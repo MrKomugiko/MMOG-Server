@@ -1,0 +1,11 @@
+D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG.exe
+D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG.deps.json
+D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG.runtimeconfig.json
+D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG.runtimeconfig.dev.json
+D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG.dll
+D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG.pdb
+D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG.csprojAssemblyReference.cache
+D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG.AssemblyInfoInputs.cache
+D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG.AssemblyInfo.cs
+D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG.dll
+D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG.pdb
