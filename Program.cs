@@ -16,6 +16,17 @@ namespace MMOG
             mainThread.Start();
 
             Server.Start(50, 5555);
+
+            Console.WriteLine("... press enter");
+            Console.ReadKey();
+            ServerSend.UpdateChat("GM was wita ;3");
+            Console.WriteLine("przywitałeś sie z serwerem xD");
+            string message = "";
+            while(message != "exit") {
+                Console.WriteLine("wprowadz wiadomosc do ludu : [exit]-by zakońćzyć nadawanie obwieszczeń");
+                message = Console.ReadLine();
+                ServerSend.UpdateChat(message);
+            }
         }
 
         private static void MainThread()
