@@ -12,7 +12,7 @@ namespace MMOG
         spawnPlayer,
         playerPosition,
         playerRotation,
-        udpTest,
+        // udpTest,
         updateChat
     }
 
@@ -20,7 +20,7 @@ namespace MMOG
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        updTestReceived,
+        // updTestReceived,
         playerMovement
     }
 
