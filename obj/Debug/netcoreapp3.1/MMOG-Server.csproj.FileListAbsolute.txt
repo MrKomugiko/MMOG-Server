@@ -8,3 +8,4 @@ D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG-Server.dll
 D:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG-Server.pdb
 D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG-Server.dll
 D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG-Server.pdb
+D:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG-Server.csprojAssemblyReference.cache

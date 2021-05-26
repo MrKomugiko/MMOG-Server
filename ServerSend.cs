@@ -11,13 +11,11 @@ namespace MMOG
             _packet.WriteLength();
             Server.clients[_toClient].tcp.SendData(_packet);
         }
-
         private static void SendUDPData(int _toClient, Packet _packet)
         {
             _packet.WriteLength();
             Server.clients[_toClient].udp.SendData(_packet);
         }
-
         private static void SendTCPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
@@ -37,7 +35,6 @@ namespace MMOG
                 }
             }
         }
-
         private static void SendUDPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
@@ -69,7 +66,6 @@ namespace MMOG
                 SendTCPData(_toClient, _packet);
             }
         }
-
         public static void UDPTest(int _toClient)
         {
             using (Packet _packet = new Packet((int)ServerPackets.udpTest))
@@ -79,6 +75,26 @@ namespace MMOG
                 SendUDPData(_toClient, _packet);
             }
         }
-        #endregion
-    }
+        public static void SpawnPlayer(int _toClient, Player _player) {
+            Console.WriteLine("Spawn Gracza");
+            using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer)) {
+                _packet.Write(_player.id);
+                _packet.Write(_player.username);
+                _packet.Write(_player.position);
+                _packet.Write(_player.rotation);
+
+                SendTCPData(_toClient, _packet);
+            }
+        }
+        public static void PlayerPosition(Player _player) {
+            using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
+                _packet.Write(_player.id);
+                _packet.Write(_player.position);
+
+                SendUDPDataToAll(_packet);
+            }
+        }
+
+            #endregion
+        }
 }

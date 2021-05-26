@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
+using System.Linq;
 
 namespace MMOG
 {
@@ -11,6 +13,7 @@ namespace MMOG
         public static int dataBufferSize = 4096;
 
         public int id;
+        public Player player;
         public TCP tcp;
         public UDP udp;
 
@@ -136,7 +139,6 @@ namespace MMOG
                 return false;
             }
         }
-
         public class UDP
         {
             public IPEndPoint endPoint;
@@ -172,6 +174,22 @@ namespace MMOG
                         Server.packetHandlers[_packetId](id, _packet);
                     }
                 });
+            }
+        }
+    
+        public void SendIntoGame(string _playerName) {
+            player = new Player(id, _playerName, new Vector3(0,0,0));
+
+            // spawn nowego gracza - lokalnego
+            foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
+                if(_client.id != id) {
+                    ServerSend.SpawnPlayer(id, _client.player);
+                }
+            }
+
+            // wysłanie info do wszystkich pozostałych graczy, że pojawił się nowy
+            foreach (Client _client in Server.clients.Values.Where(client => client.player != null)) {
+                ServerSend.SpawnPlayer(_client.id, player);
             }
         }
     }
