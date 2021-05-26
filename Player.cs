@@ -39,8 +39,7 @@ namespace MMOG
         private void Move(Vector2 _direction) {
             position += new Vector3(_direction.X * moveSpeed, _direction.Y * moveSpeed,0);
 
-            if(_direction != Vector2.Zero) Console.WriteLine($"[{username}] moved.");
-            ServerSend.PlayerPosition(this);
+           if(_direction != Vector2.Zero) ServerSend.PlayerPosition(this);
         }
 
         public void SetInput(bool[] _inputs, Quaternion _rotation) {

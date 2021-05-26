@@ -76,7 +76,7 @@ namespace MMOG
             }
         }
         public static void SpawnPlayer(int _toClient, Player _player) {
-            Console.WriteLine("Spawn Gracza");
+            Console.WriteLine($"Spawn Gracza [{_player.username}]");
             using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer)) {
                 _packet.Write(_player.id);
                 _packet.Write(_player.username);
@@ -87,6 +87,7 @@ namespace MMOG
             }
         }
         public static void PlayerPosition(Player _player) {
+            Console.WriteLine($"[{_player.username}] wykonał ruch.");
             using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
                 _packet.Write(_player.id);
                 _packet.Write(_player.position);
@@ -95,6 +96,6 @@ namespace MMOG
             }
         }
 
-            #endregion
-        }
+        #endregion
+    }
 }
