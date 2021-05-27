@@ -9,6 +9,7 @@ namespace MMOG
     {
         public int id;
         public string username;
+        public DateTime loginDate;
 
         public Vector3 position;
         public Quaternion rotation;
@@ -21,7 +22,7 @@ namespace MMOG
             username = _username;
             position = _spawnPosition;
             rotation = Quaternion.Identity;
-
+            loginDate = DateTime.Now;
             inputs = new bool[4];
         }
 

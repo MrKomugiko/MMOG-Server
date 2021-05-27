@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 
 namespace MMOG
@@ -20,18 +21,35 @@ namespace MMOG
             while(true)
             {
                 string consoleCommand = Console.ReadLine();
-                if(consoleCommand == "cmd_help") ShowConsoleCommands();
-                if(consoleCommand == "cmd_chat") GMMessagesToClients();
+                if (consoleCommand == "cmd_help") ShowConsoleCommands();
+                if (consoleCommand == "cmd_chat") GMMessagesToClients();
+                if (consoleCommand == "cmd_users") ShowCurrentlyLoggedInUsers();
+
             }
 
+        }
+
+        private static void ShowCurrentlyLoggedInUsers() {
+            string listaGraczy = "";
+            foreach(Client client in Server.clients.Values)
+            {
+                if (client.player == null) continue;
+
+                Player player = client.player;
+                string timePlayerIsOnline = (DateTime.Now - player.loginDate).ToString(@"hh\:mm\:ss");
+                listaGraczy += $"[#{player.id}]:[{player.username}]:[{timePlayerIsOnline}]\n";
+            }
+
+            Console.WriteLine(listaGraczy);
         }
 
         private static void ShowConsoleCommands()
         {
             Console.WriteLine(
-                $"Dostepne komendy:\n"
-                +"[cmd_chat] -> wiadomosci GM na czacie globalnym.\n"
-                +"[cmd_help] -> wyswietlenie wszystkich komend\n");
+                  "Dostepne komendy:\n"
+                + "[cmd_chat]  -> wiadomosci GM na czacie globalnym.\n"
+                + "[cmd_help]  -> wyswietlenie wszystkich komend\n"
+                + "[cmd_users] -> lista aktualnie zalogowanych graczy\n");
         }
         private static void GMMessagesToClients()
         {
