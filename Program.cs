@@ -17,14 +17,33 @@ namespace MMOG
 
             Server.Start(50, 5555);
 
-            Console.WriteLine("... press enter");
-            Console.ReadKey();
-            ServerSend.UpdateChat("GM was wita ;3");
-            Console.WriteLine("przywitałeś sie z serwerem xD");
+            while(true)
+            {
+                string consoleCommand = Console.ReadLine();
+                if(consoleCommand == "cmd_help") ShowConsoleCommands();
+                if(consoleCommand == "cmd_chat") GMMessagesToClients();
+            }
+
+        }
+
+        private static void ShowConsoleCommands()
+        {
+            Console.WriteLine(
+                $"Dostepne komendy:\n"
+                +"[cmd_chat] -> wiadomosci GM na czacie globalnym.\n"
+                +"[cmd_help] -> wyswietlenie wszystkich komend\n");
+        }
+        private static void GMMessagesToClients()
+        {
             string message = "";
-            while(message != "exit") {
-                Console.WriteLine("wprowadz wiadomosc do ludu : [exit]-by zakońćzyć nadawanie obwieszczeń");
+            Console.WriteLine("wprowadz wiadomosc do ludu : \n[cmd_exit] -> by zakońćzyć nadawanie obwieszczeń");
+            while(true) {
                 message = Console.ReadLine();
+                
+                if(message == "cmd_exit") {
+                    Console.Clear();
+                    return;
+                }
                 ServerSend.UpdateChat(message);
             }
         }

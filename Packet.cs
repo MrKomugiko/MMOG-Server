@@ -5,24 +5,26 @@ using System.Text;
 
 namespace MMOG
 {
-    /// <summary>Sent from server to client.</summary>
-    public enum ServerPackets
-    {
-        welcome = 1,
-        spawnPlayer,
-        playerPosition,
-        playerRotation,
-        // udpTest,
-        updateChat
-    }
+/// <summary>Sent from server to client.</summary>
+public enum ServerPackets
+{
+    welcome = 1,
+    spawnPlayer,
+    playerPosition,
+    playerRotation,
+   // udpTest,
+    updateChat,
+    updateChat_NewUserPost
+}
 
-    /// <summary>Sent from client to server.</summary>
-    public enum ClientPackets
-    {
-        welcomeReceived = 1,
-        // updTestReceived,
-        playerMovement
-    }
+/// <summary>Sent from client to server.</summary>
+public enum ClientPackets
+{
+    welcomeReceived = 1,
+   // updTestReceived,
+    playerMovement,
+    SendChatMessage
+}
 
     public class Packet : IDisposable
     {

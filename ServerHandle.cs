@@ -34,8 +34,17 @@ namespace MMOG
             }
             Quaternion _rotation = _packet.ReadQuaternion(); // pobieranie rotacji
 
-            Server.clients[_fromClient].player.SetInput(_inputs, _rotation); // przesłanie informacji dot. wcisnietych input klawiszy danego clienta
-                                                                             
+            Server.clients[_fromClient].player.SetInput(_inputs, _rotation); // przesłanie informacji dot. wcisnietych input klawiszy danego clienta                                                                 
+        }
+
+        public static void SendChatMessage(int _fromClient, Packet _packet)
+        { 
+            //tutaj obieram wiadomość od klienta i rozsyłam ją do wszystkich aby ją zaktualizowali na czacie
+            int _id = _packet.ReadInt();
+            string _msg = _packet.ReadString();
+            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]:[{Server.clients[_id].player.username}]:{_msg}");
+            
+            ServerSend.UpdateChat_NewUserPost(_id, _msg);
         }
     }
 }

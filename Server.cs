@@ -119,7 +119,9 @@ namespace MMOG
             {
                 { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
                // { (int)ClientPackets.updTestReceived, ServerHandle.UDPTestReceived },
-                { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement }
+                { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
+                { (int)ClientPackets.SendChatMessage, ServerHandle.SendChatMessage }
+
             };
             Console.WriteLine("Initialized packets.");
         }

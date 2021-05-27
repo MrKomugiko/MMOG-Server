@@ -68,12 +68,12 @@ namespace MMOG
         }
         public static void UDPTest(int _toClient)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.udpTest))
+          /*  using (Packet _packet = new Packet((int)ServerPackets.udpTest))
             {
                 _packet.Write("A test packet for UDP.");
 
                 SendUDPData(_toClient, _packet);
-            }
+            }*/
         }
         public static void SpawnPlayer(int _toClient, Player _player) {
             Console.WriteLine($"Spawn Gracza [{_player.username}]");
@@ -99,6 +99,15 @@ namespace MMOG
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
                 _packet.Write(_msg);
 
+                SendTCPDataToAll(_packet);
+            }
+        }
+
+        public static void UpdateChat_NewUserPost(int _fromPlayer, string _msg)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.updateChat_NewUserPost)) {
+                _packet.Write(_fromPlayer);
+                _packet.Write(_msg);
                 SendTCPDataToAll(_packet);
             }
         }

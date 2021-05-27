@@ -66,7 +66,7 @@ namespace MMOG
                 }
                 catch (Exception _ex)
                 {
-                    Console.WriteLine($"Error sending data to player {id} via TCP: {_ex}");
+                   Console.WriteLine($"Error sending data to player {id} via TCP: {_ex}");
                 }
             }
 
@@ -89,7 +89,7 @@ namespace MMOG
                 }
                 catch (Exception _ex)
                 {
-                    Console.WriteLine($"Error receiving TCP data: {_ex}");
+                  //  Console.WriteLine($"Error receiving TCP data: {_ex}");
                     Server.clients[id].Disconnect();
 
                 }
@@ -163,7 +163,7 @@ namespace MMOG
             public void Connect(IPEndPoint _endPoint)
             {
                 endPoint = _endPoint;
-                ServerSend.UDPTest(id);
+                //ServerSend.UDPTest(id);
             }
 
             public void SendData(Packet _packet)
@@ -207,11 +207,14 @@ namespace MMOG
             }
         }
         private void Disconnect() {
-            Console.WriteLine($"[{player.username}][{tcp.socket.Client.RemoteEndPoint}] has disconnected.");
-            player = null;
+           
+                Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}] has disconnected.");
 
-            tcp.Disconnect();
-            udp.Disconnect();
+                player = null;
+
+                tcp.Disconnect();
+                udp.Disconnect();
+   
         }
 
     }
