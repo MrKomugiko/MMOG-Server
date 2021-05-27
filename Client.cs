@@ -52,6 +52,7 @@ namespace MMOG
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
                 ServerSend.Welcome(id, "Welcome to the server!");
+
                
             }
 
@@ -142,6 +143,7 @@ namespace MMOG
             }
 
             public void Disconnect() {
+                if (socket == null) return;
                 socket.Close();
                 stream = null;
                 receivedData = null;
@@ -197,6 +199,7 @@ namespace MMOG
             // spawn nowego gracza - lokalnego
             foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
                 if(_client.id != id) {
+                    Console.WriteLine($"Spawn Gracza [{_client.player.username}]");
                     ServerSend.SpawnPlayer(id, _client.player);
                 }
             }
@@ -208,12 +211,17 @@ namespace MMOG
         }
         private void Disconnect() {
            
-                Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}] has disconnected.");
+            if(player != null) {
+                Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.username}] has disconnected.");
+                ServerSend.UpdateChat($"[{player.username}] has disconnected.");
 
-                player = null;
+                ServerSend.RemoveOfflinePlayer(player.id);
+            }
 
-                tcp.Disconnect();
-                udp.Disconnect();
+            player = null;
+
+            tcp.Disconnect();
+            udp.Disconnect();
    
         }
 

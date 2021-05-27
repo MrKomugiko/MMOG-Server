@@ -39,13 +39,13 @@ namespace MMOG
         {
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
             tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
-            Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
 
             for (int i = 1; i <= MaxPlayers; i++)
             {
                 if (clients[i].tcp.socket == null)
                 {
                     clients[i].tcp.Connect(_client);
+                   // Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
                     return;
                 }
             }

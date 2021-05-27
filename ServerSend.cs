@@ -76,7 +76,6 @@ namespace MMOG
             }*/
         }
         public static void SpawnPlayer(int _toClient, Player _player) {
-            Console.WriteLine($"Spawn Gracza [{_player.username}]");
             using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer)) {
                 _packet.Write(_player.id);
                 _packet.Write(_player.username);
@@ -108,6 +107,13 @@ namespace MMOG
             using (Packet _packet = new Packet((int)ServerPackets.updateChat_NewUserPost)) {
                 _packet.Write(_fromPlayer);
                 _packet.Write(_msg);
+                SendTCPDataToAll(_packet);
+            }
+        }
+
+        public static void RemoveOfflinePlayer(int _playerToRemove) {
+            using (Packet _packet = new Packet((int)ServerPackets.removeOfflinePlayer)) {
+                _packet.Write(_playerToRemove);
                 SendTCPDataToAll(_packet);
             }
         }
