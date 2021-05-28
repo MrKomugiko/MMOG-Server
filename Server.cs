@@ -28,8 +28,10 @@ namespace MMOG
             tcpListener = new TcpListener(IPAddress.Any, Port);
             tcpListener.Start();
             tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
-
+ 
+            int SIO_UDP_CONNRESET = -1744830452;
             udpListener = new UdpClient(Port);
+            udpListener.Client.IOControl((IOControlCode) SIO_UDP_CONNRESET,new byte[] { 0, 0, 0, 0 },null);
             udpListener.BeginReceive(UDPReceiveCallback, null);
 
             Console.WriteLine($"Server started on port {Port}.");
@@ -59,7 +61,13 @@ namespace MMOG
             {
                 IPEndPoint _clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 byte[] _data = udpListener.EndReceive(_result, ref _clientEndPoint);
-                udpListener.BeginReceive(UDPReceiveCallback, null);
+                try { 
+                    udpListener.BeginReceive(UDPReceiveCallback, null);
+                } 
+                catch {
+                    Console.WriteLine("error udp - 0");
+                        return; 
+                }
 
                 if (_data.Length < 4)
                 {
@@ -89,7 +97,12 @@ namespace MMOG
             }
             catch (Exception _ex)
             {
-                Console.WriteLine($"Error receiving UDP data: {_ex}");
+               // Console.WriteLine($"Error receiving UDP data: {_ex}");
+                Console.WriteLine("error udp - 1");
+               
+              //  wudpListener.BeginReceive(UDPReceiveCallback, null);
+               // return;
+               
             }
         }
 

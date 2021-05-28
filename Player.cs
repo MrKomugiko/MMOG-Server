@@ -39,7 +39,7 @@ namespace MMOG
 
         private void Move(Vector2 _direction) {
             inputs = new bool[4];
-            position += new Vector3(_direction.X * moveSpeed, _direction.Y * moveSpeed,0);
+            position += new Vector3(_direction.X, _direction.Y,0);
 
            if(_direction != Vector2.Zero) ServerSend.PlayerPosition(this);
         }

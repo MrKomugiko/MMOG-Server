@@ -90,7 +90,7 @@ namespace MMOG
                 }
                 catch (Exception _ex)
                 {
-                  //  Console.WriteLine($"Error receiving TCP data: {_ex}");
+                    Console.WriteLine($"Error receiving TCP data: {_ex}");
                     Server.clients[id].Disconnect();
                   
 
@@ -195,7 +195,7 @@ namespace MMOG
         }
     
         public void SendIntoGame(string _playerName) {
-            player = new Player(id, _playerName, new Vector3(0,0,0));
+            player = new Player(id, _playerName, new Vector3(0,0,2));
 
             // spawn nowego gracza - lokalnego
             foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
