@@ -92,6 +92,7 @@ namespace MMOG
                 {
                   //  Console.WriteLine($"Error receiving TCP data: {_ex}");
                     Server.clients[id].Disconnect();
+                  
 
                 }
             }
@@ -209,9 +210,10 @@ namespace MMOG
                 ServerSend.SpawnPlayer(_client.id, player);
             }
         }
-        private void Disconnect() {
+        public void Disconnect() {
            
             if(player != null) {
+                if (tcp.socket == null) return;
                 Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.username}] has disconnected.");
                 ServerSend.UpdateChat($"[{player.username}] has disconnected.");
 

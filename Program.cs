@@ -18,14 +18,19 @@ namespace MMOG
 
             Server.Start(50, 5555);
 
-            while(true)
-            {
+            while (true) {
                 string consoleCommand = Console.ReadLine();
                 if (consoleCommand == "cmd_help") ShowConsoleCommands();
                 if (consoleCommand == "cmd_chat") GMMessagesToClients();
                 if (consoleCommand == "cmd_users") ShowCurrentlyLoggedInUsers();
-
+                if (consoleCommand.Contains("cmd_kick_")) KickUserByID(Convert.ToInt32(consoleCommand.Replace("cmd_kick_","")));
             }
+
+        }
+
+        private static void KickUserByID(int _userId) {
+            Console.WriteLine("Kicking user with id " + _userId + "and nick:" + Server.clients[_userId].player.username);
+            Server.clients[_userId].Disconnect();
 
         }
 
@@ -49,7 +54,8 @@ namespace MMOG
                   "Dostepne komendy:\n"
                 + "[cmd_chat]  -> wiadomosci GM na czacie globalnym.\n"
                 + "[cmd_help]  -> wyswietlenie wszystkich komend\n"
-                + "[cmd_users] -> lista aktualnie zalogowanych graczy\n");
+                + "[cmd_users] -> lista aktualnie zalogowanych graczy\n"
+                + "[cmd_kick_<user id>] -> wywalenie gracza z ID");
         }
         private static void GMMessagesToClients()
         {
