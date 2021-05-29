@@ -25,9 +25,9 @@ namespace MMOG
                 if (consoleCommand == "cmd_chat") GMMessagesToClients();
                 if (consoleCommand == "cmd_users") ShowCurrentlyLoggedInUsers();
                 if (consoleCommand.Contains("cmd_kick_")) KickUserByID(Convert.ToInt32(consoleCommand.Replace("cmd_kick_","")));
-                if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
+                if (consoleCommand.Contains("cmd_downloadMapData_")) ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadMapData_","")));
+                //  if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
             }
-
         }
 
         private static void KickUserByID(int _userId) {
@@ -56,7 +56,8 @@ namespace MMOG
                 + "[cmd_chat]  -> wiadomosci GM na czacie globalnym.\n"
                 + "[cmd_help]  -> wyswietlenie wszystkich komend\n"
                 + "[cmd_users] -> lista aktualnie zalogowanych graczy\n"
-                + "[cmd_kick_<user id>] -> wywalenie gracza z ID");
+                + "[cmd_kick_<user id>] -> wywalenie gracza z ID\n"
+                + "[cmd_downloadMapData_<admin_id>] -> pobranie na serwer danych Mapy od klienta");
         }
         private static void GMMessagesToClients()
         {

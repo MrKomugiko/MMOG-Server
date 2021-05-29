@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 
 namespace MMOG
 {
@@ -18,7 +19,7 @@ namespace MMOG
         private static UdpClient udpListener;
 
         public static Dictionary<int, string> listaObecnosci = new Dictionary<int, string>();
-
+        public static Dictionary<Vector3, string> MAPDATA = new Dictionary<Vector3, string>();
         public static void Start(int _maxPlayers, int _port)
         {
             MaxPlayers = _maxPlayers;
@@ -136,7 +137,9 @@ namespace MMOG
                // { (int)ClientPackets.updTestReceived, ServerHandle.UDPTestReceived },
                 { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
                 { (int)ClientPackets.SendChatMessage, ServerHandle.SendChatMessage },
-                { (int)ClientPackets.PingReceived, ServerHandle.PingReceived }
+                { (int)ClientPackets.PingReceived, ServerHandle.PingReceived },
+                { (int)ClientPackets.SEND_MAPDATA, ServerHandle.MapDataReceived }
+
             };
             Console.WriteLine("Initialized packets.");
         }

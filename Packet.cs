@@ -16,7 +16,8 @@ namespace MMOG
         updateChat,
         updateChat_NewUserPost,
         removeOfflinePlayer,
-        ping_ALL
+        ping_ALL,
+        downloadMapData
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -26,7 +27,8 @@ namespace MMOG
        // updTestReceived,
         playerMovement,
         SendChatMessage,
-        PingReceived
+        PingReceived,
+        SEND_MAPDATA
     }
 
     public class Packet : IDisposable

@@ -52,5 +52,18 @@ namespace MMOG
                 Console.WriteLine("Cos poszło nie tak z aktualizacją statusu obecności gracza" + ex.Message);
            }
         }
+
+        public static void MapDataReceived(int _fromClient, Packet _packet) {
+            Console.WriteLine("Odebrano dane mapy.");
+
+            // Wypakowywanie
+            int _dataSize = _packet.ReadInt();
+
+                for (int i = 0; i < _dataSize; i++) {
+                Server.MAPDATA.Add(_packet.ReadVector3(),_packet.ReadString());
+            }
+
+            Console.WriteLine("MAPDATA zawiera informacje o "+Server.MAPDATA.Count+" polach.");
+        }
     }
 }

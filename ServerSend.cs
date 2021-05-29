@@ -35,6 +35,7 @@ namespace MMOG
                 }
             }
         }
+
         private static void SendUDPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
@@ -133,6 +134,14 @@ namespace MMOG
             using (Packet _packet = new Packet((int)ServerPackets.removeOfflinePlayer)) {
                 _packet.Write(_playerToRemove);
                 SendTCPDataToAll(_packet);
+            }
+        }
+
+        public static void DownloadMapData(int fromID) {
+            Console.WriteLine("Wysłanie żądania o dostarczenie danych mapy");
+            using (Packet _packet = new Packet((int)ServerPackets.downloadMapData)) {
+                _packet.Write(1);
+                SendTCPData(fromID,_packet);
             }
         }
         #endregion
