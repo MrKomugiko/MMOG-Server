@@ -90,10 +90,8 @@ namespace MMOG
                 }
                 catch (Exception _ex)
                 {
-                    Console.WriteLine($"Error receiving TCP data: {_ex}");
+                   // Console.WriteLine($"Error receiving TCP data: {_ex}");
                     Server.clients[id].Disconnect();
-                  
-
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -24,6 +25,7 @@ namespace MMOG
                 if (consoleCommand == "cmd_chat") GMMessagesToClients();
                 if (consoleCommand == "cmd_users") ShowCurrentlyLoggedInUsers();
                 if (consoleCommand.Contains("cmd_kick_")) KickUserByID(Convert.ToInt32(consoleCommand.Replace("cmd_kick_","")));
+                if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
             }
 
         }
@@ -31,7 +33,6 @@ namespace MMOG
         private static void KickUserByID(int _userId) {
             Console.WriteLine("Kicking user with id " + _userId + "and nick:" + Server.clients[_userId].player.username);
             Server.clients[_userId].Disconnect();
-
         }
 
         private static void ShowCurrentlyLoggedInUsers() {
@@ -74,9 +75,15 @@ namespace MMOG
 
         private static void MainThread()
         {
-            Console.WriteLine($"Main thread started. Running at {Constants.TICKS_PER_SEC} ticks per second.");
+            //Console.WriteLine($"Main thread started. Running at {Constants.TICKS_PER_SEC} ticks per second.");
             DateTime _nextLoop = DateTime.Now;
 
+            // init ping
+            //Console.WriteLine("Ping do graczy...");
+            ServerSend.Ping_ALL();
+            int afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK*1000;
+
+            // pingowanie i czyszczenie afków co 1s = 1.000ms
             while (isRunning)
             {
                 while (_nextLoop < DateTime.Now)
@@ -89,6 +96,24 @@ namespace MMOG
                     {
                         try { Thread.Sleep(_nextLoop - DateTime.Now); } 
                         catch(Exception ex) { Console.WriteLine(ex.Message); };
+                    }
+
+                    afkCleanerCounter -= (int)Constants.MS_PER_TICK;
+                    if(afkCleanerCounter < 0) {
+                        //Console.WriteLine("Kicking ghost-afk users");
+                        foreach(KeyValuePair<int,string> obecnosc in Server.listaObecnosci) {
+                            if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
+                            {
+                                try {
+                                    Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
+                                } catch { };
+                                ServerSend.RemoveOfflinePlayer(obecnosc.Key);
+                                Server.clients[obecnosc.Key].Disconnect();
+                                Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
+                            }
+                        }
+                        ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
+                        afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK*1000;
                     }
                 }
             }

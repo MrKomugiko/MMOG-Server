@@ -81,12 +81,12 @@ namespace MMOG
                 _packet.Write(_player.username);
                 _packet.Write(_player.position);
                 _packet.Write(_player.rotation);
-
+             
                 SendTCPData(_toClient, _packet);
             }
         }
         public static void PlayerPosition(Player _player) {
-            Console.WriteLine($"[{_player.username}] wykonał ruch.");
+            //Console.WriteLine($"[{_player.username}] wykonał ruch.");
             using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
                 _packet.Write(_player.id);
                 _packet.Write(_player.position);
@@ -98,6 +98,24 @@ namespace MMOG
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
                 _packet.Write(_msg);
 
+                SendTCPDataToAll(_packet);
+            }
+        }
+
+        public static void Ping_ALL() {
+            Server.listaObecnosci.Clear();
+            foreach(var player in Server.clients.Values) {
+                if (player.player == null) continue;
+
+                // sprawdzanie czy na liscie obecnosci znajduje sie juz ten gracz nie nadpisuj go, 
+                if (Server.listaObecnosci.ContainsKey(player.id)) continue;
+
+                // jezeli nowy gracz dolaczył, dopisz go do listy
+                Server.listaObecnosci.Add(player.id, $"[....] \t[#{player.id} {player.player.username}]");
+            };
+
+            using (Packet _packet = new Packet((int)ServerPackets.ping_ALL)) {
+                _packet.Write(1);
                 SendTCPDataToAll(_packet);
             }
         }

@@ -17,6 +17,8 @@ namespace MMOG
         private static TcpListener tcpListener;
         private static UdpClient udpListener;
 
+        public static Dictionary<int, string> listaObecnosci = new Dictionary<int, string>();
+
         public static void Start(int _maxPlayers, int _port)
         {
             MaxPlayers = _maxPlayers;
@@ -133,10 +135,14 @@ namespace MMOG
                 { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
                // { (int)ClientPackets.updTestReceived, ServerHandle.UDPTestReceived },
                 { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
-                { (int)ClientPackets.SendChatMessage, ServerHandle.SendChatMessage }
-
+                { (int)ClientPackets.SendChatMessage, ServerHandle.SendChatMessage },
+                { (int)ClientPackets.PingReceived, ServerHandle.PingReceived }
             };
             Console.WriteLine("Initialized packets.");
+        }
+
+        public static void ZaktualizujListeObecnosci(int afkId) {
+            listaObecnosci.Remove(afkId);
         }
     }
 }
