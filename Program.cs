@@ -17,7 +17,7 @@ namespace MMOG
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
 
-            Server.Start(50, 5555);
+           Server.Start(50, 5555);
 
             while (true) {
                 string consoleCommand = Console.ReadLine();
