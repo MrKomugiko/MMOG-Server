@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
@@ -14,7 +15,7 @@ namespace MMOG
         public Vector3 position;
         public Quaternion rotation;
 
-        private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
+      //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
                                                                 // odpowiadałoby to speed / time.deltatime w unity
         private bool[] inputs; // wciśnięte klawisze przez gracza
         public Player(int _id, string _username, Vector3 _spawnPosition) {
@@ -58,7 +59,7 @@ namespace MMOG
             Vector3 _groundPosition = new Vector3(_newPosition.X, _newPosition.Y, _newPosition.Z - 2); // bo interesuje nas podłoga na ktorą gracz wchodzi
 
             if (Server.MAPDATA.ContainsKey(_newPosition) == true) {// jeżeli cokolwiek jest na posiomie gracza
-                if (Server.MAPDATA[_newPosition] == "WALL") {// jezeli na poziomie gracza stoi sciana
+                if (Server.MAPDATA[_newPosition].Contains("WALL")) {// jezeli na poziomie gracza stoi sciana
                     //Console.WriteLine($"{Server.MAPDATA[_newPosition]} na pozycji {_newPosition} uniemozliwia przejscie. ");
                     return false; 
                 }

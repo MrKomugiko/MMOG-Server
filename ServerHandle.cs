@@ -31,7 +31,14 @@ namespace MMOG
             }
             Quaternion _rotation = _packet.ReadQuaternion(); // pobieranie rotacji
 
-            Server.clients[_fromClient].player.SetInput(_inputs, _rotation); // przesłanie informacji dot. wcisnietych input klawiszy danego clienta                                                                 
+           try
+           {
+            Server.clients[_fromClient].player.SetInput(_inputs, _rotation); // przesłanie informacji dot. wcisnietych input klawiszy danego clienta                                                                    
+           }
+           catch (System.Exception ex)
+           {
+                Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}] Error: {ex.Message} ");               
+           } 
         }
 
         public static void SendChatMessage(int _fromClient, Packet _packet) {

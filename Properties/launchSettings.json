@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MMOG-Server": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

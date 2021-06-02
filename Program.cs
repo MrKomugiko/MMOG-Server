@@ -31,6 +31,13 @@ namespace MMOG
         }
 
         private static void KickUserByID(int _userId) {
+
+            if(Server.clients.ContainsKey(_userId) == false )
+            {
+                Console.WriteLine("Brak gracza o ID: "+_userId);
+                return;
+            }
+
             Console.WriteLine("Kicking user with id " + _userId + "and nick:" + Server.clients[_userId].player.username);
             Server.clients[_userId].Disconnect();
         }

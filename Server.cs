@@ -98,7 +98,7 @@ namespace MMOG
                     }
                 }
             }
-            catch (Exception _ex)
+            catch (Exception )
             {
                // Console.WriteLine($"Error receiving UDP data: {_ex}");
                 Console.WriteLine("error udp - 1");

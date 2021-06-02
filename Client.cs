@@ -65,9 +65,9 @@ namespace MMOG
                         stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
                     }
                 }
-                catch (Exception _ex)
+                catch(Exception)
                 {
-                   Console.WriteLine($"Error sending data to player {id} via TCP: {_ex}");
+                   Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}] Error sending data to player {id} via TCP:");// {_ex}");
                 }
             }
 
@@ -88,7 +88,7 @@ namespace MMOG
                     receivedData.Reset(HandleData(_data));
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
-                catch (Exception _ex)
+                catch (Exception)
                 {
                    // Console.WriteLine($"Error receiving TCP data: {_ex}");
                     Server.clients[id].Disconnect();
