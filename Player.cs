@@ -77,6 +77,12 @@ namespace MMOG
 
         private bool CheckIfPlayerNewPositionIsPossible(Vector3 _newPosition)
         {
+            if(Server.MAPDATA.Count == 0) {
+             //   Console.WriteLine("Player.cs detected mapdata size " + Server.MAPDATA.Count);
+                ServerHandle.LoadMapDataFromFile();
+            //    Console.WriteLine("updated mapdata new size: " + Server.MAPDATA.Count);
+            }
+
             // proste sprawdzenie czy nastepna pozycją jest ściana lub czy istnieje
             Vector3 _groundPosition = _newPosition + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
             Vector3 _downstairPosition = _newPosition + Vector3FloorDown + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
@@ -87,85 +93,66 @@ namespace MMOG
             // Sprawdzanie klocka przed sobą
             if (Server.MAPDATA.ContainsKey(_newPosition))
             {
-                if (Server.MAPDATA[_newPosition].Contains("WALL"))
-                {
-               //     Console.WriteLine("nie mozna isc trafisz na sciane");
+                if (Server.MAPDATA[_newPosition].Contains("WALL")) {
+              //      Console.WriteLine("nie mozna isc trafisz na sciane");
                     return false;
                 }
 
-                if (Server.MAPDATA[_newPosition].Contains("schody"))
-                {
-                   // Console.WriteLine("masz przed soba schodek, do gory, mozesz na niego wejsc");
+                if (Server.MAPDATA[_newPosition].Contains("schody")) {
+                //    Console.WriteLine("masz przed soba schodek, do gory, mozesz na niego wejsc");
                     walkIntoStairs = true;
-                    stairsDirection = Vector3FloorUP;;
+                    stairsDirection = Vector3FloorUP; ;
                     return true;
                 }
-            }
-            else
-            {
-                if(walkIntoStairs == true)
-                {
-                  //  Console.WriteLine("Nie masz niczego przed sobą a stoisz na schodach, nie mozesz z nich spac");
+            } else {
+                if (walkIntoStairs == true) {
+               //     Console.WriteLine("Nie masz niczego przed sobą a stoisz na schodach, nie mozesz z nich spac");
                     output = false;
-                }
-                else
-                {
-                  //  Console.WriteLine("nie masz nic przed soba, nic ni eblokuje ci drogi, mozesz isc");
-                    output= true;
+                } else {
+              //      Console.WriteLine("nie masz nic przed soba, nic ni eblokuje ci drogi, mozesz isc");
+                    output = true;
                 }
             }
 
-            //-------------------------------------------------------------------------------------------------------------------------------
+          //  -------------------------------------------------------------------------------------------------------------------------------
             // sprawdzanie klocka na ktorym sie toi
-            if (Server.MAPDATA.ContainsKey(_groundPosition))
-            {
-                if (Server.MAPDATA[_groundPosition].Contains("ground"))
-                {
-                    // mozna isc jest po czym
-                 //   Console.WriteLine("mozesz isc bedziesz miec pod sobą ziemie");
+            if (Server.MAPDATA.ContainsKey(_groundPosition)) {
+                if (Server.MAPDATA[_groundPosition].Contains("ground")) {
+              //      mozna isc jest po czym
+                //    Console.WriteLine("mozesz isc bedziesz miec pod sobą ziemie");
                     output = true;
                 }
 
-                if (Server.MAPDATA[_groundPosition].Contains("schody"))
-                {
-                    if(walkIntoStairs == true)
-                    {
-                 //       Console.WriteLine("jestesmy juz na schodach, a przed nami na ziemi jest kolejny schodek, idziemy na dol");
-                  //      Console.WriteLine("masz pod soba schodek, na dół, mozesz zejsc na niego");
-                        // walkIntoStairs = true;
-                        // stairsDirection = new Vector3(0, 0, -2);
+                if (Server.MAPDATA[_groundPosition].Contains("schody")) {
+                    if (walkIntoStairs == true) {
+                  //      Console.WriteLine("jestesmy juz na schodach, a przed nami na ziemi jest kolejny schodek, idziemy na dol");
+                   //     Console.WriteLine("masz pod soba schodek, na dół, mozesz zejsc na niego");
+                        walkIntoStairs = true;
+                        stairsDirection = new Vector3(0, 0, -2);
                         return true;
                     }
 
-                //    Console.WriteLine("Mozesz spokojnie wejsc na pole schodka ;d");
+                 //   Console.WriteLine("Mozesz spokojnie wejsc na pole schodka ;d");
                     output = true;
                 }
-            }
-            else
-            {
-                if(walkIntoStairs == true) 
-                {   
+            } else {
+                if (walkIntoStairs == true) {
                 //    Console.WriteLine("nie masz nic przed soba ale wlasnie schodzi po schodach wiec cos bedzie na dole xD");
                     output = true;
-                }
-                else
-                {
+                } else {
                  //   Console.WriteLine("nie mozesz isc przed siebie, stracisz grunt pod nogami");
                     output = false;
                 }
             }
-            //----------------------------------------------------------------------------------------------------------------------------
-            if (Server.MAPDATA.ContainsKey(_downstairPosition))
-            {
-                // jezeli juz jestesmy na schodku, i chcemy isc dalej w dol trzeba sprawdzic czy nizej cos tam ejst
-                if (Server.MAPDATA[_downstairPosition].Contains("schody"))
-                {
-                 //   Console.WriteLine("schodzisz dalej w dół, nizej jest jeszcze schodek, mozesz isc");
+         //   ----------------------------------------------------------------------------------------------------------------------------
+            if (Server.MAPDATA.ContainsKey(_downstairPosition)) {
+            //jezeli juz jestesmy na schodku, i chcemy isc dalej w dol trzeba sprawdzic czy nizej cos tam ejst
+               if (Server.MAPDATA[_downstairPosition].Contains("schody")) {
+               //     Console.WriteLine("schodzisz dalej w dół, nizej jest jeszcze schodek, mozesz isc");
 
                     walkIntoStairs = true;
                     stairsDirection = Vector3FloorDown;
 
-                    
                     return true;
                 }
             }

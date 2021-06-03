@@ -21,7 +21,12 @@ namespace MMOG
             _packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; i++)
             {
-                Server.clients[i].tcp.SendData(_packet);
+                try {
+                    Server.clients[i].tcp.SendData(_packet);
+                }
+                catch(KeyNotFoundException ex){
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
         private static void SendTCPDataToAll(int _exceptClient, Packet _packet)

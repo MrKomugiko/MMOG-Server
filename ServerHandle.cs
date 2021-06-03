@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Numerics;
-using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MMOG
 {
@@ -62,15 +65,109 @@ namespace MMOG
 
         public static void MapDataReceived(int _fromClient, Packet _packet) {
             Console.WriteLine("Odebrano dane mapy.");
-
-            // Wypakowywanie
+            Dictionary<Vector3, string> tempDict = new Dictionary<Vector3, string>();
             int _dataSize = _packet.ReadInt();
 
-                for (int i = 0; i < _dataSize; i++) {
-                Server.MAPDATA.Add(_packet.ReadVector3(),_packet.ReadString());
+            for (int i = 0; i < _dataSize; i++) 
+            {
+                var key = _packet.ReadVector3();
+                string value = _packet.ReadString();
+                tempDict.Add(key, value);
             }
 
-            Console.WriteLine("MAPDATA zawiera informacje o "+Server.MAPDATA.Count+" polach.");
+            ZapiszMapeDoPliku(tempDict);
+
+            Console.WriteLine("Aktualizacja z istniejącymi danymi");
+            LoadMapDataFromFile();
         }
+
+        private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path=@"D:\Programowanie\Unity\MMOG-Client\PC_Build\myfile.txt")
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Create))
+            {
+                using (TextWriter tw = new StreamWriter(fs))
+                    
+                foreach (KeyValuePair<Vector3, string> kvp in mapData)
+                {
+                    tw.WriteLine(string.Format("{0} {1}", kvp.Key, kvp.Value));
+                }
+            }
+        }   
+
+        public static void LoadMapDataFromFile(string path=@"D:\Programowanie\Unity\MMOG-Client\PC_Build\myfile.txt" )
+        {
+            var mapData = new Dictionary<Vector3,string>();
+            if (!File.Exists(path)) return;
+            // ----------------------------------ZCZYTYWANIE Z PLIKU ----------------------------------
+            string line;
+
+            int modifiedCounter = 0;
+            int wrongDataRecords = 0;
+            int deletedCounter = 0;
+            int newAddedCounter = 0;
+
+            StreamReader file = new StreamReader(path);  
+            while((line = file.ReadLine()) != null)  
+            {  
+                string text = line.Replace("<","").Replace(">","");
+                string[] data = text.Split(" ");
+
+                try {
+                    int x = Int32.Parse(data[0].Trim());
+                    int y = Int32.Parse(data[1].Trim());
+                    int z = Int32.Parse(data[2].Trim());
+                    string value = data[3];
+
+                    mapData.Add(new Vector3(x, y, z), value);
+                }
+                catch(System.FormatException ex) {
+                    Console.WriteLine("zły format, zle załądowana lokalizacja Vector3 => "+text+" Error: "+ex.Message );
+                    wrongDataRecords++;
+                }
+                catch(Exception ex) {
+                    Console.WriteLine(ex.Message);
+                }
+            }  
+            file.Close();
+
+            // ----------------------------------ZAPISYWANIE W PAMIECI SERVERA ----------------------------------
+            // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE
+            if (Server.MAPDATA.Count == 0) 
+            {
+                Server.MAPDATA = mapData;
+            }
+            // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
+            if (Server.MAPDATA.Count > 0) 
+            {
+                if (mapData.Count == 0) Console.WriteLine("Plik jest pusty -> Brak zapisanych danych mapy");
+
+                // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
+                foreach (var kvp in mapData) {
+                    if (Server.MAPDATA.ContainsKey(kvp.Key)) {
+                        if (Server.MAPDATA[kvp.Key] != kvp.Value) {
+                            Server.MAPDATA[kvp.Key] = kvp.Value;
+                            modifiedCounter++;
+                        }
+                    }else {
+                        Server.MAPDATA.Add(kvp.Key, kvp.Value);
+                        newAddedCounter++;
+                    }
+                }
+
+                // usuniecie nieaktualnych pól
+                foreach (var pole in Server.MAPDATA.Where(pole => mapData.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) {
+                    Server.MAPDATA.Remove(pole);
+                    deletedCounter++;
+                }
+            }
+
+           // ----------------------------------PODSUMOWANIE ----------------------------------
+            Console.WriteLine(
+                $"Odczytano: .................. {mapData.Count}\n"+
+                $"Dodano: ..................... {newAddedCounter}\n" +
+                $"Zmodyfikowano: .............. {modifiedCounter}\n" +
+                $"Usunięto: ................... {deletedCounter}\n" +
+                $"Uszkodzonych danych: ........ {wrongDataRecords}");
+        }   
     }
 }

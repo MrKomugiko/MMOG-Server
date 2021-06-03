@@ -22,6 +22,8 @@ namespace MMOG
         public static Dictionary<Vector3, string> MAPDATA = new Dictionary<Vector3, string>();
         public static void Start(int _maxPlayers, int _port)
         {
+
+
             MaxPlayers = _maxPlayers;
             Port = _port;
 
@@ -38,6 +40,11 @@ namespace MMOG
             udpListener.BeginReceive(UDPReceiveCallback, null);
 
             Console.WriteLine($"Server started on port {Port}.");
+
+            Console.WriteLine("MAPDATA size old: " +MAPDATA.Count);
+            ServerHandle.LoadMapDataFromFile();
+            Console.WriteLine("MAPDATA size new: " + MAPDATA.Count);
+
         }
 
         private static void TCPConnectCallback(IAsyncResult _result)
