@@ -153,24 +153,24 @@ namespace MMOG
         // wyslanie info o aktualnej wesji update`a
         public static void SendCurrentUpdateVersionNumber(int sendToID = -1) {
             
-            Console.WriteLine("Wysłanie info o numerze aktualnej wersji");
             using (Packet _packet = new Packet((int)ServerPackets.sendCurrentUpdateNumber)) {
 
-                if (sendToID != -1) _packet.Write(sendToID); // zapisanie nadawcy jako nowego odbiorcy wiadomosci
 
                 _packet.Write(Server.UpdateVersion);
 
                 if(sendToID == -1) {
+                    Console.WriteLine("wysłano numer wersji DO WSZYSTKICH");
                     SendTCPDataToAll(_packet); // wysłanie pakietu do wszystkich
                     return;
                 }
-
+                
+                Console.WriteLine("wysłano numer wersji do gracza #"+sendToID);
                 SendTCPData(sendToID,_packet); // wysłanie pakietu do konkretnej osoby 
             }
         }
 
         public static void SendMapDataToClient(int id) {
-            Console.WriteLine("Wysłanie danych mapy do gracza #"+id);
+            Console.WriteLine("Wysłanie wszystkich danych mapy do gracza #"+id);
             using (Packet _packet = new Packet((int)ServerPackets.SEND_MAPDATA_TO_CLIENT)) 
             {
                 _packet.Write(Server.MAPDATA.Count); // dodanie wielkości przesyłanego pakietu

@@ -26,13 +26,14 @@ namespace MMOG
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        // updTestReceived,
+       // updTestReceived,
         playerMovement,
         SendChatMessage,
         PingReceived,
         SEND_MAPDATA_TO_SERVER,
-        downloadLatestMapUpdate
-    }
+        downloadLatestMapUpdate,
+        download_recentMapVersion
+}
     public class Packet : IDisposable
     {
         private List<byte> buffer;

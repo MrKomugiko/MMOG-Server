@@ -174,7 +174,13 @@ namespace MMOG
                 $"Uszkodzonych danych: ........ {wrongDataRecords}");
         }   
     
-        
+        public static void SendNumberOfLAtestMapUpdate(int _fromClient, Packet _packet)
+        {
+            Console.WriteLine("Wyslanie do gracza info zawierające aktualny numer update'a");
+           //  int _id = _packet.ReadInt();
+            ServerSend.SendCurrentUpdateVersionNumber(sendToID: _fromClient);
+        }
+
        public static void SendLatestUpdateMapDataToClient(int _FromClient, Packet _packet) {
             int _id = _packet.ReadInt();
             Console.WriteLine("Otrzymanie żądania o wysłanie nowej mapy przez klienta #"+_id);
