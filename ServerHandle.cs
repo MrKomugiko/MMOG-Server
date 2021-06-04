@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -81,8 +82,9 @@ namespace MMOG
             LoadMapDataFromFile();
         }
 
-        private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path=@"D:\Programowanie\Unity\MMOG-Client\PC_Build\myfile.txt")
+        private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path=Constants.MAP_DATA_FILE_PATH)
         {
+            Console.WriteLine("Zapisywanie danych mapy do pliku");
             using (FileStream fs = new FileStream(path, FileMode.Create))
             {
                 using (TextWriter tw = new StreamWriter(fs))
@@ -94,8 +96,9 @@ namespace MMOG
             }
         }   
 
-        public static void LoadMapDataFromFile(string path=@"D:\Programowanie\Unity\MMOG-Client\PC_Build\myfile.txt" )
+        public static void LoadMapDataFromFile(string path=Constants.MAP_DATA_FILE_PATH )
         {
+            Console.WriteLine("Ladowanie danych mapy z pliku do pamięci");
             var mapData = new Dictionary<Vector3,string>();
             if (!File.Exists(path)) return;
             // ----------------------------------ZCZYTYWANIE Z PLIKU ----------------------------------
@@ -106,6 +109,7 @@ namespace MMOG
             int deletedCounter = 0;
             int newAddedCounter = 0;
 
+            
             StreamReader file = new StreamReader(path);  
             while((line = file.ReadLine()) != null)  
             {  
@@ -113,9 +117,9 @@ namespace MMOG
                 string[] data = text.Split(" ");
 
                 try {
-                    int x = Int32.Parse(data[0].Trim());
-                    int y = Int32.Parse(data[1].Trim());
-                    int z = Int32.Parse(data[2].Trim());
+                    int x = Int32.Parse(data[0].Trim().Replace(",", ""));
+                    int y = Int32.Parse(data[1].Trim().Replace(",", ""));
+                    int z = Int32.Parse(data[2].Trim().Replace(",", ""));
                     string value = data[3];
 
                     mapData.Add(new Vector3(x, y, z), value);
@@ -169,5 +173,15 @@ namespace MMOG
                 $"Usunięto: ................... {deletedCounter}\n" +
                 $"Uszkodzonych danych: ........ {wrongDataRecords}");
         }   
+    
+        
+       public static void SendLatestUpdateMapDataToClient(int _FromClient, Packet _packet) {
+            int _id = _packet.ReadInt();
+            Console.WriteLine("Otrzymanie żądania o wysłanie nowej mapy przez klienta #"+_id);
+
+            ServerSend.SendMapDataToClient(_id);
+        }
     }
 }
+
+// TODO: wysyłanie przez uzytkownika tylko komendy na serwer prostym żądaniem pingCommand

@@ -77,13 +77,7 @@ namespace MMOG
 
         private bool CheckIfPlayerNewPositionIsPossible(Vector3 _newPosition)
         {
-            if(Server.MAPDATA.Count == 0) {
-             //   Console.WriteLine("Player.cs detected mapdata size " + Server.MAPDATA.Count);
-                ServerHandle.LoadMapDataFromFile();
-            //    Console.WriteLine("updated mapdata new size: " + Server.MAPDATA.Count);
-            }
-
-            // proste sprawdzenie czy nastepna pozycją jest ściana lub czy istnieje
+             // proste sprawdzenie czy nastepna pozycją jest ściana lub czy istnieje
             Vector3 _groundPosition = _newPosition + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
             Vector3 _downstairPosition = _newPosition + Vector3FloorDown + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
 

@@ -1,0 +1,10 @@
+D:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.exe
+D:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.deps.json
+D:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.runtimeconfig.json
+D:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.runtimeconfig.dev.json
+D:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.dll
+D:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.pdb
+D:\Programowanie\Unity\MMOG\obj\Release\netcoreapp3.1\win-x64\MMOG-Server.AssemblyInfoInputs.cache
+D:\Programowanie\Unity\MMOG\obj\Release\netcoreapp3.1\win-x64\MMOG-Server.AssemblyInfo.cs
+D:\Programowanie\Unity\MMOG\obj\Release\netcoreapp3.1\win-x64\MMOG-Server.dll
+D:\Programowanie\Unity\MMOG\obj\Release\netcoreapp3.1\win-x64\MMOG-Server.pdb

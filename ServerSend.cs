@@ -149,6 +149,41 @@ namespace MMOG
                 SendTCPData(fromID,_packet);
             }
         }
+
+        // wyslanie info o aktualnej wesji update`a
+        public static void SendCurrentUpdateVersionNumber(int sendToID = -1) {
+            
+            Console.WriteLine("Wysłanie info o numerze aktualnej wersji");
+            using (Packet _packet = new Packet((int)ServerPackets.sendCurrentUpdateNumber)) {
+
+                if (sendToID != -1) _packet.Write(sendToID); // zapisanie nadawcy jako nowego odbiorcy wiadomosci
+
+                _packet.Write(Server.UpdateVersion);
+
+                if(sendToID == -1) {
+                    SendTCPDataToAll(_packet); // wysłanie pakietu do wszystkich
+                    return;
+                }
+
+                SendTCPData(sendToID,_packet); // wysłanie pakietu do konkretnej osoby 
+            }
+        }
+
+        public static void SendMapDataToClient(int id) {
+            Console.WriteLine("Wysłanie danych mapy do gracza #"+id);
+            using (Packet _packet = new Packet((int)ServerPackets.SEND_MAPDATA_TO_CLIENT)) 
+            {
+                _packet.Write(Server.MAPDATA.Count); // dodanie wielkości przesyłanego pakietu
+                foreach(var kvp in Server.MAPDATA) {
+                    _packet.Write(kvp.Key); // dodanie Vector3
+                    _packet.Write(kvp.Value); // dodanie string = wartosci pola = nazwy
+                }   
+
+            SendTCPData(id, _packet);
+            }
+
+            Console.WriteLine("Pomyslnie wysłano dane do klienta");
+        }
         #endregion
     }
-}
+        }
