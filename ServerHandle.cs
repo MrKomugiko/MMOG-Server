@@ -80,6 +80,9 @@ namespace MMOG
 
             Console.WriteLine("Aktualizacja z istniejącymi danymi");
             LoadMapDataFromFile();
+
+            // inkrementacja numeru update'a
+            Server.UpdateVersion++;
         }
 
         private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path=Constants.MAP_DATA_FILE_PATH)

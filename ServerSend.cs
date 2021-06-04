@@ -100,6 +100,7 @@ namespace MMOG
                 SendUDPDataToAll(_packet);
             }
         }
+        
         public static void UpdateChat(string _msg) {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
                 _packet.Write(_msg);

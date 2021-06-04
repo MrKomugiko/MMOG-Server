@@ -58,9 +58,35 @@ namespace MMOG
                     position += stairsDirection;
                     walkIntoStairs = false;
                 }
+                CheckForItems();
                 ServerSend.PlayerPosition(this);
+
+
             }
         }
+
+        private void CheckForItems()
+        {
+            // trzymac w pamieci liste samych itemkow i ich lokalizacji
+            // tyczy sie to itemkow juz lezacych na ziemi - znajdziek 
+
+            // drop bedzie sie pojawiac losowo z puli, ale to poznmiej
+            
+            if(Server.MAPDATA.ContainsKey(position))
+            {
+                if(Server.MAPDATA[position].Contains("ITEM"))
+                {
+                    Console.WriteLine($"|Gracz {username} znalazl {Server.MAPDATA[position]}");
+
+                    // TODO: ServerSend.CollectItem 
+                        // usuniecie z bazy serwera oznaczenie jako nieaktywny?
+                        //dodanie do gracza 
+                }
+            }
+
+            return;
+        }
+        
 
         public void SetInput(bool[] _inputs, Quaternion _rotation)
         {

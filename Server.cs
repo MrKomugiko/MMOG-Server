@@ -20,7 +20,7 @@ namespace MMOG
 
         public static Dictionary<int, string> listaObecnosci = new Dictionary<int, string>();
         public static Dictionary<Vector3, string> MAPDATA = new Dictionary<Vector3, string>();
-        public static int UpdateVersion = 1000;
+        public static int UpdateVersion = 1001;
         public static void Start(int _maxPlayers, int _port)
         {
 
