@@ -25,7 +25,10 @@ namespace MMOG
                 if (consoleCommand == "cmd_chat") GMMessagesToClients();
                 if (consoleCommand == "cmd_users") ShowCurrentlyLoggedInUsers();
                 if (consoleCommand.Contains("cmd_kick_")) KickUserByID(Convert.ToInt32(consoleCommand.Replace("cmd_kick_","")));
-                if (consoleCommand.Contains("cmd_downloadMapData_")) ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadMapData_","")));
+                if (consoleCommand.Contains("cmd_downloadAllMaps")) {
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadMapData_","")),MAPTYPE.OBSTACLEMAP);
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadMapData_","")),MAPTYPE.GROUND_MAP);
+                }
                 if (consoleCommand == "cmd_sendMapUpdateToAll") SendMapUpdateVersionToAll();
                 //  if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
             }
@@ -69,7 +72,7 @@ namespace MMOG
                 + "[cmd_help]  -> wyswietlenie wszystkich komend\n"
                 + "[cmd_users] -> lista aktualnie zalogowanych graczy\n"
                 + "[cmd_kick_<user id>] -> wywalenie gracza z ID\n"
-                + "[cmd_downloadMapData_<admin_id>] -> pobranie na serwer danych Mapy od klienta\n"
+                + "[cmd_downloadAllMaps_<admin_id>] -> pobranie na serwer danych Mapy od klienta, [2x Ground + Obstacle]\n"
                 + "[cmd_sendMapUpdateToAll] -> wysłanie do wszystkich aktualnie zalogowanychgraczy info o nowej aktualizacji na serwerze czekającej do pobrania");
         }
         private static void GMMessagesToClients()

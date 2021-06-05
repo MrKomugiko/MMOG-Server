@@ -72,11 +72,11 @@ namespace MMOG
 
             // drop bedzie sie pojawiac losowo z puli, ale to poznmiej
             
-            if(Server.MAPDATA.ContainsKey(position))
+            if(Server.GLOBAL_MAPDATA.ContainsKey(position))
             {
-                if(Server.MAPDATA[position].Contains("ITEM"))
+                if(Server.GLOBAL_MAPDATA[position].Contains("ITEM"))
                 {
-                    Console.WriteLine($"|Gracz {username} znalazl {Server.MAPDATA[position]}");
+                    Console.WriteLine($"|Gracz {username} znalazl {Server.GLOBAL_MAPDATA[position]}");
 
                     // TODO: ServerSend.CollectItem 
                         // usuniecie z bazy serwera oznaczenie jako nieaktywny?
@@ -111,14 +111,14 @@ namespace MMOG
 
             //----------------------------------------------------------------------------------------------------------------------------
             // Sprawdzanie klocka przed sobą
-            if (Server.MAPDATA.ContainsKey(_newPosition))
+            if (Server.GLOBAL_MAPDATA.ContainsKey(_newPosition))
             {
-                if (Server.MAPDATA[_newPosition].Contains("WALL")) {
+                if (Server.GLOBAL_MAPDATA[_newPosition].Contains("WALL")) {
               //      Console.WriteLine("nie mozna isc trafisz na sciane");
                     return false;
                 }
 
-                if (Server.MAPDATA[_newPosition].Contains("schody")) {
+                if (Server.GLOBAL_MAPDATA[_newPosition].Contains("schody")) {
                 //    Console.WriteLine("masz przed soba schodek, do gory, mozesz na niego wejsc");
                     walkIntoStairs = true;
                     stairsDirection = Vector3FloorUP; ;
@@ -136,14 +136,14 @@ namespace MMOG
 
           //  -------------------------------------------------------------------------------------------------------------------------------
             // sprawdzanie klocka na ktorym sie toi
-            if (Server.MAPDATA.ContainsKey(_groundPosition)) {
-                if (Server.MAPDATA[_groundPosition].Contains("ground")) {
+            if (Server.GLOBAL_MAPDATA.ContainsKey(_groundPosition)) {
+                if (Server.GLOBAL_MAPDATA[_groundPosition].Contains("ground")) {
               //      mozna isc jest po czym
                 //    Console.WriteLine("mozesz isc bedziesz miec pod sobą ziemie");
                     output = true;
                 }
 
-                if (Server.MAPDATA[_groundPosition].Contains("schody")) {
+                if (Server.GLOBAL_MAPDATA[_groundPosition].Contains("schody")) {
                     if (walkIntoStairs == true) {
                   //      Console.WriteLine("jestesmy juz na schodach, a przed nami na ziemi jest kolejny schodek, idziemy na dol");
                    //     Console.WriteLine("masz pod soba schodek, na dół, mozesz zejsc na niego");
@@ -165,9 +165,9 @@ namespace MMOG
                 }
             }
          //   ----------------------------------------------------------------------------------------------------------------------------
-            if (Server.MAPDATA.ContainsKey(_downstairPosition)) {
+            if (Server.GLOBAL_MAPDATA.ContainsKey(_downstairPosition)) {
             //jezeli juz jestesmy na schodku, i chcemy isc dalej w dol trzeba sprawdzic czy nizej cos tam ejst
-               if (Server.MAPDATA[_downstairPosition].Contains("schody")) {
+               if (Server.GLOBAL_MAPDATA[_downstairPosition].Contains("schody")) {
                //     Console.WriteLine("schodzisz dalej w dół, nizej jest jeszcze schodek, mozesz isc");
 
                     walkIntoStairs = true;

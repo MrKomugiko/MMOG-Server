@@ -143,10 +143,10 @@ namespace MMOG
             }
         }
 
-        public static void DownloadMapData(int fromID) {
+        public static void DownloadMapData(int fromID, MAPTYPE mapType) {
             Console.WriteLine("Wysłanie żądania o dostarczenie danych mapy");
             using (Packet _packet = new Packet((int)ServerPackets.downloadMapData)) {
-                _packet.Write(1);
+                _packet.Write((int)mapType);
                 SendTCPData(fromID,_packet);
             }
         }
@@ -174,8 +174,8 @@ namespace MMOG
             Console.WriteLine("Wysłanie wszystkich danych mapy do gracza #"+id);
             using (Packet _packet = new Packet((int)ServerPackets.SEND_MAPDATA_TO_CLIENT)) 
             {
-                _packet.Write(Server.MAPDATA.Count); // dodanie wielkości przesyłanego pakietu
-                foreach(var kvp in Server.MAPDATA) {
+                _packet.Write(Server.GLOBAL_MAPDATA.Count); // dodanie wielkości przesyłanego pakietu
+                foreach(var kvp in Server.GLOBAL_MAPDATA) {
                     _packet.Write(kvp.Key); // dodanie Vector3
                     _packet.Write(kvp.Value); // dodanie string = wartosci pola = nazwy
                 }   

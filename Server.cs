@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Reflection.Metadata;
+using System.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
@@ -19,12 +21,11 @@ namespace MMOG
         private static UdpClient udpListener;
 
         public static Dictionary<int, string> listaObecnosci = new Dictionary<int, string>();
-        public static Dictionary<Vector3, string> MAPDATA = new Dictionary<Vector3, string>();
+        public static Dictionary<Vector3, string> GLOBAL_MAPDATA = new Dictionary<Vector3, string>();
+        public static Dictionary<Vector3, string> GROUND_MAPDATA = new Dictionary<Vector3, string>();
         public static int UpdateVersion = 1001;
         public static void Start(int _maxPlayers, int _port)
         {
-
-
             MaxPlayers = _maxPlayers;
             Port = _port;
 
@@ -42,9 +43,13 @@ namespace MMOG
 
             Console.WriteLine($"Server started on port {Port}.");
 
-            Console.WriteLine("MAPDATA size old: " +MAPDATA.Count);
-            ServerHandle.LoadMapDataFromFile();
-            Console.WriteLine("MAPDATA size new: " + MAPDATA.Count);
+            
+            ServerHandle.LoadMapDataFromFile(MAPTYPE.OBSTACLEMAP, Constants.MAP_DATA_FILE_PATH);
+            Console.WriteLine("GLOBAL size new: " + GLOBAL_MAPDATA.Count);
+
+           
+            ServerHandle.LoadMapDataFromFile(MAPTYPE.GROUND_MAP, Constants.GROUND_MAP_DATA_FILE_PATH);
+            Console.WriteLine("GROUND size new: " + GROUND_MAPDATA.Count);
 
         }
 

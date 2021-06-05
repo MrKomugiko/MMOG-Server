@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace MMOG
 {
-    class ServerHandle
+    partial class ServerHandle
     {
         public static void WelcomeReceived(int _fromClient, Packet _packet) {
             int _clientIdCheck = _packet.ReadInt();
@@ -65,10 +65,22 @@ namespace MMOG
         }
 
         public static void MapDataReceived(int _fromClient, Packet _packet) {
-            Console.WriteLine("Odebrano dane mapy.");
             Dictionary<Vector3, string> tempDict = new Dictionary<Vector3, string>();
             int _dataSize = _packet.ReadInt();
+            MAPTYPE _mapTypeName = (MAPTYPE)_packet.ReadInt();
+            string path = "";
+            switch (_mapTypeName)
+            {
+                case MAPTYPE.GROUND_MAP:
+                    Console.WriteLine("Odebrano dane mapy typu GROUND.");
+                    path = Constants.GROUND_MAP_DATA_FILE_PATH;
+                break;
 
+                case MAPTYPE.OBSTACLEMAP:
+                    Console.WriteLine("Odebrano dane mapy typu GLOBAL/OBSTACLE.");
+                    path = Constants.MAP_DATA_FILE_PATH;
+                break;
+            }
             for (int i = 0; i < _dataSize; i++) 
             {
                 var key = _packet.ReadVector3();
@@ -76,16 +88,15 @@ namespace MMOG
                 tempDict.Add(key, value);
             }
 
-            ZapiszMapeDoPliku(tempDict);
-
+            ZapiszMapeDoPliku(tempDict,path);
             Console.WriteLine("Aktualizacja z istniejącymi danymi");
-            LoadMapDataFromFile();
+            LoadMapDataFromFile(_mapTypeName, path);
 
             // inkrementacja numeru update'a
             Server.UpdateVersion++;
         }
 
-        private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path=Constants.MAP_DATA_FILE_PATH)
+        private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path)
         {
             Console.WriteLine("Zapisywanie danych mapy do pliku");
             using (FileStream fs = new FileStream(path, FileMode.Create))
@@ -98,21 +109,21 @@ namespace MMOG
                 }
             }
         }   
-
-        public static void LoadMapDataFromFile(string path=Constants.MAP_DATA_FILE_PATH )
+        public static void LoadMapDataFromFile(MAPTYPE _mapType, string path)
         {
-            Console.WriteLine("Ladowanie danych mapy z pliku do pamięci");
+
+            Console.WriteLine($"Ladowanie danych mapy[{_mapType.ToString()}] z pliku do pamięci");
             var mapData = new Dictionary<Vector3,string>();
-            if (!File.Exists(path)) return;
+            if (!File.Exists(path)) 
+            {
+                Console.WriteLine("Plik nie istnieje");
+                return;
+            }
             // ----------------------------------ZCZYTYWANIE Z PLIKU ----------------------------------
             string line;
 
-            int modifiedCounter = 0;
-            int wrongDataRecords = 0;
-            int deletedCounter = 0;
-            int newAddedCounter = 0;
+            int modifiedCounter = 0, wrongDataRecords = 0, deletedCounter = 0, newAddedCounter = 0;
 
-            
             StreamReader file = new StreamReader(path);  
             while((line = file.ReadLine()) != null)  
             {  
@@ -136,36 +147,57 @@ namespace MMOG
                 }
             }  
             file.Close();
-
+            
+            Dictionary<Vector3,string> REFERENCEMAP = new Dictionary<Vector3,string>();
+            switch (_mapType)
+            {
+                case MAPTYPE.GROUND_MAP:
+                    REFERENCEMAP = Server.GROUND_MAPDATA;
+                break;
+                case MAPTYPE.OBSTACLEMAP:
+                    REFERENCEMAP = Server.GLOBAL_MAPDATA;      
+                break;   
+            }
             // ----------------------------------ZAPISYWANIE W PAMIECI SERVERA ----------------------------------
             // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE
-            if (Server.MAPDATA.Count == 0) 
+            if (REFERENCEMAP.Count == 0) 
             {
-                Server.MAPDATA = mapData;
+                REFERENCEMAP = mapData;
             }
             // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
-            if (Server.MAPDATA.Count > 0) 
+            if (REFERENCEMAP.Count > 0) 
             {
                 if (mapData.Count == 0) Console.WriteLine("Plik jest pusty -> Brak zapisanych danych mapy");
 
                 // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
                 foreach (var kvp in mapData) {
-                    if (Server.MAPDATA.ContainsKey(kvp.Key)) {
-                        if (Server.MAPDATA[kvp.Key] != kvp.Value) {
-                            Server.MAPDATA[kvp.Key] = kvp.Value;
+                    if (REFERENCEMAP.ContainsKey(kvp.Key)) {
+                        if (REFERENCEMAP[kvp.Key] != kvp.Value) {
+                            REFERENCEMAP[kvp.Key] = kvp.Value;
                             modifiedCounter++;
                         }
                     }else {
-                        Server.MAPDATA.Add(kvp.Key, kvp.Value);
+                        REFERENCEMAP.Add(kvp.Key, kvp.Value);
                         newAddedCounter++;
                     }
                 }
 
                 // usuniecie nieaktualnych pól
-                foreach (var pole in Server.MAPDATA.Where(pole => mapData.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) {
-                    Server.MAPDATA.Remove(pole);
+                foreach (var pole in REFERENCEMAP.Where(pole => mapData.ContainsKey(pole.Key) == false).Select(pole => pole.Key).ToList()) 
+                {
+                    REFERENCEMAP.Remove(pole);
                     deletedCounter++;
                 }
+            }
+            //---------- przypisanie danych 
+            switch (_mapType)
+            {
+                case MAPTYPE.GROUND_MAP:
+                    Server.GROUND_MAPDATA = REFERENCEMAP;
+                break;
+                case MAPTYPE.OBSTACLEMAP:
+                    Server.GLOBAL_MAPDATA = REFERENCEMAP;    
+                break;   
             }
 
            // ----------------------------------PODSUMOWANIE ----------------------------------
