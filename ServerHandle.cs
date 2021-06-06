@@ -69,6 +69,13 @@ namespace MMOG
             int _dataSize = _packet.ReadInt();
             MAPTYPE _mapTypeName = (MAPTYPE)_packet.ReadInt();
             string path = "";
+            for (int i = 0; i < _dataSize; i++) 
+            {
+                var key = _packet.ReadVector3();
+                string value = _packet.ReadString();
+                tempDict.Add(key, value);
+            }
+
             switch (_mapTypeName)
             {
                 case MAPTYPE.GROUND_MAP:
@@ -81,16 +88,19 @@ namespace MMOG
                     path = Constants.MAP_DATA_FILE_PATH;
                 break;
             }
-            for (int i = 0; i < _dataSize; i++) 
-            {
-                var key = _packet.ReadVector3();
-                string value = _packet.ReadString();
-                tempDict.Add(key, value);
-            }
-
             ZapiszMapeDoPliku(tempDict,path);
             Console.WriteLine("Aktualizacja z istniejącymi danymi");
-            LoadMapDataFromFile(_mapTypeName, path);
+            
+             switch (_mapTypeName)
+            {
+                case MAPTYPE.GROUND_MAP:
+                    LoadMapDataFromFile(_mapTypeName,ref Server.GROUND_MAPDATA, path);
+                break;
+
+                case MAPTYPE.OBSTACLEMAP:
+                    LoadMapDataFromFile(_mapTypeName,ref Server.GLOBAL_MAPDATA, path);
+                break;
+            }
 
             // inkrementacja numeru update'a
             Server.UpdateVersion++;
@@ -109,7 +119,7 @@ namespace MMOG
                 }
             }
         }   
-        public static void LoadMapDataFromFile(MAPTYPE _mapType, string path)
+        public static void LoadMapDataFromFile(MAPTYPE _mapType, ref Dictionary<Vector3,string> REFERENCEMAP, string path)
         {
 
             Console.WriteLine($"Ladowanie danych mapy[{_mapType.ToString()}] z pliku do pamięci");
@@ -148,18 +158,29 @@ namespace MMOG
             }  
             file.Close();
             
-            Dictionary<Vector3,string> REFERENCEMAP = new Dictionary<Vector3,string>();
+           // Dictionary<Vector3,string> REFERENCEMAP = new Dictionary<Vector3,string>();
             switch (_mapType)
             {
                 case MAPTYPE.GROUND_MAP:
-                    REFERENCEMAP = Server.GROUND_MAPDATA;
+                    Console.WriteLine("zapisywanie do GROUND_MAPDATA");
+                   // REFERENCEMAP = Server.GROUND_MAPDATA;
                 break;
                 case MAPTYPE.OBSTACLEMAP:
-                    REFERENCEMAP = Server.GLOBAL_MAPDATA;      
-                break;   
+                Console.WriteLine("zapisywanie do GLOBAL_MAPDATA");
+                   // REFERENCEMAP = Server.GLOBAL_MAPDATA;      
+                break;  
+                default:
+                    Console.WriteLine("nie wybrano nic !?????????????????????????????????????????????????????????????????????????????????????????????"); 
+                break;
             }
             // ----------------------------------ZAPISYWANIE W PAMIECI SERVERA ----------------------------------
             // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE
+            
+            // if(REFERENCEMAP == null) 
+            // {
+            //     Console.WriteLine("null?");
+            //     return;
+            // }
             if (REFERENCEMAP.Count == 0) 
             {
                 REFERENCEMAP = mapData;
@@ -190,15 +211,15 @@ namespace MMOG
                 }
             }
             //---------- przypisanie danych 
-            switch (_mapType)
-            {
-                case MAPTYPE.GROUND_MAP:
-                    Server.GROUND_MAPDATA = REFERENCEMAP;
-                break;
-                case MAPTYPE.OBSTACLEMAP:
-                    Server.GLOBAL_MAPDATA = REFERENCEMAP;    
-                break;   
-            }
+            // switch (_mapType)
+            // {
+            //     case MAPTYPE.GROUND_MAP:
+            //         Server.GROUND_MAPDATA = REFERENCEMAP;
+            //     break;
+            //     case MAPTYPE.OBSTACLEMAP:
+            //         Server.GLOBAL_MAPDATA = REFERENCEMAP;    
+            //     break;   
+            // }
 
            // ----------------------------------PODSUMOWANIE ----------------------------------
             Console.WriteLine(
@@ -218,9 +239,10 @@ namespace MMOG
 
        public static void SendLatestUpdateMapDataToClient(int _FromClient, Packet _packet) {
             int _id = _packet.ReadInt();
-            Console.WriteLine("Otrzymanie żądania o wysłanie nowej mapy przez klienta #"+_id);
-
-            ServerSend.SendMapDataToClient(_id);
+            Console.WriteLine("Otrzymanie żądania o wysłanie nowej mapy przez klienta #"+_id);          
+            
+            ServerSend.SendMapDataToClient(_id, MAPTYPE.OBSTACLEMAP, ref Server.GLOBAL_MAPDATA);
+            ServerSend.SendMapDataToClient(_id, MAPTYPE.GROUND_MAP, ref Server.GROUND_MAPDATA);
         }
     }
 }

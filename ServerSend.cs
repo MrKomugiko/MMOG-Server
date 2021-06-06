@@ -154,6 +154,7 @@ namespace MMOG
         // wyslanie info o aktualnej wesji update`a
         public static void SendCurrentUpdateVersionNumber(int sendToID = -1) {
             
+            
             using (Packet _packet = new Packet((int)ServerPackets.sendCurrentUpdateNumber)) {
 
 
@@ -170,12 +171,14 @@ namespace MMOG
             }
         }
 
-        public static void SendMapDataToClient(int id) {
-            Console.WriteLine("Wysłanie wszystkich danych mapy do gracza #"+id);
+        public static void SendMapDataToClient(int id, MAPTYPE _mapType, ref Dictionary<System.Numerics.Vector3, string> REFERENCEMAP) {
+            Console.WriteLine($"Wysłanie wszystkich danych mapy[{_mapType.ToString()}] do gracza #"+id);
+       
             using (Packet _packet = new Packet((int)ServerPackets.SEND_MAPDATA_TO_CLIENT)) 
             {
-                _packet.Write(Server.GLOBAL_MAPDATA.Count); // dodanie wielkości przesyłanego pakietu
-                foreach(var kvp in Server.GLOBAL_MAPDATA) {
+                _packet.Write((int)_mapType); // INT rodzaj mapy
+                _packet.Write(REFERENCEMAP.Count); // dodanie wielkości przesyłanego pakietu
+                foreach(var kvp in REFERENCEMAP) {
                     _packet.Write(kvp.Key); // dodanie Vector3
                     _packet.Write(kvp.Value); // dodanie string = wartosci pola = nazwy
                 }   

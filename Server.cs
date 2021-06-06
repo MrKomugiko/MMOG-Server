@@ -44,11 +44,11 @@ namespace MMOG
             Console.WriteLine($"Server started on port {Port}.");
 
             
-            ServerHandle.LoadMapDataFromFile(MAPTYPE.OBSTACLEMAP, Constants.MAP_DATA_FILE_PATH);
+            ServerHandle.LoadMapDataFromFile(MAPTYPE.OBSTACLEMAP,ref Server.GLOBAL_MAPDATA, Constants.MAP_DATA_FILE_PATH);
             Console.WriteLine("GLOBAL size new: " + GLOBAL_MAPDATA.Count);
 
            
-            ServerHandle.LoadMapDataFromFile(MAPTYPE.GROUND_MAP, Constants.GROUND_MAP_DATA_FILE_PATH);
+            ServerHandle.LoadMapDataFromFile(MAPTYPE.GROUND_MAP,ref Server.GROUND_MAPDATA, Constants.GROUND_MAP_DATA_FILE_PATH);
             Console.WriteLine("GROUND size new: " + GROUND_MAPDATA.Count);
 
         }

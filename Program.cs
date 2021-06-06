@@ -26,16 +26,12 @@ namespace MMOG
                 if (consoleCommand == "cmd_users") ShowCurrentlyLoggedInUsers();
                 if (consoleCommand.Contains("cmd_kick_")) KickUserByID(Convert.ToInt32(consoleCommand.Replace("cmd_kick_","")));
                 if (consoleCommand.Contains("cmd_downloadAllMaps")) {
-                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadMapData_","")),MAPTYPE.OBSTACLEMAP);
-                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadMapData_","")),MAPTYPE.GROUND_MAP);
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.OBSTACLEMAP);
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.GROUND_MAP);
                 }
-                if (consoleCommand == "cmd_sendMapUpdateToAll") SendMapUpdateVersionToAll();
+                if (consoleCommand == "cmd_sendMapUpdateToAll") ServerSend.SendCurrentUpdateVersionNumber(); }
                 //  if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
-            }
-        }
-
-        private static void SendMapUpdateVersionToAll() {
-            ServerSend.SendCurrentUpdateVersionNumber();
+            
         }
 
         private static void KickUserByID(int _userId) {
