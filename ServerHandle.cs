@@ -157,30 +157,7 @@ namespace MMOG
                 }
             }  
             file.Close();
-            
-           // Dictionary<Vector3,string> REFERENCEMAP = new Dictionary<Vector3,string>();
-            switch (_mapType)
-            {
-                case MAPTYPE.GROUND_MAP:
-                    Console.WriteLine("zapisywanie do GROUND_MAPDATA");
-                   // REFERENCEMAP = Server.GROUND_MAPDATA;
-                break;
-                case MAPTYPE.OBSTACLEMAP:
-                Console.WriteLine("zapisywanie do GLOBAL_MAPDATA");
-                   // REFERENCEMAP = Server.GLOBAL_MAPDATA;      
-                break;  
-                default:
-                    Console.WriteLine("nie wybrano nic !?????????????????????????????????????????????????????????????????????????????????????????????"); 
-                break;
-            }
-            // ----------------------------------ZAPISYWANIE W PAMIECI SERVERA ----------------------------------
-            // --------- JEZELI NIE MA ZAPISANYCH DANYCH NA SERWERZE
-            
-            // if(REFERENCEMAP == null) 
-            // {
-            //     Console.WriteLine("null?");
-            //     return;
-            // }
+
             if (REFERENCEMAP.Count == 0) 
             {
                 REFERENCEMAP = mapData;
@@ -210,16 +187,6 @@ namespace MMOG
                     deletedCounter++;
                 }
             }
-            //---------- przypisanie danych 
-            // switch (_mapType)
-            // {
-            //     case MAPTYPE.GROUND_MAP:
-            //         Server.GROUND_MAPDATA = REFERENCEMAP;
-            //     break;
-            //     case MAPTYPE.OBSTACLEMAP:
-            //         Server.GLOBAL_MAPDATA = REFERENCEMAP;    
-            //     break;   
-            // }
 
            // ----------------------------------PODSUMOWANIE ----------------------------------
             Console.WriteLine(

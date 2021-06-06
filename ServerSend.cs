@@ -172,6 +172,9 @@ namespace MMOG
         }
 
         public static void SendMapDataToClient(int id, MAPTYPE _mapType, ref Dictionary<System.Numerics.Vector3, string> REFERENCEMAP) {
+            if(REFERENCEMAP.Count == 0) {
+                Console.WriteLine("Brak danych mapy na serwerze, wysyłanie przerwane.");
+            }
             Console.WriteLine($"Wysłanie wszystkich danych mapy[{_mapType.ToString()}] do gracza #"+id);
        
             using (Packet _packet = new Packet((int)ServerPackets.SEND_MAPDATA_TO_CLIENT)) 
