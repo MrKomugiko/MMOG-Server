@@ -198,7 +198,7 @@ namespace MMOG
             // spawn nowego gracza - lokalnego
             foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
                 if(_client.id != id) {
-                    Console.WriteLine($"Spawn Gracza [{_client.player.username}]");
+                   // Console.WriteLine($"Spawn Gracza [{_client.player.username}]");
                     ServerSend.SpawnPlayer(id, _client.player);
                 }
             }

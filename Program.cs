@@ -17,7 +17,7 @@ namespace MMOG
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
 
-           Server.Start(50, 5555);
+            Server.Start(50, 5555);
 
             while (true) {
                 string consoleCommand = Console.ReadLine();
@@ -29,9 +29,20 @@ namespace MMOG
                     ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.OBSTACLEMAP);
                     ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.GROUND_MAP);
                 }
-                if (consoleCommand == "cmd_sendMapUpdateToAll") ServerSend.SendCurrentUpdateVersionNumber(); }
-                //  if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
-            
+                if (consoleCommand == "cmd_sendMapUpdateToAll") ServerSend.SendCurrentUpdateVersionNumber(); 
+                if (consoleCommand == "cmd_printAllPositions") PrintPlayersPositions();
+            }
+
+
+        //  if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
+
+    }
+        private static void PrintPlayersPositions()
+        {
+            foreach(var player in Server.clients.Values.Where(p=>p.player != null))
+            {
+                Console.WriteLine($"[{player.player.username}] => [{player.player.position}]");;
+            }
         }
 
         private static void KickUserByID(int _userId) {
@@ -69,7 +80,8 @@ namespace MMOG
                 + "[cmd_users] -> lista aktualnie zalogowanych graczy\n"
                 + "[cmd_kick_<user id>] -> wywalenie gracza z ID\n"
                 + "[cmd_downloadAllMaps_<admin_id>] -> pobranie na serwer danych Mapy od klienta, [2x Ground + Obstacle]\n"
-                + "[cmd_sendMapUpdateToAll] -> wysłanie do wszystkich aktualnie zalogowanychgraczy info o nowej aktualizacji na serwerze czekającej do pobrania");
+                + "[cmd_sendMapUpdateToAll] -> wysłanie do wszystkich aktualnie zalogowanychgraczy info o nowej aktualizacji na serwerze czekającej do pobrania\n"
+                + "[cmd_printAllPositions] -> wyswietlenie pozycji wszystkich graczy]\n");                
         }
         private static void GMMessagesToClients()
         {
@@ -111,23 +123,23 @@ namespace MMOG
                         catch(Exception ex) { Console.WriteLine(ex.Message); };
                     }
 
-                    afkCleanerCounter -= (int)Constants.MS_PER_TICK;
-                    if(afkCleanerCounter < 0) {
-                        //Console.WriteLine("Kicking ghost-afk users");
-                        foreach(KeyValuePair<int,string> obecnosc in Server.listaObecnosci) {
-                            if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
-                            {
-                                try {
-                                    Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
-                                } catch { };
-                                ServerSend.RemoveOfflinePlayer(obecnosc.Key);
-                                Server.clients[obecnosc.Key].Disconnect();
-                                Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
-                            }
-                        }
-                        ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
-                        afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK*1000;
-                    }
+                    //afkCleanerCounter -= (int)Constants.MS_PER_TICK;
+                    //if(afkCleanerCounter < 0) {
+                    //    //Console.WriteLine("Kicking ghost-afk users");
+                    //    foreach(KeyValuePair<int,string> obecnosc in Server.listaObecnosci) {
+                    //        if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
+                    //        {
+                    //            try {
+                    //                Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
+                    //            } catch { };
+                    //            ServerSend.RemoveOfflinePlayer(obecnosc.Key);
+                    //            Server.clients[obecnosc.Key].Disconnect();
+                    //            Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
+                    //        }
+                    //    }
+                    //    ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
+                    //    afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK*1000;
+                    //}
                 }
             }
         }

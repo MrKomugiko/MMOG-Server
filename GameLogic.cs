@@ -9,14 +9,20 @@ namespace MMOG
 
     class GameLogic
     {
-        public static void Update()
-        {
+        public static void Update() {
             // Wszyscy istniejący clienci na serwerze
             // 
-            foreach (Client _client in Server.clients.Values.Where(c => c.player != null)) {
-                _client.player.Update();
+            foreach (Client _client in Server.clients.Values.Where(c => c.player != null)) 
+            {
+                try 
+                {
+                    _client.player.Update();
+                } 
+                catch (Exception ex) 
+                {
+                    Console.WriteLine(ex);
+                }
             }
-            
             ThreadManager.UpdateMain();
         }
     }

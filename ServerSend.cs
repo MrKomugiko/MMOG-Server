@@ -36,8 +36,16 @@ namespace MMOG
             {
                 if (i != _exceptClient)
                 {
-                    Server.clients[i].tcp.SendData(_packet);
+                    try
+                    {
+                        Server.clients[i].tcp.SendData(_packet);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("exception SendTCPDataTOALL: "+ex.Message);
+                    }
                 }
+                
             }
         }
 
@@ -97,7 +105,7 @@ namespace MMOG
                 _packet.Write(_player.id);
                 _packet.Write(_player.position);
 
-                SendUDPDataToAll(_packet);
+                SendTCPDataToAll(_packet);
             }
         }
         

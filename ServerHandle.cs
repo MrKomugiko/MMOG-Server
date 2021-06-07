@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -29,20 +30,21 @@ namespace MMOG
         }
 
         public static void PlayerMovement(int _fromClient, Packet _packet) {
+         
             bool[] _inputs = new bool[_packet.ReadInt()]; // pobieranie wielości tablicy
             for (int i = 0; i < _inputs.Length; i++) {
                 _inputs[i] = _packet.ReadBool(); // pobieranie kolejnych wartości bool
             }
             Quaternion _rotation = _packet.ReadQuaternion(); // pobieranie rotacji
 
-           try
-           {
+           //try
+           //{
             Server.clients[_fromClient].player.SetInput(_inputs, _rotation); // przesłanie informacji dot. wcisnietych input klawiszy danego clienta                                                                    
-           }
-           catch (System.Exception ex)
-           {
-                Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}] Error: {ex.Message} ");               
-           } 
+           //}
+           //catch (System.Exception ex)
+           //{
+           //     Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}] Error: {ex.Message} ");               
+           //} 
         }
 
         public static void SendChatMessage(int _fromClient, Packet _packet) {
