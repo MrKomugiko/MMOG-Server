@@ -197,8 +197,33 @@ namespace MMOG
                 $"Zmodyfikowano: .............. {modifiedCounter}\n" +
                 $"Usunięto: ................... {deletedCounter}\n" +
                 $"Uszkodzonych danych: ........ {wrongDataRecords}");
-        }   
+        }
+
+        public static void ChangePlayerLocalisation(int _fromClient, Packet _packet)
+        {
+            Locations _location = (Locations)_packet.ReadInt();
+            Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.username}] zmienił mapę na: [{_location.ToString()}]");
+
+/*
+TODO:
+    - pobranie od admina nowej mapki i rozesłanie jej do innych klientow
     
+    - lista graczy ma zawierac info o aktualnej swojej lokalizacji
+    - zmodyfikowac weryfikacje poruszania sie uwzględniając dane odpowiednie dla odpowiadającej graczu lokalizacji
+    - jezeli gracz ma nieaktualną lokalizacje wysłać mu aktualizacje
+    - //TODO: CZY GRACZ NA INNEJ MAPIE POWIENIEN DOSTAWAĆ INFO O INNYCH GRACZACH ?
+        -- w przypadku mapy z 'widokiem na inne piętro = tak"
+        -- zamknięte pomieszczenie = nie, do czasu ew. włączenia punktu widokowego
+        --  
+    - ...
+
+
+
+
+*/
+
+        }
+
         public static void SendNumberOfLAtestMapUpdate(int _fromClient, Packet _packet)
         {
             Console.WriteLine("Wyslanie do gracza info zawierające aktualny numer update'a");

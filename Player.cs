@@ -114,7 +114,10 @@ namespace MMOG
             // jezeli chodzimy po ziemi jest git ;d
             if (Server.GROUND_MAPDATA.ContainsKey(_groundPosition))
             {  
-                output= true;
+                if(Server.GROUND_MAPDATA[_groundPosition].Contains("ground"))
+                {
+                    output= true;
+                }
             }
 
                         // jezeli chodzimy po ziemi jest git ;d
@@ -150,12 +153,15 @@ namespace MMOG
             if(Server.GROUND_MAPDATA.ContainsKey(_downstairPosition))
             {
                 // jezeli aktualnie stoimy na schodach
-                if(Server.GLOBAL_MAPDATA[currentPosition].Contains("schody"))
+                if(Server.GLOBAL_MAPDATA.ContainsKey(currentPosition))
                 {
-                    Console.WriteLine("gracz chce zejść ze schodow na ziemie");
-                    walkIntoStairs = true;
-                    stairsDirection = Vector3FloorDown;
-                    return  output = true;
+                    if(Server.GLOBAL_MAPDATA[currentPosition].Contains("schody"))
+                    {
+                        Console.WriteLine("gracz chce zejść ze schodow na ziemie");
+                        walkIntoStairs = true;
+                        stairsDirection = Vector3FloorDown;
+                        return  output = true;
+                    }
                 }
             }
 

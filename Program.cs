@@ -81,7 +81,8 @@ namespace MMOG
                 + "[cmd_kick_<user id>] -> wywalenie gracza z ID\n"
                 + "[cmd_downloadAllMaps_<admin_id>] -> pobranie na serwer danych Mapy od klienta, [2x Ground + Obstacle]\n"
                 + "[cmd_sendMapUpdateToAll] -> wysłanie do wszystkich aktualnie zalogowanychgraczy info o nowej aktualizacji na serwerze czekającej do pobrania\n"
-                + "[cmd_printAllPositions] -> wyswietlenie pozycji wszystkich graczy]\n");                
+                + "[cmd_printAllPositions] -> wyswietlenie pozycji wszystkich graczy]\n");      
+                //TOOD: dodać wyświetlanie sie aktualnych lokalizacji ew liczby osob w danym regionie          
         }
         private static void GMMessagesToClients()
         {

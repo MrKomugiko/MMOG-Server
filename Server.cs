@@ -153,7 +153,9 @@ namespace MMOG
                 { (int)ClientPackets.PingReceived, ServerHandle.PingReceived },
                 { (int)ClientPackets.SEND_MAPDATA_TO_SERVER, ServerHandle.MapDataReceived },
                 { (int)ClientPackets.downloadLatestMapUpdate, ServerHandle.SendLatestUpdateMapDataToClient },
-                { (int)ClientPackets.download_recentMapVersion, ServerHandle.SendNumberOfLAtestMapUpdate }
+                { (int)ClientPackets.download_recentMapVersion, ServerHandle.SendNumberOfLAtestMapUpdate },
+                { (int)ClientPackets.clientChangeLocalisation, ServerHandle.ChangePlayerLocalisation }
+
 
             };
 
