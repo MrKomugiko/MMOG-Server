@@ -12,10 +12,11 @@ namespace MMOG
         public int id;
         public string username;
         public DateTime loginDate;
-
         public Vector3 position;
         public Quaternion rotation;
 
+        private Locations _currentLocation;
+        public Locations CurrentLocation { get => _currentLocation; set => _currentLocation = value; }
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
         private bool[] inputs; // wciśnięte klawisze przez gracza
@@ -30,7 +31,6 @@ namespace MMOG
             loginDate = DateTime.Now;
             inputs = new bool[4];
         }
-
         public void Update()
         {
             Vector2 _inputDirection = Vector2.Zero;
@@ -45,7 +45,6 @@ namespace MMOG
             // rusz sie tylko przy zarejestrowanym ruchu roznim niz 0.0
             Move(_inputDirection);
         }
-
         private void Move(Vector2 _direction)
         {
             inputs = new bool[4];
@@ -66,17 +65,17 @@ namespace MMOG
 
             ServerSend.PlayerPosition(this);
         }
-
         private void CheckForItems()
         {
             // trzymac w pamieci liste samych itemkow i ich lokalizacjiss
             // tyczy sie to itemkow juz lezacych na ziemi - znajdziek 
 
             // drop bedzie sie pojawiac losowo z puli, ale to poznmiej
+            int ObstacleMap_key = Constants.GetKeyFromMapLocationAndType(CurrentLocation, MAPTYPE.Obstacle_MAP);
             
-            if(Server.GLOBAL_MAPDATA.ContainsKey(position))
+            if(Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(position))
             {
-                if(Server.GLOBAL_MAPDATA[position].Contains("ITEM"))
+                if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][position].Contains("ITEM"))
                 {
                     //Console.WriteLine($"|Gracz {username} znalazl {Server.GLOBAL_MAPDATA[position]}");
 
@@ -88,8 +87,6 @@ namespace MMOG
 
             return;
         }
-        
-
         public void SetInput(bool[] _inputs, Quaternion _rotation)
         {
             inputs = _inputs;
@@ -103,42 +100,48 @@ namespace MMOG
         Vector3 Vector3UP = new Vector3(0,1,0);
         Vector3 Vector3DOWN = new Vector3(0,-1,0);
 
+        
+
         private bool CheckIfPlayerNewPositionIsPossible(Vector3 _newPosition)
         {
-             // proste sprawdzenie czy nastepna pozycją jest ściana lub czy istnieje
+            int GroundMap_key = Constants.GetKeyFromMapLocationAndType(CurrentLocation, MAPTYPE.Ground_MAP);
+            int ObstacleMap_key = Constants.GetKeyFromMapLocationAndType(CurrentLocation, MAPTYPE.Obstacle_MAP);
+
+            // proste sprawdzenie czy nastepna pozycją jest ściana lub czy istnieje
             Vector3 _groundPosition = _newPosition + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
             Vector3 _downstairPosition = _newPosition + Vector3FloorDown + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
             Vector3 currentPosition = position + Vector3FloorDown;
             bool output = false;
 
+
             // jezeli chodzimy po ziemi jest git ;d
-            if (Server.GROUND_MAPDATA.ContainsKey(_groundPosition))
+            if (Server.BazaWszystkichMDanychMap[GroundMap_key].ContainsKey(_groundPosition))
             {  
-                if(Server.GROUND_MAPDATA[_groundPosition].Contains("ground"))
+                if(Server.BazaWszystkichMDanychMap[GroundMap_key][_groundPosition].Contains("ground"))
                 {
                     output= true;
                 }
             }
 
                         // jezeli chodzimy po ziemi jest git ;d
-            if (Server.GLOBAL_MAPDATA.ContainsKey(_groundPosition))
+            if (Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(_groundPosition))
             {  
-                if(Server.GLOBAL_MAPDATA[_groundPosition].Contains("schody"))
+                if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][_groundPosition].Contains("schody"))
                 {
                     Console.WriteLine("Graczwchodzi na schodek -2L = poziom gracza");// => zwykłe przemeiszczenie sie w poziomo, w razie gdyby shcvody w pewnym momencie sie wydluzaly prosto ?
                     output = true;
                 }
             }
             
-            if (Server.GLOBAL_MAPDATA.ContainsKey(_newPosition))
+            if (Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(_newPosition))
             {
                 // jezeli przed nami jest klocek sciany => 
-                 if (Server.GLOBAL_MAPDATA[_newPosition].Contains("WALL")) {
+                 if (Server.BazaWszystkichMDanychMap[ObstacleMap_key][_newPosition].Contains("WALL")) {
                     output= false;
                  }
 
                 // gracz ma przed sobą schodek i chce na neigo wejsc
-                if(Server.GLOBAL_MAPDATA[_newPosition].Contains("schody"))
+                if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][_newPosition].Contains("schody"))
                 {
                     Console.WriteLine("Gracz wchodzi na schody +0L");
                     walkIntoStairs = true;
@@ -150,12 +153,12 @@ namespace MMOG
                 //---------------------------------------------------
                 // gracz schodzi na dol opuszczajac schody
             // jezeli w docelowym miejjscu za schodkiem jest ziemia
-            if(Server.GROUND_MAPDATA.ContainsKey(_downstairPosition))
+            if(Server.BazaWszystkichMDanychMap[GroundMap_key].ContainsKey(_downstairPosition))
             {
                 // jezeli aktualnie stoimy na schodach
-                if(Server.GLOBAL_MAPDATA.ContainsKey(currentPosition))
+                if(Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(currentPosition))
                 {
-                    if(Server.GLOBAL_MAPDATA[currentPosition].Contains("schody"))
+                    if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][currentPosition].Contains("schody"))
                     {
                         Console.WriteLine("gracz chce zejść ze schodow na ziemie");
                         walkIntoStairs = true;
@@ -165,10 +168,10 @@ namespace MMOG
                 }
             }
 
-            if (Server.GLOBAL_MAPDATA.ContainsKey(_downstairPosition))
+            if (Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(_downstairPosition))
             {
                 // gracz ma na dole schodek i chce na neigo zejsc
-                if(Server.GLOBAL_MAPDATA[_downstairPosition].Contains("schody"))
+                if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][_downstairPosition].Contains("schody"))
                 {
                     stairsDirection = Vector3FloorDown;
                     walkIntoStairs = true;

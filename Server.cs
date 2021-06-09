@@ -21,8 +21,10 @@ namespace MMOG
         private static UdpClient udpListener;
 
         public static Dictionary<int, string> listaObecnosci = new Dictionary<int, string>();
-        public static Dictionary<Vector3, string> GLOBAL_MAPDATA = new Dictionary<Vector3, string>();
-        public static Dictionary<Vector3, string> GROUND_MAPDATA = new Dictionary<Vector3, string>();
+        // TODO: ważne index to [location*10+maptype+1]
+        public static Dictionary<int,Dictionary<Vector3, string>> BazaWszystkichMDanychMap = new Dictionary<int, Dictionary<Vector3, string>>(); 
+            //public static Dictionary<Vector3, string> GLOBAL_MAPDATA = new Dictionary<Vector3, string>();
+        //    public static Dictionary<Vector3, string> GROUND_MAPDATA = new Dictionary<Vector3, string>();
         public static int UpdateVersion = 1001;
         public static void Start(int _maxPlayers, int _port)
         {
@@ -43,16 +45,35 @@ namespace MMOG
 
             Console.WriteLine($"Server started on port {Port}.");
 
-            
-            ServerHandle.LoadMapDataFromFile(MAPTYPE.OBSTACLEMAP,ref Server.GLOBAL_MAPDATA, Constants.MAP_DATA_FILE_PATH);
-            Console.WriteLine("GLOBAL size new: " + GLOBAL_MAPDATA.Count);
+            //TODO: foreach na lokacjach
+            //var dataTypesCount = Enum.GetNames(typeof(DATATYPE)).Length;
+            var LocationCount = Enum.GetNames(typeof(Locations)).Length;
+            var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
 
-           
-            ServerHandle.LoadMapDataFromFile(MAPTYPE.GROUND_MAP,ref Server.GROUND_MAPDATA, Constants.GROUND_MAP_DATA_FILE_PATH);
-            Console.WriteLine("GROUND size new: " + GROUND_MAPDATA.Count);
-
+            DATATYPE datatype = DATATYPE.Locations;
+            for (int location = 0 ; location < LocationCount ; location++)
+            {
+                for(int maptype = 0 ; maptype < mapTypesCount ; maptype++)
+                {
+                    int key = Constants.GetKeyFromMapLocationAndType((Locations)location,(MAPTYPE)maptype);
+                    Dictionary<Vector3,string> dataRefference = new Dictionary<Vector3, string>();
+                    if(BazaWszystkichMDanychMap.TryGetValue(key,out dataRefference) == false)
+                    {
+                        Console.WriteLine("Dodawanie wpisu do bazy danych map o kluczu: "+key);
+                        BazaWszystkichMDanychMap.Add(key,new Dictionary<Vector3, string>());
+                    }
+                        
+                    ServerHandle.LoadMapDataFromFile
+                    (
+                        (Locations)location,
+                        (MAPTYPE)maptype,
+                        Constants.GetFilePath(datatype, (Locations)location, (MAPTYPE)maptype)
+                    );
+                //   Console.WriteLine($"KEY:{((location*10)+maptype)} {((Locations)location).ToString()} / {((MAPTYPE)maptype).ToString()} / SIZE: {dataRefference.Count} ");
+                }
+            }
         }
-
+        
         private static void TCPConnectCallback(IAsyncResult _result)
         {
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
@@ -152,7 +173,7 @@ namespace MMOG
                 { (int)ClientPackets.SendChatMessage, ServerHandle.SendChatMessage },
                 { (int)ClientPackets.PingReceived, ServerHandle.PingReceived },
                 { (int)ClientPackets.SEND_MAPDATA_TO_SERVER, ServerHandle.MapDataReceived },
-                { (int)ClientPackets.downloadLatestMapUpdate, ServerHandle.SendLatestUpdateMapDataToClient },
+                { (int)ClientPackets.downloadLatestMapUpdate, ServerHandle.SendALLLatestUpdateMapDataToClient },
                 { (int)ClientPackets.download_recentMapVersion, ServerHandle.SendNumberOfLAtestMapUpdate },
                 { (int)ClientPackets.clientChangeLocalisation, ServerHandle.ChangePlayerLocalisation }
 

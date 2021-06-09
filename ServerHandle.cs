@@ -69,8 +69,11 @@ namespace MMOG
         public static void MapDataReceived(int _fromClient, Packet _packet) {
             Dictionary<Vector3, string> tempDict = new Dictionary<Vector3, string>();
             int _dataSize = _packet.ReadInt();
-            MAPTYPE _mapTypeName = (MAPTYPE)_packet.ReadInt();
-            string path = "";
+            DATATYPE _datatype = (DATATYPE)_packet.ReadInt();
+            Locations _location = (Locations)_packet.ReadInt();
+            MAPTYPE _mapType = (MAPTYPE)_packet.ReadInt();
+
+            Console.WriteLine($"Otrzymano: {_dataSize} / {_location} / {_mapType}");
             for (int i = 0; i < _dataSize; i++) 
             {
                 var key = _packet.ReadVector3();
@@ -78,31 +81,24 @@ namespace MMOG
                 tempDict.Add(key, value);
             }
 
-            switch (_mapTypeName)
-            {
-                case MAPTYPE.GROUND_MAP:
-                    Console.WriteLine("Odebrano dane mapy typu GROUND.");
-                    path = Constants.GROUND_MAP_DATA_FILE_PATH;
-                break;
+            //switch (_mapType)
+            //{
+            //    case MAPTYPE.Ground_MAP:
+            //        Console.WriteLine("Odebrano dane mapy typu GROUND.");
+            //        path = Constants.GROUND_MAP_DATA_FILE_PATH;
+            //    break;
 
-                case MAPTYPE.OBSTACLEMAP:
-                    Console.WriteLine("Odebrano dane mapy typu GLOBAL/OBSTACLE.");
-                    path = Constants.MAP_DATA_FILE_PATH;
-                break;
-            }
+            //    case MAPTYPE.Obstacle_MAP:
+            //        Console.WriteLine("Odebrano dane mapy typu GLOBAL/OBSTACLE.");
+            //        path = Constants.MAP_DATA_FILE_PATH;
+            //    break;
+            //}
+            string path = Constants.GetFilePath((DATATYPE)_datatype, (Locations)_location, (MAPTYPE)_mapType);
             ZapiszMapeDoPliku(tempDict,path);
             Console.WriteLine("Aktualizacja z istniejącymi danymi");
-            
-             switch (_mapTypeName)
-            {
-                case MAPTYPE.GROUND_MAP:
-                    LoadMapDataFromFile(_mapTypeName,ref Server.GROUND_MAPDATA, path);
-                break;
 
-                case MAPTYPE.OBSTACLEMAP:
-                    LoadMapDataFromFile(_mapTypeName,ref Server.GLOBAL_MAPDATA, path);
-                break;
-            }
+           // int bazaWszystkichMapKeyToRefference = Constants.GetKeyFromMapLocationAndType(_location, _mapType);
+            LoadMapDataFromFile ((Locations)_location, (MAPTYPE)_mapType, path );
 
             // inkrementacja numeru update'a
             Server.UpdateVersion++;
@@ -121,13 +117,13 @@ namespace MMOG
                 }
             }
         }   
-        public static void LoadMapDataFromFile(MAPTYPE _mapType, ref Dictionary<Vector3,string> REFERENCEMAP, string path)
+        public static void LoadMapDataFromFile(Locations _location, MAPTYPE _mapType, string path)
         {
-
             Console.WriteLine($"Ladowanie danych mapy[{_mapType.ToString()}] z pliku do pamięci");
             var mapData = new Dictionary<Vector3,string>();
             if (!File.Exists(path)) 
             {
+                Console.WriteLine(path);
                 Console.WriteLine("Plik nie istnieje");
                 return;
             }
@@ -160,6 +156,8 @@ namespace MMOG
             }  
             file.Close();
 
+            int key = Constants.GetKeyFromMapLocationAndType(_location, _mapType);
+            Dictionary<Vector3, string> REFERENCEMAP = Server.BazaWszystkichMDanychMap[key];
             if (REFERENCEMAP.Count == 0) 
             {
                 REFERENCEMAP = mapData;
@@ -197,11 +195,14 @@ namespace MMOG
                 $"Zmodyfikowano: .............. {modifiedCounter}\n" +
                 $"Usunięto: ................... {deletedCounter}\n" +
                 $"Uszkodzonych danych: ........ {wrongDataRecords}");
+
+            Server.BazaWszystkichMDanychMap[key] = REFERENCEMAP;
         }
 
         public static void ChangePlayerLocalisation(int _fromClient, Packet _packet)
         {
             Locations _location = (Locations)_packet.ReadInt();
+            Server.clients[_fromClient].player.CurrentLocation = _location;
             Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.username}] zmienił mapę na: [{_location.ToString()}]");
 
 /*
@@ -231,12 +232,21 @@ TODO:
             ServerSend.SendCurrentUpdateVersionNumber(sendToID: _fromClient);
         }
 
-       public static void SendLatestUpdateMapDataToClient(int _FromClient, Packet _packet) {
+       public static void SendALLLatestUpdateMapDataToClient(int _FromClient, Packet _packet) {
             int _id = _packet.ReadInt();
-            Console.WriteLine("Otrzymanie żądania o wysłanie nowej mapy przez klienta #"+_id);          
-            
-            ServerSend.SendMapDataToClient(_id, MAPTYPE.OBSTACLEMAP, ref Server.GLOBAL_MAPDATA);
-            ServerSend.SendMapDataToClient(_id, MAPTYPE.GROUND_MAP, ref Server.GROUND_MAPDATA);
+
+            var LocationCount = Enum.GetNames(typeof(Locations)).Length;
+            var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
+            Console.WriteLine("wysłanie do gracza "+_id+ " mapy w ilości: "+(LocationCount*mapTypesCount));
+
+            for (int location = 0; location < LocationCount; location++) {
+                for (int maptype = 0; maptype < mapTypesCount; maptype++) {
+                    int key = Constants.GetKeyFromMapLocationAndType((Locations)location, (MAPTYPE)maptype);
+                    
+                    ServerSend.SendMapDataToClient(_id, (Locations)location, (MAPTYPE)maptype, Server.BazaWszystkichMDanychMap[key]);
+
+                }
+            }
         }
     }
 }

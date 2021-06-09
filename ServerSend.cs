@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace MMOG
@@ -95,6 +96,7 @@ namespace MMOG
                 _packet.Write(_player.username);
                 _packet.Write(_player.position);
                 _packet.Write(_player.rotation);
+                _packet.Write((int)_player.CurrentLocation); // iint
              
                 SendTCPData(_toClient, _packet);
             }
@@ -151,10 +153,11 @@ namespace MMOG
             }
         }
 
-        public static void DownloadMapData(int fromID, MAPTYPE mapType) {
+        public static void DownloadMapData(int fromID, MAPTYPE mapType, Locations mapLocation) {
             Console.WriteLine("Wysłanie żądania o dostarczenie danych mapy");
             using (Packet _packet = new Packet((int)ServerPackets.downloadMapData)) {
                 _packet.Write((int)mapType);
+                _packet.Write((int)mapLocation);
                 SendTCPData(fromID,_packet);
             }
         }
@@ -179,16 +182,18 @@ namespace MMOG
             }
         }
 
-        public static void SendMapDataToClient(int id, MAPTYPE _mapType, ref Dictionary<System.Numerics.Vector3, string> REFERENCEMAP) {
+        public static void SendMapDataToClient(int id, Locations _location, MAPTYPE _mapType, Dictionary<Vector3, string> REFERENCEMAP) {
             if(REFERENCEMAP.Count == 0) {
                 Console.WriteLine("Brak danych mapy na serwerze, wysyłanie przerwane.");
             }
-            Console.WriteLine($"Wysłanie wszystkich danych mapy[{_mapType.ToString()}] do gracza #"+id);
+            Console.WriteLine($"Wysłanie wszystkich danych mapy[{_location.ToString()}][{_mapType.ToString()}] do gracza #"+id);
        
             using (Packet _packet = new Packet((int)ServerPackets.SEND_MAPDATA_TO_CLIENT)) 
             {
+                _packet.Write((int)_location);// int lokalizacja
                 _packet.Write((int)_mapType); // INT rodzaj mapy
                 _packet.Write(REFERENCEMAP.Count); // dodanie wielkości przesyłanego pakietu
+                Console.WriteLine("wielokosc paczki: "+REFERENCEMAP.Count);
                 foreach(var kvp in REFERENCEMAP) {
                     _packet.Write(kvp.Key); // dodanie Vector3
                     _packet.Write(kvp.Value); // dodanie string = wartosci pola = nazwy
