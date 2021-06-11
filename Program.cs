@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MMOG;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,6 +12,8 @@ namespace MMOG
 
         static void Main(string[] args)
         {
+            UpdateChecker.ReadDataFromFile();
+
             Console.Title = "Game Server";
             isRunning = true;
 
@@ -26,20 +29,48 @@ namespace MMOG
                 if (consoleCommand == "cmd_users") ShowCurrentlyLoggedInUsers();
                 if (consoleCommand.Contains("cmd_kick_")) KickUserByID(Convert.ToInt32(consoleCommand.Replace("cmd_kick_","")));
                 if (consoleCommand.Contains("cmd_downloadAllMaps")) {
-                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Obstacle_MAP, Locations.Start_First_Floor);
-                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Ground_MAP,Locations.Start_First_Floor);
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Obstacle_MAP, LOCATIONS.Start_First_Floor);
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Ground_MAP,LOCATIONS.Start_First_Floor);
 
-                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Obstacle_MAP,Locations.Start_Second_Floor);
-                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Ground_MAP,Locations.Start_Second_Floor);
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Obstacle_MAP,LOCATIONS.Start_Second_Floor);
+                    ServerSend.DownloadMapData(fromID: Convert.ToInt32(consoleCommand.Replace("cmd_downloadAllMaps_","")),MAPTYPE.Ground_MAP,LOCATIONS.Start_Second_Floor);
                 }
+                if (consoleCommand == "cmd_ChooseMapToDownload") {
+                    Console.WriteLine(
+                        $"0-0 = [{LOCATIONS.Start_First_Floor.ToString()}][{MAPTYPE.Ground_MAP.ToString()}] \n" +
+                        $"0-1 = [{LOCATIONS.Start_First_Floor.ToString()}][{MAPTYPE.Obstacle_MAP.ToString()}] \n" +
+                        $"1-0 = [{LOCATIONS.Start_Second_Floor.ToString()}][{MAPTYPE.Ground_MAP.ToString()}] \n" +
+                        $"1-1 = [{LOCATIONS.Start_Second_Floor.ToString()}][{MAPTYPE.Obstacle_MAP.ToString()}]");
+                    string mapchoose = Console.ReadLine();
+
+                    Console.WriteLine("podaj jeszcze ID Admina od ktorego chcesz pobrać mape");
+                    int admin = Int32.Parse(Console.ReadLine());
+
+                    switch(mapchoose) {
+                        case "0-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Ground_MAP); break;
+                        case "0-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Obstacle_MAP); break;
+                        case "1-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Ground_MAP); break;
+                        case "1-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Obstacle_MAP); break;
+                    }
+                };
                 if (consoleCommand == "cmd_sendMapUpdateToAll") ServerSend.SendCurrentUpdateVersionNumber(); 
                 if (consoleCommand == "cmd_printAllPositions") PrintPlayersPositions();
+                if (consoleCommand == "cmd_showData") Console.WriteLine(UpdateChecker.serverJsonFile);
+              //  if (consoleCommand == "cmd_initData") UpdateChecker.IniciateData_TEST();
+                if (consoleCommand == "cmd_dataTest") {
+                    TestAktualizacjiIWyswietlaniaDanychZBAzy();
+                }
             }
+        }
 
+        private static void TestAktualizacjiIWyswietlaniaDanychZBAzy() {
+            Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Locations, _location: LOCATIONS.Start_Second_Floor, _maptype: MAPTYPE.Obstacle_MAP));
+            Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Items, _item: ITEMS.Stone));
+            Items potek = UpdateChecker.SERVER_UPDATE_VERSIONS._Data[ITEMS.Health_Potion];
+            potek._Name = "Mikstura życia";
+            UpdateChecker.ChangeRecord(ITEMS.Health_Potion, potek);
+        }
 
-        //  if (consoleCommand == "cmd_ping") ServerSend.Ping_ALL();
-
-    }
         private static void PrintPlayersPositions()
         {
             foreach(var player in Server.clients.Values.Where(p=>p.player != null))
@@ -127,23 +158,23 @@ namespace MMOG
                         catch(Exception ex) { Console.WriteLine(ex.Message); };
                     }
 
-                    //afkCleanerCounter -= (int)Constants.MS_PER_TICK;
-                    //if(afkCleanerCounter < 0) {
-                    //    //Console.WriteLine("Kicking ghost-afk users");
-                    //    foreach(KeyValuePair<int,string> obecnosc in Server.listaObecnosci) {
-                    //        if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
-                    //        {
-                    //            try {
-                    //                Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
-                    //            } catch { };
-                    //            ServerSend.RemoveOfflinePlayer(obecnosc.Key);
-                    //            Server.clients[obecnosc.Key].Disconnect();
-                    //            Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
-                    //        }
-                    //    }
-                    //    ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
-                    //    afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK*1000;
-                    //}
+                    afkCleanerCounter -= (int)Constants.MS_PER_TICK;
+                    if (afkCleanerCounter < 0) {
+                        //Console.WriteLine("Kicking ghost-afk users");
+                        foreach (KeyValuePair<int, string> obecnosc in Server.listaObecnosci) {
+                            if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
+                            {
+                                try {
+                                    Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
+                                } catch { };
+                                ServerSend.RemoveOfflinePlayer(obecnosc.Key);
+                                Server.clients[obecnosc.Key].Disconnect();
+                                Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
+                            }
+                        }
+                        ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
+                        afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK * 1000;
+                    }
                 }
             }
         }

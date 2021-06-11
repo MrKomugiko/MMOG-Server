@@ -25,7 +25,7 @@ namespace MMOG
         public static Dictionary<int,Dictionary<Vector3, string>> BazaWszystkichMDanychMap = new Dictionary<int, Dictionary<Vector3, string>>(); 
             //public static Dictionary<Vector3, string> GLOBAL_MAPDATA = new Dictionary<Vector3, string>();
         //    public static Dictionary<Vector3, string> GROUND_MAPDATA = new Dictionary<Vector3, string>();
-        public static int UpdateVersion = 1001;
+        [Obsolete] public static int UpdateVersion = 1001;
         public static void Start(int _maxPlayers, int _port)
         {
             MaxPlayers = _maxPlayers;
@@ -47,7 +47,7 @@ namespace MMOG
 
             //TODO: foreach na lokacjach
             //var dataTypesCount = Enum.GetNames(typeof(DATATYPE)).Length;
-            var LocationCount = Enum.GetNames(typeof(Locations)).Length;
+            var LocationCount = Enum.GetNames(typeof(LOCATIONS)).Length;
             var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
 
             DATATYPE datatype = DATATYPE.Locations;
@@ -55,7 +55,7 @@ namespace MMOG
             {
                 for(int maptype = 0 ; maptype < mapTypesCount ; maptype++)
                 {
-                    int key = Constants.GetKeyFromMapLocationAndType((Locations)location,(MAPTYPE)maptype);
+                    int key = Constants.GetKeyFromMapLocationAndType((LOCATIONS)location,(MAPTYPE)maptype);
                     Dictionary<Vector3,string> dataRefference = new Dictionary<Vector3, string>();
                     if(BazaWszystkichMDanychMap.TryGetValue(key,out dataRefference) == false)
                     {
@@ -65,9 +65,9 @@ namespace MMOG
                         
                     ServerHandle.LoadMapDataFromFile
                     (
-                        (Locations)location,
+                        (LOCATIONS)location,
                         (MAPTYPE)maptype,
-                        Constants.GetFilePath(datatype, (Locations)location, (MAPTYPE)maptype)
+                        Constants.GetFilePath(datatype, (LOCATIONS)location, (MAPTYPE)maptype)
                     );
                 //   Console.WriteLine($"KEY:{((location*10)+maptype)} {((Locations)location).ToString()} / {((MAPTYPE)maptype).ToString()} / SIZE: {dataRefference.Count} ");
                 }
@@ -84,7 +84,7 @@ namespace MMOG
                 if (clients[i].tcp.socket == null)
                 {
                     clients[i].tcp.Connect(_client);
-                   // Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
+                    Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
                     return;
                 }
             }
@@ -173,7 +173,7 @@ namespace MMOG
                 { (int)ClientPackets.SendChatMessage, ServerHandle.SendChatMessage },
                 { (int)ClientPackets.PingReceived, ServerHandle.PingReceived },
                 { (int)ClientPackets.SEND_MAPDATA_TO_SERVER, ServerHandle.MapDataReceived },
-                { (int)ClientPackets.downloadLatestMapUpdate, ServerHandle.SendALLLatestUpdateMapDataToClient },
+                { (int)ClientPackets.downloadLatestMapUpdate, ServerHandle.SendUpdatedVersionMapDataToClient },
                 { (int)ClientPackets.download_recentMapVersion, ServerHandle.SendNumberOfLAtestMapUpdate },
                 { (int)ClientPackets.clientChangeLocalisation, ServerHandle.ChangePlayerLocalisation }
 

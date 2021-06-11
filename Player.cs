@@ -15,8 +15,8 @@ namespace MMOG
         public Vector3 position;
         public Quaternion rotation;
 
-        private Locations _currentLocation;
-        public Locations CurrentLocation { get => _currentLocation; set => _currentLocation = value; }
+        private LOCATIONS _currentLocation;
+        public LOCATIONS CurrentLocation { get => _currentLocation; set => _currentLocation = value; }
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
         private bool[] inputs; // wciśnięte klawisze przez gracza

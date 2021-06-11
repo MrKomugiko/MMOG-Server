@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MMOG;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
@@ -73,6 +74,7 @@ namespace MMOG
         #region Packets
         public static void Welcome(int _toClient, string _msg)
         {
+            Console.WriteLine("send packet Hello");
             using (Packet _packet = new Packet((int)ServerPackets.welcome))
             {
                 _packet.Write(_msg);
@@ -109,8 +111,7 @@ namespace MMOG
 
                 SendTCPDataToAll(_packet);
             }
-        }
-        
+        }      
         public static void UpdateChat(string _msg) {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
                 _packet.Write(_msg);
@@ -118,7 +119,6 @@ namespace MMOG
                 SendTCPDataToAll(_packet);
             }
         }
-
         public static void Ping_ALL() {
             Server.listaObecnosci.Clear();
             foreach(var player in Server.clients.Values) {
@@ -136,7 +136,6 @@ namespace MMOG
                 SendTCPDataToAll(_packet);
             }
         }
-
         public static void UpdateChat_NewUserPost(int _fromPlayer, string _msg)
         {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat_NewUserPost)) {
@@ -145,16 +144,14 @@ namespace MMOG
                 SendTCPDataToAll(_packet);
             }
         }
-
         public static void RemoveOfflinePlayer(int _playerToRemove) {
             using (Packet _packet = new Packet((int)ServerPackets.removeOfflinePlayer)) {
                 _packet.Write(_playerToRemove);
                 SendTCPDataToAll(_packet);
             }
         }
-
-        public static void DownloadMapData(int fromID, MAPTYPE mapType, Locations mapLocation) {
-            Console.WriteLine("Wysłanie żądania o dostarczenie danych mapy");
+        public static void DownloadMapData(int fromID, MAPTYPE mapType, LOCATIONS mapLocation) {
+            Console.WriteLine("Wysłanie żądania o dostarczenie danych mapy przez klienta-admina");
             using (Packet _packet = new Packet((int)ServerPackets.downloadMapData)) {
                 _packet.Write((int)mapType);
                 _packet.Write((int)mapLocation);
@@ -164,42 +161,83 @@ namespace MMOG
 
         // wyslanie info o aktualnej wesji update`a
         public static void SendCurrentUpdateVersionNumber(int sendToID = -1) {
-            
-            
             using (Packet _packet = new Packet((int)ServerPackets.sendCurrentUpdateNumber)) {
-
-
-                _packet.Write(Server.UpdateVersion);
+            // TODO: rozdzielenie updateów map dla kazdej z oobno
+                _packet.Write(UpdateChecker.serverJsonFile);
 
                 if(sendToID == -1) {
-                    Console.WriteLine("wysłano numer wersji DO WSZYSTKICH");
+                    Console.WriteLine("wysłano JSON z numerami wersji DO WSZYSTKICH");
                     SendTCPDataToAll(_packet); // wysłanie pakietu do wszystkich
                     return;
                 }
                 
-                Console.WriteLine("wysłano numer wersji do gracza #"+sendToID);
+                Console.WriteLine("wysłano JSON z numerami wersji do gracza #" + sendToID);
                 SendTCPData(sendToID,_packet); // wysłanie pakietu do konkretnej osoby 
             }
         }
+       // TODO:
+        //public static void SendInformationAboutDataVersion(int _toClient, DATATYPE? _data = null, LOCATIONS? _location = null, MAPTYPE? _maptype = null, ITEMS? _items = null) {
+        //  //  SEND ALL IN ONE BIG PACKET
+        //    if (_data == null && _location == null && _maptype == null) {
+        //        var datatypeCount = Enum.GetNames(typeof(DATATYPE)).Length;
 
-        public static void SendMapDataToClient(int id, Locations _location, MAPTYPE _mapType, Dictionary<Vector3, string> REFERENCEMAP) {
+        //        switch(_data) {
+            
+        //            case DATATYPE.Locations:
+        //                var LocationCount = Enum.GetNames(typeof(LOCATIONS)).Length;
+        //                var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
+
+        //                int packetSize = 0;
+        //                 for (int location = 0; location < LocationCount; location++) {
+        //                    for (int maptype = 0; maptype < mapTypesCount; maptype++) {
+        //                        packetSize++;
+        //                        }
+                            
+        //                }
+        //                using (Packet _packet = new Packet((int)ServerPackets.InformationAboutDataVersion)) {
+        //                    _packet.Write(packetSize);      // numer pakietu
+        //                        int datatype = (int)_data;
+        //                        for (int location = 0; location < LocationCount; location++) {
+        //                            for (int maptype = 0; maptype < mapTypesCount; maptype++) {
+
+        //                                _packet.Write(datatype);        // DATATYPE
+        //                                _packet.Write(location);        // Locations
+        //                                _packet.Write(maptype);         // MAPTYPE
+        //                                _packet.Write(UpdateChecker.GetVersionOf(_datatype:(DATATYPE)datatype,_location:(LOCATIONS)location, _maptype:(MAPTYPE)maptype));
+        //                            }
+        //                        }
+                            
+
+        //                    SendTCPData(_toClient, _packet); // wysłanie pakietu do konkretnej osoby 
+        //                }
+        //                break;
+
+        //        }
+        //    }
+
+        //   // SEND SPECIFIC DATA
+
+        //}
+
+        public static void SendMapDataToClient(int id, LOCATIONS _location, MAPTYPE _mapType, Dictionary<Vector3, string> REFERENCEMAP) {
             if(REFERENCEMAP.Count == 0) {
                 Console.WriteLine("Brak danych mapy na serwerze, wysyłanie przerwane.");
             }
-            Console.WriteLine($"Wysłanie wszystkich danych mapy[{_location.ToString()}][{_mapType.ToString()}] do gracza #"+id);
-       
+
             using (Packet _packet = new Packet((int)ServerPackets.SEND_MAPDATA_TO_CLIENT)) 
             {
-                _packet.Write((int)_location);// int lokalizacja
-                _packet.Write((int)_mapType); // INT rodzaj mapy
-                _packet.Write(REFERENCEMAP.Count); // dodanie wielkości przesyłanego pakietu
+                _packet.Write(UpdateChecker.GetVersionOf(_location,_mapType));          // aktualna wersja mapy
+                _packet.Write((int)_location);                                          // int lokalizacja
+                _packet.Write((int)_mapType);                                           // INT rodzaj mapy
+                _packet.Write(REFERENCEMAP.Count);                                      // dodanie wielkości przesyłanego pakietu
                 Console.WriteLine("wielokosc paczki: "+REFERENCEMAP.Count);
+
                 foreach(var kvp in REFERENCEMAP) {
-                    _packet.Write(kvp.Key); // dodanie Vector3
-                    _packet.Write(kvp.Value); // dodanie string = wartosci pola = nazwy
+                    _packet.Write(kvp.Key);                                             // dodanie Vector3
+                    _packet.Write(kvp.Value);                                           // dodanie string = wartosci pola = nazwy
                 }   
 
-            SendTCPData(id, _packet);
+                SendTCPData(id, _packet);
             }
 
             Console.WriteLine("Pomyslnie wysłano dane do klienta");

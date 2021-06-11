@@ -70,7 +70,7 @@ namespace MMOG
             Dictionary<Vector3, string> tempDict = new Dictionary<Vector3, string>();
             int _dataSize = _packet.ReadInt();
             DATATYPE _datatype = (DATATYPE)_packet.ReadInt();
-            Locations _location = (Locations)_packet.ReadInt();
+            LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
             MAPTYPE _mapType = (MAPTYPE)_packet.ReadInt();
 
             Console.WriteLine($"Otrzymano: {_dataSize} / {_location} / {_mapType}");
@@ -93,15 +93,18 @@ namespace MMOG
             //        path = Constants.MAP_DATA_FILE_PATH;
             //    break;
             //}
-            string path = Constants.GetFilePath((DATATYPE)_datatype, (Locations)_location, (MAPTYPE)_mapType);
+            string path = Constants.GetFilePath((DATATYPE)_datatype, (LOCATIONS)_location, (MAPTYPE)_mapType);
             ZapiszMapeDoPliku(tempDict,path);
             Console.WriteLine("Aktualizacja z istniejącymi danymi");
 
            // int bazaWszystkichMapKeyToRefference = Constants.GetKeyFromMapLocationAndType(_location, _mapType);
-            LoadMapDataFromFile ((Locations)_location, (MAPTYPE)_mapType, path );
+            LoadMapDataFromFile ((LOCATIONS)_location, (MAPTYPE)_mapType, path );
 
             // inkrementacja numeru update'a
-            Server.UpdateVersion++;
+            // TODO: zaktualizować Versje dla konkretnej mapki w patchnotesie
+            UpdateChecker.SERVER_UPDATE_VERSIONS._Data[_location][_mapType].UpdateVersionNumber();
+            UpdateChecker.SaveChangesToFile();
+            
         }
 
         private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path)
@@ -117,7 +120,7 @@ namespace MMOG
                 }
             }
         }   
-        public static void LoadMapDataFromFile(Locations _location, MAPTYPE _mapType, string path)
+        public static void LoadMapDataFromFile(LOCATIONS _location, MAPTYPE _mapType, string path)
         {
             Console.WriteLine($"Ladowanie danych mapy[{_mapType.ToString()}] z pliku do pamięci");
             var mapData = new Dictionary<Vector3,string>();
@@ -201,7 +204,7 @@ namespace MMOG
 
         public static void ChangePlayerLocalisation(int _fromClient, Packet _packet)
         {
-            Locations _location = (Locations)_packet.ReadInt();
+            LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
             Server.clients[_fromClient].player.CurrentLocation = _location;
             Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.username}] zmienił mapę na: [{_location.ToString()}]");
 
@@ -232,23 +235,37 @@ TODO:
             ServerSend.SendCurrentUpdateVersionNumber(sendToID: _fromClient);
         }
 
-       public static void SendALLLatestUpdateMapDataToClient(int _FromClient, Packet _packet) {
+       public static void SendUpdatedVersionMapDataToClient(int _FromClient, Packet _packet) {
+            bool _isRequestSpecified = _packet.ReadBool();
+            
             int _id = _packet.ReadInt();
-
-            var LocationCount = Enum.GetNames(typeof(Locations)).Length;
+            var LocationCount = Enum.GetNames(typeof(LOCATIONS)).Length;
             var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
-            Console.WriteLine("wysłanie do gracza "+_id+ " mapy w ilości: "+(LocationCount*mapTypesCount));
 
-            for (int location = 0; location < LocationCount; location++) {
-                for (int maptype = 0; maptype < mapTypesCount; maptype++) {
-                    int key = Constants.GetKeyFromMapLocationAndType((Locations)location, (MAPTYPE)maptype);
-                    
-                    ServerSend.SendMapDataToClient(_id, (Locations)location, (MAPTYPE)maptype, Server.BazaWszystkichMDanychMap[key]);
+            if (_isRequestSpecified == false) {
+                // WYSYŁAMY WSZYSTKO CO MAMY
+                Console.WriteLine("wysłanie do gracza " + _id + " mapy w ilości: " + (LocationCount * mapTypesCount));
 
+                for (int location = 0; location < LocationCount; location++) {
+                    for (int maptype = 0; maptype < mapTypesCount; maptype++) {
+                        int key = Constants.GetKeyFromMapLocationAndType((LOCATIONS)location, (MAPTYPE)maptype);
+
+                        ServerSend.SendMapDataToClient(_id, (LOCATIONS)location, (MAPTYPE)maptype, Server.BazaWszystkichMDanychMap[key]);
+                    }
+                }
+            }
+            else {
+                // WYSYŁAMY KONKRETNY PAKIET MAPY
+                LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
+                MAPTYPE _maptype = (MAPTYPE)_packet.ReadInt();
+
+                int key = Constants.GetKeyFromMapLocationAndType(_location, _maptype);
+
+                Console.WriteLine($"wysłanie do gracza {_id} konkretnej mapy [{_location.ToString()}][{_maptype.ToString()}]");
+                ServerSend.SendMapDataToClient(_id, _location, _maptype, Server.BazaWszystkichMDanychMap[key]);
                 }
             }
         }
     }
-}
 
 // TODO: wysyłanie przez uzytkownika tylko komendy na serwer prostym żądaniem pingCommand
