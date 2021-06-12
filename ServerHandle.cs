@@ -168,13 +168,13 @@ namespace MMOG
             // ---------- MODYFIKACJA ISTNIEJĄCYCH DANYCH SERVERA
             if (REFERENCEMAP.Count > 0) 
             {
-                if (mapData.Count == 0) Console.WriteLine("Plik jest pusty -> Brak zapisanych danych mapy");
+        if (mapData.Count == 0) Console.WriteLine("Plik jest pusty -> Brak zapisanych danych mapy");
 
                 // porownanie i dodanie/zamiana danych z istniejącym zapisem w pamiec
                 foreach (var kvp in mapData) {
                     if (REFERENCEMAP.ContainsKey(kvp.Key)) {
                         if (REFERENCEMAP[kvp.Key] != kvp.Value) {
-                            REFERENCEMAP[kvp.Key] = kvp.Value;
+                        REFERENCEMAP[kvp.Key] = kvp.Value;
                             modifiedCounter++;
                         }
                     }else {
@@ -241,7 +241,6 @@ TODO:
             int _id = _packet.ReadInt();
             var LocationCount = Enum.GetNames(typeof(LOCATIONS)).Length;
             var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
-
             if (_isRequestSpecified == false) {
                 // WYSYŁAMY WSZYSTKO CO MAMY
                 Console.WriteLine("wysłanie do gracza " + _id + " mapy w ilości: " + (LocationCount * mapTypesCount));
@@ -261,7 +260,9 @@ TODO:
 
                 int key = Constants.GetKeyFromMapLocationAndType(_location, _maptype);
 
-                Console.WriteLine($"wysłanie do gracza {_id} konkretnej mapy [{_location.ToString()}][{_maptype.ToString()}]");
+                Console.WriteLine($"wysyłanie: LOCATION:{_location} / MAPTYPE:{_maptype}");
+               // Console.WriteLine($"wysłanie do gracza {_id} konkretnej mapy [{_location.ToString()}][{_maptype.ToString()}]");
+                //Console.WriteLine("serwer przechowuje w pamięci "+Server.BazaWszystkichMDanychMap.Count +" map.");
                 ServerSend.SendMapDataToClient(_id, _location, _maptype, Server.BazaWszystkichMDanychMap[key]);
                 }
             }

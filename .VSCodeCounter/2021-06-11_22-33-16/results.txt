@@ -1,0 +1,110 @@
+Date : 2021-06-11 22:33:16
+Directory : d:\Programowanie\Unity\MMOG
+Total : 53 files,  76682 codes, 394 comments, 323 blanks, all 77399 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| XML      |         16 |     74,307 |          3 |         15 |     74,325 |
+| C#       |         16 |      1,539 |        391 |        302 |      2,232 |
+| JSON     |         20 |        820 |          0 |          1 |        821 |
+| Markdown |          1 |         16 |          0 |          5 |         21 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                               | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                  |         53 |     76,682 |        394 |        323 |     77,399 |
+| .vs                                                                                                |          1 |         14 |          0 |          0 |         14 |
+| Properties                                                                                         |          2 |         22 |          3 |          0 |         25 |
+| Properties\PublishProfiles                                                                         |          1 |         14 |          3 |          0 |         17 |
+| bin                                                                                                |         13 |        266 |          0 |          1 |        267 |
+| bin\.vs                                                                                            |          1 |          9 |          0 |          0 |          9 |
+| bin\Debug                                                                                          |          6 |        150 |          0 |          1 |        151 |
+| bin\Debug\netcoreapp3.1                                                                            |          6 |        150 |          0 |          1 |        151 |
+| bin\Debug\netcoreapp3.1\DATA                                                                       |          1 |         54 |          0 |          1 |         55 |
+| bin\Debug\netcoreapp3.1\publish                                                                    |          2 |         43 |          0 |          0 |         43 |
+| bin\Release                                                                                        |          6 |        107 |          0 |          0 |        107 |
+| bin\Release\netcoreapp3.1                                                                          |          6 |        107 |          0 |          0 |        107 |
+| bin\Release\netcoreapp3.1\win-x64                                                                  |          3 |         54 |          0 |          0 |         54 |
+| obj                                                                                                |         16 |        651 |         39 |         20 |        710 |
+| obj\Debug                                                                                          |          2 |         18 |         19 |         10 |         47 |
+| obj\Debug\netcoreapp3.1                                                                            |          2 |         18 |         19 |         10 |         47 |
+| obj\Release                                                                                        |          3 |         38 |         20 |         10 |         68 |
+| obj\Release\netcoreapp3.1                                                                          |          2 |         18 |         20 |         10 |         48 |
+| obj\Release\netcoreapp3.1\win-x64                                                                  |          1 |          9 |         10 |          5 |         24 |
+| obj\publish                                                                                        |          4 |        279 |          0 |          0 |        279 |
+| obj\publish\win-x64                                                                                |          4 |        279 |          0 |          0 |        279 |
+| packages                                                                                           |          8 |     74,208 |          0 |         14 |     74,222 |
+| packages\Newtonsoft.Json.13.0.1                                                                    |          8 |     74,208 |          0 |         14 |     74,222 |
+| packages\Newtonsoft.Json.13.0.1\lib                                                                |          7 |     74,192 |          0 |          9 |     74,201 |
+| packages\Newtonsoft.Json.13.0.1\lib\net20                                                          |          1 |     10,335 |          0 |          1 |     10,336 |
+| packages\Newtonsoft.Json.13.0.1\lib\net35                                                          |          1 |      9,483 |          0 |          1 |      9,484 |
+| packages\Newtonsoft.Json.13.0.1\lib\net40                                                          |          1 |      9,683 |          0 |          1 |      9,684 |
+| packages\Newtonsoft.Json.13.0.1\lib\net45                                                          |          1 |     11,305 |          0 |          1 |     11,306 |
+| packages\Newtonsoft.Json.13.0.1\lib\netstandard1.0                                                 |          1 |     10,992 |          0 |          2 |     10,994 |
+| packages\Newtonsoft.Json.13.0.1\lib\netstandard1.3                                                 |          1 |     11,114 |          0 |          2 |     11,116 |
+| packages\Newtonsoft.Json.13.0.1\lib\netstandard2.0                                                 |          1 |     11,280 |          0 |          1 |     11,281 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                           | language | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| d:\Programowanie\Unity\MMOG\.vs\VSWorkspaceState.json                                              | JSON     |         14 |          0 |          0 |         14 |
+| d:\Programowanie\Unity\MMOG\Client.cs                                                              | C#       |        183 |          5 |         42 |        230 |
+| d:\Programowanie\Unity\MMOG\Constants.cs                                                           | C#       |         39 |          4 |          5 |         48 |
+| d:\Programowanie\Unity\MMOG\GameLogic.cs                                                           | C#       |         25 |          2 |          2 |         29 |
+| d:\Programowanie\Unity\MMOG\MMOG-Server.csproj                                                     | XML      |         18 |          0 |          6 |         24 |
+| d:\Programowanie\Unity\MMOG\Packet.cs                                                              | C#       |        297 |         76 |         28 |        401 |
+| d:\Programowanie\Unity\MMOG\Player.cs                                                              | C#       |        139 |         92 |         40 |        271 |
+| d:\Programowanie\Unity\MMOG\Program.cs                                                             | C#       |        150 |          7 |         26 |        183 |
+| d:\Programowanie\Unity\MMOG\Properties\PublishProfiles\FolderProfile.pubxml                        | XML      |         14 |          3 |          0 |         17 |
+| d:\Programowanie\Unity\MMOG\Properties\launchSettings.json                                         | JSON     |          8 |          0 |          0 |          8 |
+| d:\Programowanie\Unity\MMOG\Server.cs                                                              | C#       |        152 |         10 |         29 |        191 |
+| d:\Programowanie\Unity\MMOG\ServerHandle.cs                                                        | C#       |        182 |         48 |         42 |        272 |
+| d:\Programowanie\Unity\MMOG\ServerSend.cs                                                          | C#       |        174 |         44 |         30 |        248 |
+| d:\Programowanie\Unity\MMOG\ThreadManager.cs                                                       | C#       |         42 |          3 |          6 |         51 |
+| d:\Programowanie\Unity\MMOG\UPDATE_NOTES.cs                                                        | C#       |         81 |          0 |         23 |        104 |
+| d:\Programowanie\Unity\MMOG\UpdateChecker.cs                                                       | C#       |         39 |         61 |          9 |        109 |
+| d:\Programowanie\Unity\MMOG\bin\.vs\VSWorkspaceState.json                                          | JSON     |          9 |          0 |          0 |          9 |
+| d:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\DATA\Server_UpdateNotes.json                   | JSON     |         54 |          0 |          1 |         55 |
+| d:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG-Server.deps.json                          | JSON     |         34 |          0 |          0 |         34 |
+| d:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG-Server.runtimeconfig.dev.json             | JSON     |         10 |          0 |          0 |         10 |
+| d:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\MMOG-Server.runtimeconfig.json                 | JSON     |          9 |          0 |          0 |          9 |
+| d:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\publish\MMOG-Server.deps.json                  | JSON     |         34 |          0 |          0 |         34 |
+| d:\Programowanie\Unity\MMOG\bin\Debug\netcoreapp3.1\publish\MMOG-Server.runtimeconfig.json         | JSON     |          9 |          0 |          0 |          9 |
+| d:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\MMOG-Server.deps.json                        | JSON     |         34 |          0 |          0 |         34 |
+| d:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\MMOG-Server.runtimeconfig.dev.json           | JSON     |         10 |          0 |          0 |         10 |
+| d:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\MMOG-Server.runtimeconfig.json               | JSON     |          9 |          0 |          0 |          9 |
+| d:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.deps.json                | JSON     |         35 |          0 |          0 |         35 |
+| d:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.runtimeconfig.dev.json   | JSON     |         10 |          0 |          0 |         10 |
+| d:\Programowanie\Unity\MMOG\bin\Release\netcoreapp3.1\win-x64\MMOG-Server.runtimeconfig.json       | JSON     |          9 |          0 |          0 |          9 |
+| d:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG-Server.AssemblyInfo.cs                    | C#       |          9 |         10 |          5 |         24 |
+| d:\Programowanie\Unity\MMOG\obj\Debug\netcoreapp3.1\MMOG.AssemblyInfo.cs                           | C#       |          9 |          9 |          5 |         23 |
+| d:\Programowanie\Unity\MMOG\obj\MMOG-Server.csproj.nuget.dgspec.json                               | JSON     |         71 |          0 |          0 |         71 |
+| d:\Programowanie\Unity\MMOG\obj\MMOG-Server.csproj.nuget.g.props                                   | XML      |         15 |          0 |          0 |         15 |
+| d:\Programowanie\Unity\MMOG\obj\MMOG-Server.csproj.nuget.g.targets                                 | XML      |          6 |          0 |          0 |          6 |
+| d:\Programowanie\Unity\MMOG\obj\MMOG.csproj.nuget.dgspec.json                                      | JSON     |         65 |          0 |          0 |         65 |
+| d:\Programowanie\Unity\MMOG\obj\MMOG.csproj.nuget.g.props                                          | XML      |         15 |          0 |          0 |         15 |
+| d:\Programowanie\Unity\MMOG\obj\MMOG.csproj.nuget.g.targets                                        | XML      |          6 |          0 |          0 |          6 |
+| d:\Programowanie\Unity\MMOG\obj\Release\MMOG-Server.1.0.0.nuspec                                   | XML      |         20 |          0 |          0 |         20 |
+| d:\Programowanie\Unity\MMOG\obj\Release\netcoreapp3.1\MMOG-Server.AssemblyInfo.cs                  | C#       |          9 |         10 |          5 |         24 |
+| d:\Programowanie\Unity\MMOG\obj\Release\netcoreapp3.1\win-x64\MMOG-Server.AssemblyInfo.cs          | C#       |          9 |         10 |          5 |         24 |
+| d:\Programowanie\Unity\MMOG\obj\project.assets.json                                                | JSON     |        138 |          0 |          0 |        138 |
+| d:\Programowanie\Unity\MMOG\obj\publish\win-x64\MMOG-Server.csproj.nuget.dgspec.json               | JSON     |         90 |          0 |          0 |         90 |
+| d:\Programowanie\Unity\MMOG\obj\publish\win-x64\MMOG-Server.csproj.nuget.g.props                   | XML      |         15 |          0 |          0 |         15 |
+| d:\Programowanie\Unity\MMOG\obj\publish\win-x64\MMOG-Server.csproj.nuget.g.targets                 | XML      |          6 |          0 |          0 |          6 |
+| d:\Programowanie\Unity\MMOG\obj\publish\win-x64\project.assets.json                                | JSON     |        168 |          0 |          0 |        168 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\LICENSE.md                             | Markdown |         16 |          0 |          5 |         21 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\lib\net20\Newtonsoft.Json.xml          | XML      |     10,335 |          0 |          1 |     10,336 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\lib\net35\Newtonsoft.Json.xml          | XML      |      9,483 |          0 |          1 |      9,484 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\lib\net40\Newtonsoft.Json.xml          | XML      |      9,683 |          0 |          1 |      9,684 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.xml          | XML      |     11,305 |          0 |          1 |     11,306 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\lib\netstandard1.0\Newtonsoft.Json.xml | XML      |     10,992 |          0 |          2 |     10,994 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\lib\netstandard1.3\Newtonsoft.Json.xml | XML      |     11,114 |          0 |          2 |     11,116 |
+| d:\Programowanie\Unity\MMOG\packages\Newtonsoft.Json.13.0.1\lib\netstandard2.0\Newtonsoft.Json.xml | XML      |     11,280 |          0 |          1 |     11,281 |
+| Total                                                                                              |          |     76,682 |        394 |        323 |     77,399 |
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

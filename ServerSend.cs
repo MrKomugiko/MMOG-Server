@@ -220,6 +220,9 @@ namespace MMOG
         //}
 
         public static void SendMapDataToClient(int id, LOCATIONS _location, MAPTYPE _mapType, Dictionary<Vector3, string> REFERENCEMAP) {
+          try{
+
+          
             if(REFERENCEMAP.Count == 0) {
                 Console.WriteLine("Brak danych mapy na serwerze, wysyłanie przerwane.");
             }
@@ -241,6 +244,8 @@ namespace MMOG
             }
 
             Console.WriteLine("Pomyslnie wysłano dane do klienta");
+          }
+          catch(Exception ex) { Console.WriteLine(ex.Message);}
         }
         #endregion
     }

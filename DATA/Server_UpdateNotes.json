@@ -10,13 +10,13 @@
             "_Id": 0,
             "_Name": "Ground_MAP",
             "_Type": "Ground_MAP",
-            "_Version": 1000
+            "_Version": 1002
           },
           {
             "_Id": 1,
             "_Name": "Obstacle_MAP",
             "_Type": "Obstacle_MAP",
-            "_Version": 1000
+            "_Version": 1003
           }
         ]
       },
@@ -29,13 +29,13 @@
             "_Id": 0,
             "_Name": "Ground_MAP",
             "_Type": "Ground_MAP",
-            "_Version": 1000
+            "_Version": 1002
           },
           {
             "_Id": 1,
             "_Name": "Obstacle_MAP",
             "_Type": "Obstacle_MAP",
-            "_Version": 1000
+            "_Version": 1003
           }
         ]
         

@@ -57,19 +57,19 @@ namespace MMOG
                 if (consoleCommand == "cmd_printAllPositions") PrintPlayersPositions();
                 if (consoleCommand == "cmd_showData") Console.WriteLine(UpdateChecker.serverJsonFile);
               //  if (consoleCommand == "cmd_initData") UpdateChecker.IniciateData_TEST();
-                if (consoleCommand == "cmd_dataTest") {
-                    TestAktualizacjiIWyswietlaniaDanychZBAzy();
-                }
+              //  if (consoleCommand == "cmd_dataTest") {
+               //     TestAktualizacjiIWyswietlaniaDanychZBAzy();
+               // }
             }
         }
 
-        private static void TestAktualizacjiIWyswietlaniaDanychZBAzy() {
-            Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Locations, _location: LOCATIONS.Start_Second_Floor, _maptype: MAPTYPE.Obstacle_MAP));
-            Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Items, _item: ITEMS.Stone));
-            Items potek = UpdateChecker.SERVER_UPDATE_VERSIONS._Data[ITEMS.Health_Potion];
-            potek._Name = "Mikstura życia";
-            UpdateChecker.ChangeRecord(ITEMS.Health_Potion, potek);
-        }
+        // private static void TestAktualizacjiIWyswietlaniaDanychZBAzy() {
+        //     Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Locations, _location: LOCATIONS.Start_Second_Floor, _maptype: MAPTYPE.Obstacle_MAP));
+        //     Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Items, _item: ITEMS.Stone));
+        //     Items potek = UpdateChecker.SERVER_UPDATE_VERSIONS._Data[ITEMS.Health_Potion];
+        //     potek._Name = "Mikstura życia";
+        //     UpdateChecker.ChangeRecord(ITEMS.Health_Potion, potek);
+        // }
 
         private static void PrintPlayersPositions()
         {
