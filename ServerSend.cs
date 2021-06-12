@@ -104,6 +104,8 @@ namespace MMOG
             }
         }
         public static void PlayerPosition(Player _player) {
+            // odblokowanie ruchu gracza
+            // ServerHandle.PlayersMoveInputRequests[_player.id] = 0;
             //Console.WriteLine($"[{_player.username}] wykonał ruch.");
             using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
                 _packet.Write(_player.id);
@@ -111,6 +113,7 @@ namespace MMOG
 
                 SendTCPDataToAll(_packet);
             }
+            ServerHandle.PlayersMoveExecuted[_player.id]++;
         }      
         public static void UpdateChat(string _msg) {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {

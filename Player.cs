@@ -17,6 +17,23 @@ namespace MMOG
 
         private LOCATIONS _currentLocation;
         public LOCATIONS CurrentLocation { get => _currentLocation; set => _currentLocation = value; }
+        Vector2 _inputDirection = Vector2.Zero;
+        public bool[] Inputs { get => inputs; 
+        set
+        {
+
+            if (value[0]) _inputDirection.Y += 1; // W
+            if (value[1]) _inputDirection.Y -= 1; // S
+            if (value[2]) _inputDirection.X -= 1; // A
+            if (value[3]) _inputDirection.X += 1; // D
+
+            if (_inputDirection == Vector2.Zero) return;
+
+            // rusz sie tylko przy zarejestrowanym ruchu roznim niz 0.0
+            Move(_inputDirection);
+        } 
+        }
+
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
         private bool[] inputs; // wciśnięte klawisze przez gracza
@@ -29,25 +46,25 @@ namespace MMOG
             position = _spawnPosition;
             rotation = Quaternion.Identity;
             loginDate = DateTime.Now;
-            inputs = new bool[4];
+            Inputs = new bool[4];
         }
         public void Update()
         {
-            Vector2 _inputDirection = Vector2.Zero;
+            // Vector2 _inputDirection = Vector2.Zero;
 
-            if (inputs[0]) _inputDirection.Y += 1; // W
-            if (inputs[1]) _inputDirection.Y -= 1; // S
-            if (inputs[2]) _inputDirection.X -= 1; // A
-            if (inputs[3]) _inputDirection.X += 1; // D
+            // if (inputs[0]) _inputDirection.Y += 1; // W
+            // if (inputs[1]) _inputDirection.Y -= 1; // S
+            // if (inputs[2]) _inputDirection.X -= 1; // A
+            // if (inputs[3]) _inputDirection.X += 1; // D
 
-            if (_inputDirection == Vector2.Zero) return;
+            // if (_inputDirection == Vector2.Zero) return;
 
-            // rusz sie tylko przy zarejestrowanym ruchu roznim niz 0.0
-            Move(_inputDirection);
+            // // rusz sie tylko przy zarejestrowanym ruchu roznim niz 0.0
+            // Move(_inputDirection);
         }
         private void Move(Vector2 _direction)
         {
-            inputs = new bool[4];
+            Inputs = new bool[4];
 
             Vector3 newPosition = position + new Vector3(_direction.X, _direction.Y, 0);
           //  Console.WriteLine("player want move to: "+newPosition);
@@ -89,7 +106,7 @@ namespace MMOG
         }
         public void SetInput(bool[] _inputs, Quaternion _rotation)
         {
-            inputs = _inputs;
+            Inputs = _inputs;
             rotation = _rotation;
         }
         Vector3 stairsDirection;

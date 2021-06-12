@@ -29,8 +29,17 @@ namespace MMOG
             Console.WriteLine($"Received packet via UDP. Contains message: {_msg}");
         }
 
+        public static int[] PlayersMoveInputRequests = new int[50];
+        public static int[] PlayersMoveExecuted = new int[50];
+        
         public static void PlayerMovement(int _fromClient, Packet _packet) {
          
+            if(PlayersMoveInputRequests[_fromClient] != PlayersMoveExecuted[_fromClient])
+            {
+                Console.WriteLine("wait");
+                return;
+            }
+            PlayersMoveInputRequests[_fromClient]++;
             bool[] _inputs = new bool[_packet.ReadInt()]; // pobieranie wielości tablicy
             for (int i = 0; i < _inputs.Length; i++) {
                 _inputs[i] = _packet.ReadBool(); // pobieranie kolejnych wartości bool
