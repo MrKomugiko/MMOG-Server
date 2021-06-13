@@ -32,13 +32,15 @@ namespace MMOG
         public static int[] PlayersMoveInputRequests = new int[50];
         public static int[] PlayersMoveExecuted = new int[50];
         
-        public static void PlayerMovement(int _fromClient, Packet _packet) {
-         
-            if(PlayersMoveInputRequests[_fromClient] != PlayersMoveExecuted[_fromClient])
+        public static void PlayerMovement(int _fromClient, Packet _packet) 
+        {
+            if(PlayersMoveInputRequests[_fromClient] > PlayersMoveExecuted[_fromClient])
             {
-                Console.WriteLine("wait");
+                Console.WriteLine("nie tak szybko koleeszko");
                 return;
             }
+            
+            Console.WriteLine("start process moving command"+PlayersMoveInputRequests[_fromClient]+" / "+PlayersMoveExecuted[_fromClient]);
             PlayersMoveInputRequests[_fromClient]++;
             bool[] _inputs = new bool[_packet.ReadInt()]; // pobieranie wielości tablicy
             for (int i = 0; i < _inputs.Length; i++) {
@@ -46,14 +48,8 @@ namespace MMOG
             }
             Quaternion _rotation = _packet.ReadQuaternion(); // pobieranie rotacji
 
-           //try
-           //{
             Server.clients[_fromClient].player.SetInput(_inputs, _rotation); // przesłanie informacji dot. wcisnietych input klawiszy danego clienta                                                                    
-           //}
-           //catch (System.Exception ex)
-           //{
-           //     Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}] Error: {ex.Message} ");               
-           //} 
+
         }
 
         public static void SendChatMessage(int _fromClient, Packet _packet) {
