@@ -155,7 +155,7 @@ namespace MMOG
                     if (_nextLoop > DateTime.Now)
                     {
                         try { Thread.Sleep(_nextLoop - DateTime.Now); } 
-                        catch(Exception ex) { Console.WriteLine(ex.Message); };
+                        catch(Exception ex) { Console.WriteLine("UPDATE LOOP: "+ex.Message); };
                     }
 
                     afkCleanerCounter -= (int)Constants.MS_PER_TICK;
@@ -166,7 +166,7 @@ namespace MMOG
                             {
                                 try {
                                     Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
-                                } catch { };
+                                } catch(Exception ex) {Console.WriteLine("afk cleaner "+ex.Message); };
                                 ServerSend.RemoveOfflinePlayer(obecnosc.Key);
                                 Server.clients[obecnosc.Key].Disconnect();
                                 Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);

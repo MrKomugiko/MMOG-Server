@@ -213,7 +213,6 @@ namespace MMOG
             if(player != null) {
                 if (tcp.socket == null) return;
                 ServerHandle.PlayersMoveInputRequests[player.id] =0;
-                ServerHandle.PlayersMoveExecuted[player.id] =0;
 
                 Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.username}] has disconnected.");
 

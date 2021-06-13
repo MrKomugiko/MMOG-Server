@@ -30,18 +30,17 @@ namespace MMOG
         }
 
         public static int[] PlayersMoveInputRequests = new int[50];
-        public static int[] PlayersMoveExecuted = new int[50];
         
         public static void PlayerMovement(int _fromClient, Packet _packet) 
         {
-            if(PlayersMoveInputRequests[_fromClient] > PlayersMoveExecuted[_fromClient])
+            if(PlayersMoveInputRequests[_fromClient] > 0)
             {
-                Console.WriteLine("nie tak szybko koleeszko");
+               // Console.WriteLine("nie tak szybko koleeszko");
                 return;
             }
             
-            Console.WriteLine("start process moving command"+PlayersMoveInputRequests[_fromClient]+" / "+PlayersMoveExecuted[_fromClient]);
-            PlayersMoveInputRequests[_fromClient]++;
+          //  Console.WriteLine("start process moving command"+PlayersMoveInputRequests[_fromClient]+" / "+PlayersMoveExecuted[_fromClient]);
+            PlayersMoveInputRequests[_fromClient]= 1;
             bool[] _inputs = new bool[_packet.ReadInt()]; // pobieranie wielości tablicy
             for (int i = 0; i < _inputs.Length; i++) {
                 _inputs[i] = _packet.ReadBool(); // pobieranie kolejnych wartości bool
@@ -159,7 +158,7 @@ namespace MMOG
                     wrongDataRecords++;
                 }
                 catch(Exception ex) {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("load map data"+ex.Message);
                 }
             }  
             file.Close();

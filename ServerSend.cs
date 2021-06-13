@@ -27,7 +27,7 @@ namespace MMOG
                     Server.clients[i].tcp.SendData(_packet);
                 }
                 catch(KeyNotFoundException ex){
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Send tcp to all "+ex.Message);
                 }
             }
         }
@@ -44,7 +44,7 @@ namespace MMOG
                     }
                     catch(Exception ex)
                     {
-                        Console.WriteLine("exception SendTCPDataTOALL: "+ex.Message);
+                        Console.WriteLine("exception SendTCPDataTOALL except one: "+ex.Message);
                     }
                 }
                 
@@ -113,7 +113,7 @@ namespace MMOG
 
                 SendTCPDataToAll(_packet);
             }
-            ServerHandle.PlayersMoveExecuted[_player.id]++;
+            ServerHandle.PlayersMoveInputRequests[_player.id]=0;
         }      
         public static void UpdateChat(string _msg) {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
@@ -248,7 +248,7 @@ namespace MMOG
 
             Console.WriteLine("Pomyslnie wysłano dane do klienta");
           }
-          catch(Exception ex) { Console.WriteLine(ex.Message);}
+          catch(Exception ex) { Console.WriteLine(" send mapdata to client "+ex.Message);}
         }
         #endregion
     }
