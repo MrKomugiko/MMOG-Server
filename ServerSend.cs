@@ -97,6 +97,7 @@ namespace MMOG
                 _packet.Write(_player.Position);
                 _packet.Write(_player.Rotation);
                 _packet.Write((int)_player.CurrentLocation); // iint
+                _packet.Write(_player.CurrentFloor);
              
                 SendTCPData(_toClient, _packet);
             }

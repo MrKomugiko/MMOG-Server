@@ -212,10 +212,17 @@ namespace MMOG
             // przypisanie aktualnego gracza
             player = registeredPlayerData;
 
-            // spawn nowego gracza - lokalnego
-            Console.WriteLine($"[{player.Username}] Join.");
-                foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
+           // spawn nowego gracza - lokalnego
+            foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
+                if(_client.id != id) {
+                   // Console.WriteLine($"Spawn Gracza [{_client.player.username}]");
                     ServerSend.SpawnPlayer(id, _client.player);
+                }
+            }
+
+            // wysłanie info do wszystkich pozostałych graczy, że pojawił się nowy
+            foreach (Client _client in Server.clients.Values.Where(client => client.player != null)) {
+                ServerSend.SpawnPlayer(_client.id, player);
             }
         }
         public void Disconnect() {

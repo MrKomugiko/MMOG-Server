@@ -18,6 +18,7 @@ namespace MMOG
         private Vector3 _position;
         private Quaternion _rotation;
         private LOCATIONS _currentLocation;
+        private int currentFloor;
         private bool[] _inputs; // wciśnięte klawisze przez gracza
 
         public DateTime _registrationDate;
@@ -32,6 +33,7 @@ namespace MMOG
         public LOCATIONS CurrentLocation { get => _currentLocation; set => _currentLocation = value; }
         public bool[] Inputs { get => _inputs; set => _inputs = value; }
         public Quaternion Rotation { get => _rotation; set => _rotation = value; }
+        public int CurrentFloor { get => currentFloor; set => currentFloor = value; }
 
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
@@ -45,6 +47,7 @@ namespace MMOG
             this.Rotation = Quaternion.Identity;
             this.LastLoginDate = DateTime.Now;
             this.CurrentLocation = LOCATIONS.Start_First_Floor;
+            this.CurrentFloor = 2;
             this.Inputs = new bool[4];
         }
         public void Update()
@@ -75,6 +78,7 @@ namespace MMOG
                 {
                     Position += stairsDirection;
                     walkIntoStairs = false;
+                    CurrentFloor += (int)stairsDirection.Z;
                 }
                 CheckForItems();
                 
