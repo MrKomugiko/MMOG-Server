@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using System.ComponentModel;
+using System.Reflection.Metadata;
 using System.Data;
 using System;
 using System.Collections.Generic;
@@ -6,24 +7,47 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
+using System.Linq;
 
 namespace MMOG
 {
     class Server
     {
+
+        public static List<SimplePlayerCreditionals> USERSDATABASE = new List<SimplePlayerCreditionals>{
+            new SimplePlayerCreditionals(1000,"[GM]", "admin"),
+            new SimplePlayerCreditionals(1001,"Player1", "player"),
+            new SimplePlayerCreditionals(1002,"Player2", "player")
+        };
+
+        public static List<Player> Players_DATABASE = new List<Player>(){
+            new Player(0,"Player1",new Vector3(0,0,2),1001),
+             new Player(0,"Player2",new Vector3(0,0,2),1002),
+              new Player(0,"[GM]",new Vector3(0,0,2),1000)
+        };
+
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
         public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
         public delegate void PacketHandler(int _fromClient, Packet _packet);
         public static Dictionary<int, PacketHandler> packetHandlers;
-
         private static TcpListener tcpListener;
         private static UdpClient udpListener;
 
         public static Dictionary<int, string> listaObecnosci = new Dictionary<int, string>();
         // TODO: ważne index to [location*10+maptype+1]
-        public static Dictionary<int,Dictionary<Vector3, string>> BazaWszystkichMDanychMap = new Dictionary<int, Dictionary<Vector3, string>>(); 
-            //public static Dictionary<Vector3, string> GLOBAL_MAPDATA = new Dictionary<Vector3, string>();
+        public static Dictionary<int,Dictionary<Vector3, string>> BazaWszystkichMDanychMap = new Dictionary<int, Dictionary<Vector3, string>>();
+
+        public static Player GetPlayerData(int userID, int serverID)
+        {
+            // return current avaiable server ID;
+            Player player= Players_DATABASE.Where(user => user.UserID == userID).First();
+            player.Id = serverID;
+            return player;
+        }
+
+
+        //public static Dictionary<Vector3, string> GLOBAL_MAPDATA = new Dictionary<Vector3, string>();
         //    public static Dictionary<Vector3, string> GROUND_MAPDATA = new Dictionary<Vector3, string>();
         [Obsolete] public static int UpdateVersion = 1001;
         public static void Start(int _maxPlayers, int _port)
@@ -168,7 +192,7 @@ namespace MMOG
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
-               // { (int)ClientPackets.updTestReceived, ServerHandle.UDPTestReceived },
+                { (int)ClientPackets.LogMeIn, ServerHandle.LoginDataReceived },
                 { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
                 { (int)ClientPackets.SendChatMessage, ServerHandle.SendChatMessage },
                 { (int)ClientPackets.PingReceived, ServerHandle.PingReceived },
@@ -186,5 +210,22 @@ namespace MMOG
         public static void ZaktualizujListeObecnosci(int afkId) {
             listaObecnosci.Remove(afkId);
         }
+    }
+
+    class SimplePlayerCreditionals
+    {
+        public static int RegisteredUSersCount;
+        public SimplePlayerCreditionals(int userID, string username, string password)
+        {
+            UserID = userID;
+            Username = username;
+            Password = password;
+
+            RegisteredUSersCount++;
+        }
+
+        public int UserID { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }

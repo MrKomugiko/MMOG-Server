@@ -74,12 +74,10 @@ namespace MMOG
         #region Packets
         public static void Welcome(int _toClient, string _msg)
         {
-            Console.WriteLine("send packet Hello");
             using (Packet _packet = new Packet((int)ServerPackets.welcome))
             {
                 _packet.Write(_msg);
                 _packet.Write(_toClient);
-
                 SendTCPData(_toClient, _packet);
             }
         }
@@ -94,10 +92,10 @@ namespace MMOG
         }
         public static void SpawnPlayer(int _toClient, Player _player) {
             using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer)) {
-                _packet.Write(_player.id);
-                _packet.Write(_player.username);
-                _packet.Write(_player.position);
-                _packet.Write(_player.rotation);
+                _packet.Write(_player.Id);
+                _packet.Write(_player.Username);
+                _packet.Write(_player.Position);
+                _packet.Write(_player.Rotation);
                 _packet.Write((int)_player.CurrentLocation); // iint
              
                 SendTCPData(_toClient, _packet);
@@ -108,12 +106,12 @@ namespace MMOG
             // ServerHandle.PlayersMoveInputRequests[_player.id] = 0;
             //Console.WriteLine($"[{_player.username}] wykonał ruch.");
             using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
-                _packet.Write(_player.id);
-                _packet.Write(_player.position);
+                _packet.Write(_player.Id);
+                _packet.Write(_player.Position);
 
                 SendTCPDataToAll(_packet);
             }
-            ServerHandle.PlayersMoveInputRequests[_player.id]=0;
+            ServerHandle.PlayersMoveInputRequests[_player.Id]=0;
         }      
         public static void UpdateChat(string _msg) {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
@@ -131,7 +129,7 @@ namespace MMOG
                 if (Server.listaObecnosci.ContainsKey(player.id)) continue;
 
                 // jezeli nowy gracz dolaczył, dopisz go do listy
-                Server.listaObecnosci.Add(player.id, $"[....] \t[#{player.id} {player.player.username}]");
+                Server.listaObecnosci.Add(player.id, $"[....] \t[#{player.id} {player.player.Username}]");
             };
 
             using (Packet _packet = new Packet((int)ServerPackets.ping_ALL)) {

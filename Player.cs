@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Linq;
 using System;
 using System.Collections.Generic;
@@ -9,58 +10,70 @@ namespace MMOG
 {
     class Player
     {
-        public int id;
-        public string username;
-        public DateTime loginDate;
-        public Vector3 position;
-        public Quaternion rotation;
-
+        private bool _RegisteredUser = false;
+        private int _id;
+        private int _userID;
+        private string _username;
+        private string _password;
+        private Vector3 _position;
+        private Quaternion _rotation;
         private LOCATIONS _currentLocation;
-        public LOCATIONS CurrentLocation { get => _currentLocation; set => _currentLocation = value; }
-        public bool[] Inputs { get => inputs; set => inputs = value; }
+        private bool[] _inputs; // wciśnięte klawisze przez gracza
 
-        Vector2 _inputDirection = Vector2.Zero;
+        public DateTime _registrationDate;
+        public DateTime LastLoginDate;
+
+        public bool RegisteredUser { get => _RegisteredUser; set => _RegisteredUser = value; }
+        public int Id { get => _id; set => _id = value; }
+        public int UserID { get =>_userID; set => _userID = value; }
+        public string Username { get => _username; set => _username = value; }
+        public string Password { get => _password; set => _password = value; }
+        public Vector3 Position { get => _position; set => _position = value; }
+        public LOCATIONS CurrentLocation { get => _currentLocation; set => _currentLocation = value; }
+        public bool[] Inputs { get => _inputs; set => _inputs = value; }
+        public Quaternion Rotation { get => _rotation; set => _rotation = value; }
 
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
-        private bool[] inputs; // wciśnięte klawisze przez gracza
-        private bool walkIntoStairs;
 
-        public Player(int _id, string _username, Vector3 _spawnPosition)
+        public Player(int id, string username, Vector3 spawnPosition, int userID = 0000)
         {
-            id = _id;
-            username = _username;
-            position = _spawnPosition;
-            rotation = Quaternion.Identity;
-            loginDate = DateTime.Now;
-            Inputs = new bool[4];
+            this.Id = id;
+            this.UserID = userID;
+            this.Username = username;
+            this.Position = spawnPosition;
+            this.Rotation = Quaternion.Identity;
+            this.LastLoginDate = DateTime.Now;
+            this.CurrentLocation = LOCATIONS.Start_First_Floor;
+            this.Inputs = new bool[4];
         }
         public void Update()
         {
             Vector2 _inputDirection = Vector2.Zero;
 
-            if (inputs[0]) _inputDirection.Y += 1; // W
-            if (inputs[1]) _inputDirection.Y -= 1; // S
-            if (inputs[2]) _inputDirection.X -= 1; // A
-            if (inputs[3]) _inputDirection.X += 1; // D
+            if (_inputs[0]) _inputDirection.Y += 1; // W
+            if (_inputs[1]) _inputDirection.Y -= 1; // S
+            if (_inputs[2]) _inputDirection.X -= 1; // A
+            if (_inputs[3]) _inputDirection.X += 1; // D
 
             if (_inputDirection == Vector2.Zero) return;
 
             // rusz sie tylko przy zarejestrowanym ruchu roznim niz 0.0
             Move(_inputDirection);
         }
+        private bool walkIntoStairs;
         private void Move(Vector2 _direction)
         {
             Inputs = new bool[4];
 
-            Vector3 newPosition = position + new Vector3(_direction.X, _direction.Y, 0);
+            Vector3 newPosition = Position + new Vector3(_direction.X, _direction.Y, 0);
           //  Console.WriteLine("player want move to: "+newPosition);
             if (CheckIfPlayerNewPositionIsPossible(newPosition))
             {
-                position += new Vector3(_direction.X, _direction.Y, 0);
+                Position += new Vector3(_direction.X, _direction.Y, 0);
                 if (walkIntoStairs)
                 {
-                    position += stairsDirection;
+                    Position += stairsDirection;
                     walkIntoStairs = false;
                 }
                 CheckForItems();
@@ -77,9 +90,9 @@ namespace MMOG
             // drop bedzie sie pojawiac losowo z puli, ale to poznmiej
             int ObstacleMap_key = Constants.GetKeyFromMapLocationAndType(CurrentLocation, MAPTYPE.Obstacle_MAP);
             
-            if(Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(position))
+            if(Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(Position))
             {
-                if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][position].Contains("ITEM"))
+                if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][Position].Contains("ITEM"))
                 {
                     //Console.WriteLine($"|Gracz {username} znalazl {Server.GLOBAL_MAPDATA[position]}");
 
@@ -95,18 +108,12 @@ namespace MMOG
         {
             
             Inputs = _inputs;
-            rotation = _rotation;
+            this.Rotation = _rotation;
         }
         Vector3 stairsDirection;
         Vector3 Vector3FloorUP = new Vector3(0,0,2);
         Vector3 Vector3FloorDown = new Vector3(0,0,-2);
-        Vector3 Vector3RIGHT = new Vector3(1,0,0);
-        Vector3 Vector3LEFT = new Vector3(-1,0,0);
-        Vector3 Vector3UP = new Vector3(0,1,0);
-        Vector3 Vector3DOWN = new Vector3(0,-1,0);
-
         
-
         private bool CheckIfPlayerNewPositionIsPossible(Vector3 _newPosition)
         {
             int GroundMap_key = Constants.GetKeyFromMapLocationAndType(CurrentLocation, MAPTYPE.Ground_MAP);
@@ -115,7 +122,7 @@ namespace MMOG
             // proste sprawdzenie czy nastepna pozycją jest ściana lub czy istnieje
             Vector3 _groundPosition = _newPosition + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
             Vector3 _downstairPosition = _newPosition + Vector3FloorDown + Vector3FloorDown; // bo interesuje nas podłoga na ktorą gracz wchodzi
-            Vector3 currentPosition = position + Vector3FloorDown;
+            Vector3 currentPosition = Position + Vector3FloorDown;
             bool output = false;
 
 
@@ -184,93 +191,17 @@ namespace MMOG
                     return output = true;
                 }
             }
-
-
-
-
             return output;
-
-                                         
-                                            //     //----------------------------------------------------------------------------------------------------------------------------
-                                            //     // Sprawdzanie klocka przed sobą
-                                            //     if (Server.GLOBAL_MAPDATA.ContainsKey(_newPosition))
-                                            //     {
-                                            //         if (Server.GLOBAL_MAPDATA[_newPosition].Contains("WALL")) {
-                                            //       //      Console.WriteLine("nie mozna isc trafisz na sciane");
-                                            //             return false;
-                                            //         }
-
-                                            //         if (Server.GLOBAL_MAPDATA[_newPosition].Contains("schody")) {
-                                            //         //    Console.WriteLine("masz przed soba schodek, do gory, mozesz na niego wejsc");
-                                            //             walkIntoStairs = true;
-                                            //             stairsDirection = Vector3FloorUP; ;
-                                            //             return true;
-                                            //         }
-                                            //     } else {
-                                            //         if (walkIntoStairs == true) {
-                                            //        //     Console.WriteLine("Nie masz niczego przed sobą a stoisz na schodach, nie mozesz z nich spac");
-                                            //             output = false;
-                                            //         } else {
-                                            //       //      Console.WriteLine("nie masz nic przed soba, nic ni eblokuje ci drogi, mozesz isc");
-                                            //             output = true;
-                                            //         }
-                                            //     }
-
-                                            //   //  -------------------------------------------------------------------------------------------------------------------------------
-                                            //     // sprawdzanie klocka na ktorym sie stoi
-                                            //     if (Server.GROUND_MAPDATA.ContainsKey(_groundPosition)) {
-                                            //         if (Server.GROUND_MAPDATA[_groundPosition].Contains("ground")) {
-                                            //       //      mozna isc jest po czym
-                                            //         //    Console.WriteLine("mozesz isc bedziesz miec pod sobą ziemie");
-                                            //             output = true;
-                                            //         }
-
-
-                                            //         if(Server.GLOBAL_MAPDATA.ContainsKey(_groundPosition))
-                                            //         {
-                                                    
-                                            //         if (Server.GLOBAL_MAPDATA[_groundPosition].Contains("schody")) 
-                                            //         {
-                                            //             if (walkIntoStairs == true) 
-                                            //             {
-                                            //           //      Console.WriteLine("jestesmy juz na schodach, a przed nami na ziemi jest kolejny schodek, idziemy na dol");
-                                            //            //     Console.WriteLine("masz pod soba schodek, na dół, mozesz zejsc na niego");
-                                            //                 walkIntoStairs = true;
-                                            //                 stairsDirection = new Vector3(0, 0, -2);
-                                            //                 return true;
-                                            //             }
-
-                                            //          //   Console.WriteLine("Mozesz spokojnie wejsc na pole schodka ;d");
-                                            //             output = true;
-                                            //         }
-                                            //         else 
-                                            //         { 
-                                            //                 if (walkIntoStairs == true) {
-                                            //             //    Console.WriteLine("nie masz nic przed soba ale wlasnie schodzi po schodach wiec cos bedzie na dole xD");
-                                            //                 output = true;
-                                            //             } else {
-                                            //             //   Console.WriteLine("nie mozesz isc przed siebie, stracisz grunt pod nogami");
-                                            //                 output = false;
-                                            //             }
-                                            //         }
-                                            //     }
-                                            // }
-                                            //  //   ----------------------------------------------------------------------------------------------------------------------------
-                                            //     if (Server.GLOBAL_MAPDATA.ContainsKey(_downstairPosition)) {
-                                            //     //jezeli juz jestesmy na schodku, i chcemy isc dalej w dol trzeba sprawdzic czy nizej cos tam ejst
-                                            //        if (Server.GLOBAL_MAPDATA[_downstairPosition].Contains("schody")) {
-                                            //        //     Console.WriteLine("schodzisz dalej w dół, nizej jest jeszcze schodek, mozesz isc");
-
-                                            //             walkIntoStairs = true;
-                                            //             stairsDirection = Vector3FloorDown;
-
-                                            //             return true;
-                                            //         }
-                                            //     }
-                                            //     Console.WriteLine(output);
-            //return output;
         }
-
-
+        // public void LoadPlayerData(Player _data)
+        // {
+        //     Console.WriteLine("Ładowanie danych gracza = logowanie do juz istniejacego konta");
+        //     this._RegisteredUser = true;
+        //     this._id = _data.Id;
+        //     this._currentLocation = _data.CurrentLocation;
+        //     this._username = _data.Username;
+        //     this._position = _data.Position;
+        //     this._inputs = new bool[4];
+        // }
     }
 }

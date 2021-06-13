@@ -208,17 +208,27 @@ namespace MMOG
                 ServerSend.SpawnPlayer(_client.id, player);
             }
         }
+        public void SendIntoGame(Player registeredPlayerData) {
+            // przypisanie aktualnego gracza
+            player = registeredPlayerData;
+
+            // spawn nowego gracza - lokalnego
+            Console.WriteLine($"[{player.Username}] Join.");
+                foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
+                    ServerSend.SpawnPlayer(id, _client.player);
+            }
+        }
         public void Disconnect() {
            
             if(player != null) {
                 if (tcp.socket == null) return;
-                ServerHandle.PlayersMoveInputRequests[player.id] =0;
+                ServerHandle.PlayersMoveInputRequests[player.Id] =0;
 
-                Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.username}] has disconnected.");
+                Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.Username}] has disconnected.");
 
-                ServerSend.UpdateChat($"[{player.username}] has disconnected.");
+                ServerSend.UpdateChat($"[{player.Username}] has disconnected.");
 
-                ServerSend.RemoveOfflinePlayer(player.id);
+                ServerSend.RemoveOfflinePlayer(player.Id);
             }
 
             player = null;

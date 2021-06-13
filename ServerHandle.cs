@@ -22,6 +22,28 @@ namespace MMOG
             }
             Server.clients[_fromClient].SendIntoGame(_username);
         }
+        public static void LoginDataReceived(int _fromClient, Packet _packet) {
+            int _clientIdCheck = _packet.ReadInt();
+            string _username = _packet.ReadString();
+            string _password = _packet.ReadString();
+            Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
+
+            // TODO: ogarnac to jak anlezy xd narazie napisane z reki
+            SimplePlayerCreditionals playerdata = Server.USERSDATABASE.Where(user=>user.Username == _username && user.Password == _password).FirstOrDefault();
+            if(playerdata != null) 
+            {
+
+                Player registeredPlayer = Server.GetPlayerData(playerdata.UserID, serverID:_fromClient);
+                Console.WriteLine("ACCES GRANTED");
+                Server.clients[_fromClient].SendIntoGame(registeredPlayer);
+            }
+            else
+            {
+                Console.WriteLine("ACCES DENIED");
+                Server.clients[_fromClient].Disconnect();
+            }
+        }
+
 
         public static void UDPTestReceived(int _fromClient, Packet _packet) {
             string _msg = _packet.ReadString();
@@ -55,7 +77,7 @@ namespace MMOG
             //tutaj obieram wiadomość od klienta i rozsyłam ją do wszystkich aby ją zaktualizowali na czacie
             int _id = _packet.ReadInt();
             string _msg = _packet.ReadString();
-            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]:[{Server.clients[_id].player.username}]:{_msg}");
+            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]:[{Server.clients[_id].player.Username}]:{_msg}");
 
             ServerSend.UpdateChat_NewUserPost(_id, _msg);
         }
@@ -63,10 +85,10 @@ namespace MMOG
 
         public static void PingReceived(int _fromClient, Packet _packet) {
           try {
-                Server.listaObecnosci[_fromClient] = $"[.OK.] \t[#{_fromClient} {Server.clients[_fromClient].player.username}]";
+                Server.listaObecnosci[_fromClient] = $"[.OK.] \t[#{_fromClient} {Server.clients[_fromClient].player.Username}]";
             } 
             catch(Exception ex) {
-                Console.WriteLine("Cos poszło nie tak z aktualizacją statusu obecności gracza" + ex.Message);
+               // Console.WriteLine("Cos poszło nie tak z aktualizacją statusu obecności gracza" + ex.Message);
            }
         }
 
@@ -210,7 +232,7 @@ namespace MMOG
         {
             LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
             Server.clients[_fromClient].player.CurrentLocation = _location;
-            Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.username}] zmienił mapę na: [{_location.ToString()}]");
+            Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.Username}] zmienił mapę na: [{_location.ToString()}]");
 
 /*
 TODO:

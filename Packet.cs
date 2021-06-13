@@ -26,6 +26,7 @@ namespace MMOG
     public enum ClientPackets
     {
         welcomeReceived = 1,
+        LogMeIn = 2,
        // updTestReceived,
         playerMovement,
         SendChatMessage,

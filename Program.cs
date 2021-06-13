@@ -75,7 +75,7 @@ namespace MMOG
         {
             foreach(var player in Server.clients.Values.Where(p=>p.player != null))
             {
-                Console.WriteLine($"[{player.player.username}] => [{player.player.position}]");;
+                Console.WriteLine($"[{player.player.Username}] => [{player.player.Position}]");;
             }
         }
 
@@ -87,7 +87,7 @@ namespace MMOG
                 return;
             }
 
-            Console.WriteLine("Kicking user with id " + _userId + "and nick:" + Server.clients[_userId].player.username);
+            Console.WriteLine("Kicking user with id " + _userId + "and nick:" + Server.clients[_userId].player.Username);
             Server.clients[_userId].Disconnect();
         }
 
@@ -98,8 +98,8 @@ namespace MMOG
                 if (client.player == null) continue;
 
                 Player player = client.player;
-                string timePlayerIsOnline = (DateTime.Now - player.loginDate).ToString(@"hh\:mm\:ss");
-                listaGraczy += $"[#{player.id}]:[{player.username}]:[{timePlayerIsOnline}]\n";
+                string timePlayerIsOnline = (DateTime.Now - player.LastLoginDate).ToString(@"hh\:mm\:ss");
+                listaGraczy += $"[#{player.Id}]:[{player.Username}]:[{timePlayerIsOnline}]\n";
             }
 
             Console.WriteLine(listaGraczy);
@@ -165,7 +165,7 @@ namespace MMOG
                             if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
                             {
                                 try {
-                                    Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
+                                    Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.Username + "].");
                                 } catch(Exception ex) {Console.WriteLine("afk cleaner "+ex.Message); };
                                 ServerSend.RemoveOfflinePlayer(obecnosc.Key);
                                 Server.clients[obecnosc.Key].Disconnect();
