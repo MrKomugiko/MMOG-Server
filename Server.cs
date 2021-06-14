@@ -21,9 +21,9 @@ namespace MMOG
         };
 
         public static List<Player> Players_DATABASE = new List<Player>(){
-            new Player(0,"Player1",new Vector3(0,0,2),1001),
-             new Player(0,"Player2",new Vector3(0,0,2),1002),
-              new Player(0,"[GM]",new Vector3(0,0,2),1000)
+              new Player(0,"[GM]"),
+            new Player(0,"Player1"),
+             new Player(0,"Player2")
         };
 
         public static int MaxPlayers { get; private set; }

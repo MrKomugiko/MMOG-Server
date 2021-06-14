@@ -193,7 +193,7 @@ namespace MMOG
         }
     
         public void SendIntoGame(string _playerName) {
-            player = new Player(id, _playerName, new Vector3(0,0,2));
+            player = new Player(id, _playerName);
 
             // spawn nowego gracza - lokalnego
             foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {

@@ -10,6 +10,7 @@ namespace MMOG
 {
     class Player
     {
+        #region variables
         private bool _RegisteredUser = false;
         private int _id;
         private int _userID;
@@ -38,17 +39,21 @@ namespace MMOG
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
 
-        public Player(int id, string username, Vector3 spawnPosition, int userID = 0000)
+        #endregion
+        
+        public Player(int id, string username, int userID = 0000)
         {
             this.Id = id;
-            this.UserID = userID;
+            this.UserID = Server.USERSDATABASE.Count()+1000;
             this.Username = username;
-            this.Position = spawnPosition;
+            this.Position = new Vector3(0,0,2);
             this.Rotation = Quaternion.Identity;
             this.LastLoginDate = DateTime.Now;
             this.CurrentLocation = LOCATIONS.Start_First_Floor;
             this.CurrentFloor = 2;
             this.Inputs = new bool[4];
+
+            Console.WriteLine($"Dodano do bazy gracza [{this.UserID}][{this.Username}]");
         }
         public void Update()
         {
@@ -144,7 +149,7 @@ namespace MMOG
             {  
                 if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][_groundPosition].Contains("schody"))
                 {
-                    Console.WriteLine("Graczwchodzi na schodek -2L = poziom gracza");// => zwykłe przemeiszczenie sie w poziomo, w razie gdyby shcvody w pewnym momencie sie wydluzaly prosto ?
+                   // Console.WriteLine("Graczwchodzi na schodek -2L = poziom gracza");// => zwykłe przemeiszczenie sie w poziomo, w razie gdyby shcvody w pewnym momencie sie wydluzaly prosto ?
                     output = true;
                 }
             }
@@ -159,7 +164,6 @@ namespace MMOG
                 // gracz ma przed sobą schodek i chce na neigo wejsc
                 if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][_newPosition].Contains("schody"))
                 {
-                    Console.WriteLine("Gracz wchodzi na schody +0L");
                     walkIntoStairs = true;
                     stairsDirection = Vector3FloorUP;
                     return output = true;
@@ -176,7 +180,7 @@ namespace MMOG
                 {
                     if(Server.BazaWszystkichMDanychMap[ObstacleMap_key][currentPosition].Contains("schody"))
                     {
-                        Console.WriteLine("gracz chce zejść ze schodow na ziemie");
+//                        Console.WriteLine("gracz chce zejść ze schodow na ziemie");
                         walkIntoStairs = true;
                         stairsDirection = Vector3FloorDown;
                         return  output = true;
@@ -197,15 +201,5 @@ namespace MMOG
             }
             return output;
         }
-        // public void LoadPlayerData(Player _data)
-        // {
-        //     Console.WriteLine("Ładowanie danych gracza = logowanie do juz istniejacego konta");
-        //     this._RegisteredUser = true;
-        //     this._id = _data.Id;
-        //     this._currentLocation = _data.CurrentLocation;
-        //     this._username = _data.Username;
-        //     this._position = _data.Position;
-        //     this._inputs = new bool[4];
-        // }
     }
 }

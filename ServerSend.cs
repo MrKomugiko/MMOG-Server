@@ -71,6 +71,15 @@ namespace MMOG
             }
         }
 
+        internal static void LoginResponse( int _toClient)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.LoginResponse))
+            {
+                _packet.Write("Podane dane są nieprawidłowe");
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
         #region Packets
         public static void Welcome(int _toClient, string _msg)
         {
@@ -81,6 +90,16 @@ namespace MMOG
                 SendTCPData(_toClient, _packet);
             }
         }
+
+        internal static void ConfirmAccountCreation(string _confirmationCode, int _toClient)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.RegistrationResponse))
+            {
+                _packet.Write(_confirmationCode);
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
         public static void UDPTest(int _toClient)
         {
           /*  using (Packet _packet = new Packet((int)ServerPackets.udpTest))

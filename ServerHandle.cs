@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Net.Security;
+using System.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,21 +27,42 @@ namespace MMOG
             int _clientIdCheck = _packet.ReadInt();
             string _username = _packet.ReadString();
             string _password = _packet.ReadString();
-            Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
-
-            // TODO: ogarnac to jak anlezy xd narazie napisane z reki
-            SimplePlayerCreditionals playerdata = Server.USERSDATABASE.Where(user=>user.Username == _username && user.Password == _password).FirstOrDefault();
-            if(playerdata != null) 
+            string _MODE = _packet.ReadString();
+            if(_MODE == "LOGIN")
             {
-
-                Player registeredPlayer = Server.GetPlayerData(playerdata.UserID, serverID:_fromClient);
-                Console.WriteLine("ACCES GRANTED");
-                Server.clients[_fromClient].SendIntoGame(registeredPlayer);
+                // TODO: ogarnac to jak anlezy xd narazie napisane z reki
+                SimplePlayerCreditionals playerdata = Server.USERSDATABASE.Where(user=>user.Username == _username && user.Password == _password).FirstOrDefault();
+                if(playerdata != null) 
+                {
+                    Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
+                    Player registeredPlayer = Server.GetPlayerData(playerdata.UserID, serverID:_fromClient);
+                    Console.WriteLine("ACCES GRANTED");
+                    Server.clients[_fromClient].SendIntoGame(registeredPlayer);
+                }
+                else
+                {
+                    Console.WriteLine("ACCES DENIED");
+                    ServerSend.LoginResponse(_fromClient);
+                  
+                }
             }
-            else
+            if(_MODE == "REGISTER")
             {
-                Console.WriteLine("ACCES DENIED");
-                Server.clients[_fromClient].Disconnect();
+                //sprawdzenie czy konto juz istnieje
+                if(Server.Players_DATABASE.Where(player=>player.Username == _username).Any())
+                {
+                    ServerSend.ConfirmAccountCreation(_confirmationCode:"FAILED", _toClient: _fromClient);
+                    return;
+                }
+                foreach(var players in Server.Players_DATABASE)
+                {
+                    Console.WriteLine("chyba puste: "+players.Username);
+                }
+                Console.WriteLine($"Nowy towarzysz właśnie utworzył konto: {_username}:{_password}");
+                Server.Players_DATABASE.Add(new Player(_fromClient,_username));
+
+                Server.USERSDATABASE.Add(new SimplePlayerCreditionals(userID:Server.Players_DATABASE.Where(player=>player.Username == _username).First().UserID,_username,_password));
+                ServerSend.ConfirmAccountCreation(_confirmationCode:"SUCCES", _toClient: _fromClient);
             }
         }
 
