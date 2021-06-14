@@ -34,6 +34,22 @@ namespace MMOG
                 SimplePlayerCreditionals playerdata = Server.USERSDATABASE.Where(user=>user.Username == _username && user.Password == _password).FirstOrDefault();
                 if(playerdata != null) 
                 {
+                        // obsługa multikonta na te same dane
+                        foreach(var users in Server.clients.Values)
+                        {
+                            // sprawdzanie czy UserId jest juz zalogowany
+                            int alreadyLoggedInPlayer_UserId = Server.GetUserId(_username);
+                            if(users.player !=  null) // jezeli taki gracz jest aktualnie dostepnmy
+                            {
+                                if(users.player.UserID == alreadyLoggedInPlayer_UserId)
+                                {
+                                    //sprawdzanie Serverowego ID juz zalogowanego osobnika
+                                    // i go wyjebanie 'd
+                                    Server.clients[Server.GetPlayerByUserID(alreadyLoggedInPlayer_UserId).Id].Disconnect();
+                                }
+                            }
+                        }
+
                     Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
                     Player registeredPlayer = Server.GetPlayerData(playerdata.UserID, serverID:_fromClient);
                     Console.WriteLine("ACCES GRANTED");

@@ -19,12 +19,13 @@ namespace MMOG
             new SimplePlayerCreditionals(1001,"Player1", "player"),
             new SimplePlayerCreditionals(1002,"Player2", "player")
         };
-
         public static List<Player> Players_DATABASE = new List<Player>(){
               new Player(0,"[GM]"),
             new Player(0,"Player1"),
              new Player(0,"Player2")
         };
+        public static int GetUserId(string _username) => Players_DATABASE.Where(user=>user.Username == _username).FirstOrDefault().UserID;
+        public static Player GetPlayerByUserID(int _userId) =>  Players_DATABASE.Where(user=>user.UserID == _userId).FirstOrDefault();
 
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }

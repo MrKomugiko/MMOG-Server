@@ -69,6 +69,8 @@ namespace MMOG
             // rusz sie tylko przy zarejestrowanym ruchu roznim niz 0.0
             Move(_inputDirection);
         }
+
+          
         private bool walkIntoStairs;
         private void Move(Vector2 _direction)
         {
