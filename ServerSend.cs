@@ -71,18 +71,35 @@ namespace MMOG
             }
         }
 
+        internal static void LoginResponse( int _toClient)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.LoginResponse))
+            {
+                _packet.Write("Podane dane są nieprawidłowe");
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
         #region Packets
         public static void Welcome(int _toClient, string _msg)
         {
-            Console.WriteLine("send packet Hello");
             using (Packet _packet = new Packet((int)ServerPackets.welcome))
             {
                 _packet.Write(_msg);
                 _packet.Write(_toClient);
-
                 SendTCPData(_toClient, _packet);
             }
         }
+
+        internal static void ConfirmAccountCreation(string _confirmationCode, int _toClient)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.RegistrationResponse))
+            {
+                _packet.Write(_confirmationCode);
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
         public static void UDPTest(int _toClient)
         {
           /*  using (Packet _packet = new Packet((int)ServerPackets.udpTest))
@@ -94,26 +111,28 @@ namespace MMOG
         }
         public static void SpawnPlayer(int _toClient, Player _player) {
             using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer)) {
-                _packet.Write(_player.id);
-                _packet.Write(_player.username);
-                _packet.Write(_player.position);
-                _packet.Write(_player.rotation);
+                _packet.Write(_player.Id);
+                _packet.Write(_player.Username);
+                _packet.Write(_player.Position);
+                _packet.Write(_player.Rotation);
                 _packet.Write((int)_player.CurrentLocation); // iint
+                _packet.Write(_player.CurrentFloor);
              
                 SendTCPData(_toClient, _packet);
             }
         }
-        public static void PlayerPosition(Player _player) {
+        public static void PlayerPosition(Player _player, bool _isTeleported = false) {
             // odblokowanie ruchu gracza
             // ServerHandle.PlayersMoveInputRequests[_player.id] = 0;
             //Console.WriteLine($"[{_player.username}] wykonał ruch.");
             using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
-                _packet.Write(_player.id);
-                _packet.Write(_player.position);
+                _packet.Write(_isTeleported);
+                _packet.Write(_player.Id);
+                _packet.Write(_player.Position);
 
                 SendTCPDataToAll(_packet);
             }
-            ServerHandle.PlayersMoveInputRequests[_player.id]=0;
+            ServerHandle.PlayersMoveInputRequests[_player.Id]=0;
         }      
         public static void UpdateChat(string _msg) {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
@@ -122,7 +141,27 @@ namespace MMOG
                 SendTCPDataToAll(_packet);
             }
         }
+
+        internal static void CollectItem(int ID, Item item)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.colectItem)) 
+            {
+                _packet.Write(ID); // INT server current player ID
+                 // przekazywanie danych itemkka
+                _packet.Write(item.id);
+                _packet.Write(item.name);
+                _packet.Write(item.value);
+                _packet.Write(item.level);
+                _packet.Write(item.stackable);
+                _packet.Write(item.stackSize);
+                _packet.Write(item.description);
+
+                SendTCPData(ID,_packet);
+            }
+        }
+
         public static void Ping_ALL() {
+            //nie usuwanie Serverowych kont
             Server.listaObecnosci.Clear();
             foreach(var player in Server.clients.Values) {
                 if (player.player == null) continue;
@@ -130,8 +169,10 @@ namespace MMOG
                 // sprawdzanie czy na liscie obecnosci znajduje sie juz ten gracz nie nadpisuj go, 
                 if (Server.listaObecnosci.ContainsKey(player.id)) continue;
 
+
                 // jezeli nowy gracz dolaczył, dopisz go do listy
-                Server.listaObecnosci.Add(player.id, $"[....] \t[#{player.id} {player.player.username}]");
+                Server.listaObecnosci.Add(player.id, $"[....] \t[#{player.id} {player.player.Username}]");
+
             };
 
             using (Packet _packet = new Packet((int)ServerPackets.ping_ALL)) {
@@ -169,12 +210,12 @@ namespace MMOG
                 _packet.Write(UpdateChecker.serverJsonFile);
 
                 if(sendToID == -1) {
-                    Console.WriteLine("wysłano JSON z numerami wersji DO WSZYSTKICH");
+                 //   Console.WriteLine("wysłano JSON z numerami wersji DO WSZYSTKICH");
                     SendTCPDataToAll(_packet); // wysłanie pakietu do wszystkich
                     return;
                 }
                 
-                Console.WriteLine("wysłano JSON z numerami wersji do gracza #" + sendToID);
+                //Console.WriteLine("wysłano JSON z numerami wersji do gracza #" + sendToID);
                 SendTCPData(sendToID,_packet); // wysłanie pakietu do konkretnej osoby 
             }
         }

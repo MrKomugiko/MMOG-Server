@@ -118,6 +118,7 @@ namespace MMOG
                         using (Packet _packet = new Packet(_packetBytes))
                         {
                             int _packetId = _packet.ReadInt();
+                            if(_packetId == 0) Console.WriteLine("packet widmo -> nr. 0 ??????");
                             Server.packetHandlers[_packetId](id, _packet);
                         }
                     });
@@ -193,9 +194,26 @@ namespace MMOG
         }
     
         public void SendIntoGame(string _playerName) {
-            player = new Player(id, _playerName, new Vector3(0,0,2));
+            player = new Player(id, _playerName);
 
             // spawn nowego gracza - lokalnego
+            foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
+                if(_client.id != id) {
+                   // Console.WriteLine($"Spawn Gracza [{_client.player.username}]");
+                    ServerSend.SpawnPlayer(id, _client.player);
+                }
+            }
+
+            // wysłanie info do wszystkich pozostałych graczy, że pojawił się nowy
+            foreach (Client _client in Server.clients.Values.Where(client => client.player != null)) {
+                ServerSend.SpawnPlayer(_client.id, player);
+            }
+        }
+        public void SendIntoGame(Player registeredPlayerData) {
+            // przypisanie aktualnego gracza
+            player = registeredPlayerData;
+
+           // spawn nowego gracza - lokalnego
             foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
                 if(_client.id != id) {
                    // Console.WriteLine($"Spawn Gracza [{_client.player.username}]");
@@ -212,13 +230,13 @@ namespace MMOG
            
             if(player != null) {
                 if (tcp.socket == null) return;
-                ServerHandle.PlayersMoveInputRequests[player.id] =0;
+                ServerHandle.PlayersMoveInputRequests[player.Id] =0;
 
-                Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.username}] has disconnected.");
+                Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.Username}] has disconnected.");
 
-                ServerSend.UpdateChat($"[{player.username}] has disconnected.");
+                ServerSend.UpdateChat($"[{player.Username}] has disconnected.");
 
-                ServerSend.RemoveOfflinePlayer(player.id);
+                ServerSend.RemoveOfflinePlayer(player.Id);
             }
 
             player = null;

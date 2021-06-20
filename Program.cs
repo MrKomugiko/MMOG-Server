@@ -1,7 +1,10 @@
-﻿using MMOG;
+﻿using System.ComponentModel.Design;
+using System.Net.Security;
+using MMOG;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 
 namespace MMOG
@@ -56,13 +59,41 @@ namespace MMOG
                 if (consoleCommand == "cmd_sendMapUpdateToAll") ServerSend.SendCurrentUpdateVersionNumber(); 
                 if (consoleCommand == "cmd_printAllPositions") PrintPlayersPositions();
                 if (consoleCommand == "cmd_showData") Console.WriteLine(UpdateChecker.serverJsonFile);
-              //  if (consoleCommand == "cmd_initData") UpdateChecker.IniciateData_TEST();
-              //  if (consoleCommand == "cmd_dataTest") {
+                if (consoleCommand == "cmd_spawnNewPlayer") SpawnServerPlayer();
+                if (consoleCommand.Contains("cmd_teleportPlayer_ID_x,y,z"))
+                {
+                    string[] stringFullCommand = consoleCommand.Split("_");
+                    int playerId = Convert.ToInt32(stringFullCommand[2]);
+                    
+                    string[] coordinatesString = stringFullCommand[3].Split(",");
+                    int[] coordinates = coordinatesString.Select(c=>Int32.Parse(c)).ToArray();
+                    GameLogic.TeleportPlayer(playerId,location: new Vector3((int)coordinates[0],coordinates[1],coordinates[2]));
+                    Console.WriteLine($"nastąpi teleport gracza na pozycje <{coordinates[0]},{coordinates[1]},{coordinates[2]}>");
+                };
+                if (consoleCommand == "cmd_showRegistredPlayers") Server.Players_DATABASE.ForEach(p=>Console.WriteLine($"[{p.UserID}][{p.Username}]"));
+                if (consoleCommand.Contains("cmd_inspectPlayerInventory_")) {
+                    string[] stringFullCommand = consoleCommand.Split("_");
+                    int playerId = Convert.ToInt32(stringFullCommand[2]);
+                    int itemId = Convert.ToInt32(stringFullCommand[3]);
+                    //  Server.clients[playerId].player.Inventory.TESTPOPULATEINVENTORYWITHITEMBYID(itemId);
+                    Server.Players_DATABASE.Where(p=>p.UserID == playerId).First().Inventory.TESTPOPULATEINVENTORYWITHITEMBYID(itemId);
+                }
+                //  if (consoleCommand == "cmd_dataTest") {
                //     TestAktualizacjiIWyswietlaniaDanychZBAzy();
                // }
             }
         }
+        private static int testPlayerID = 40;
+        public static void SpawnServerPlayer()
+        {
+            testPlayerID++;
+            Console.WriteLine($"Spawning new player with id[{testPlayerID}]...");
+            // dodanie do klienta obiektu gracza
+            Server.clients[testPlayerID].player = new Player(testPlayerID,$"ServerPlayer{testPlayerID}",testPlayerID+9000);
+            // zespawnij tego gracza w grze
+            Server.clients[testPlayerID].SendIntoGame(Server.clients[testPlayerID].player);
 
+        }
         // private static void TestAktualizacjiIWyswietlaniaDanychZBAzy() {
         //     Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Locations, _location: LOCATIONS.Start_Second_Floor, _maptype: MAPTYPE.Obstacle_MAP));
         //     Console.WriteLine(UpdateChecker.GetVersionOf(_datatype: DATATYPE.Items, _item: ITEMS.Stone));
@@ -75,10 +106,9 @@ namespace MMOG
         {
             foreach(var player in Server.clients.Values.Where(p=>p.player != null))
             {
-                Console.WriteLine($"[{player.player.username}] => [{player.player.position}]");;
+                Console.WriteLine($"[{player.player.Username}] => [{player.player.Position}]");;
             }
         }
-
         private static void KickUserByID(int _userId) {
 
             if(Server.clients.ContainsKey(_userId) == false )
@@ -87,10 +117,9 @@ namespace MMOG
                 return;
             }
 
-            Console.WriteLine("Kicking user with id " + _userId + "and nick:" + Server.clients[_userId].player.username);
+            Console.WriteLine("Kicking user with id " + _userId + "and nick:" + Server.clients[_userId].player.Username);
             Server.clients[_userId].Disconnect();
         }
-
         private static void ShowCurrentlyLoggedInUsers() {
             string listaGraczy = "";
             foreach(Client client in Server.clients.Values)
@@ -98,13 +127,12 @@ namespace MMOG
                 if (client.player == null) continue;
 
                 Player player = client.player;
-                string timePlayerIsOnline = (DateTime.Now - player.loginDate).ToString(@"hh\:mm\:ss");
-                listaGraczy += $"[#{player.id}]:[{player.username}]:[{timePlayerIsOnline}]\n";
+                string timePlayerIsOnline = (DateTime.Now - player.LastLoginDate).ToString(@"hh\:mm\:ss");
+                listaGraczy += $"[#{player.Id}]:[{player.Username}]:[{timePlayerIsOnline}]\n";
             }
 
             Console.WriteLine(listaGraczy);
         }
-
         private static void ShowConsoleCommands()
         {
             Console.WriteLine(
@@ -132,7 +160,6 @@ namespace MMOG
                 ServerSend.UpdateChat(message);
             }
         }
-
         private static void MainThread()
         {
             //Console.WriteLine($"Main thread started. Running at {Constants.TICKS_PER_SEC} ticks per second.");
@@ -164,9 +191,6 @@ namespace MMOG
                         foreach (KeyValuePair<int, string> obecnosc in Server.listaObecnosci) {
                             if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
                             {
-                                try {
-                                    Console.WriteLine("brak odpowiedzi ze strony gracza [" + Server.clients[obecnosc.Key].player.username + "].");
-                                } catch(Exception ex) {Console.WriteLine("afk cleaner "+ex.Message); };
                                 ServerSend.RemoveOfflinePlayer(obecnosc.Key);
                                 Server.clients[obecnosc.Key].Disconnect();
                                 Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
@@ -174,7 +198,7 @@ namespace MMOG
                         }
                         ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
                         afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK * 1000;
-                    }
+                   }
                 }
             }
         }
