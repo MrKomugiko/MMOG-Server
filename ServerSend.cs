@@ -121,11 +121,12 @@ namespace MMOG
                 SendTCPData(_toClient, _packet);
             }
         }
-        public static void PlayerPosition(Player _player) {
+        public static void PlayerPosition(Player _player, bool _isTeleported = false) {
             // odblokowanie ruchu gracza
             // ServerHandle.PlayersMoveInputRequests[_player.id] = 0;
             //Console.WriteLine($"[{_player.username}] wykonał ruch.");
             using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
+                _packet.Write(_isTeleported);
                 _packet.Write(_player.Id);
                 _packet.Write(_player.Position);
 
@@ -140,7 +141,27 @@ namespace MMOG
                 SendTCPDataToAll(_packet);
             }
         }
+
+        internal static void CollectItem(int ID, Item item)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.colectItem)) 
+            {
+                _packet.Write(ID); // INT server current player ID
+                 // przekazywanie danych itemkka
+                _packet.Write(item.id);
+                _packet.Write(item.name);
+                _packet.Write(item.value);
+                _packet.Write(item.level);
+                _packet.Write(item.stackable);
+                _packet.Write(item.stackSize);
+                _packet.Write(item.description);
+
+                SendTCPData(ID,_packet);
+            }
+        }
+
         public static void Ping_ALL() {
+            //nie usuwanie Serverowych kont
             Server.listaObecnosci.Clear();
             foreach(var player in Server.clients.Values) {
                 if (player.player == null) continue;
@@ -148,8 +169,10 @@ namespace MMOG
                 // sprawdzanie czy na liscie obecnosci znajduje sie juz ten gracz nie nadpisuj go, 
                 if (Server.listaObecnosci.ContainsKey(player.id)) continue;
 
+
                 // jezeli nowy gracz dolaczył, dopisz go do listy
                 Server.listaObecnosci.Add(player.id, $"[....] \t[#{player.id} {player.player.Username}]");
+
             };
 
             using (Packet _packet = new Packet((int)ServerPackets.ping_ALL)) {
@@ -187,12 +210,12 @@ namespace MMOG
                 _packet.Write(UpdateChecker.serverJsonFile);
 
                 if(sendToID == -1) {
-                    Console.WriteLine("wysłano JSON z numerami wersji DO WSZYSTKICH");
+                 //   Console.WriteLine("wysłano JSON z numerami wersji DO WSZYSTKICH");
                     SendTCPDataToAll(_packet); // wysłanie pakietu do wszystkich
                     return;
                 }
                 
-                Console.WriteLine("wysłano JSON z numerami wersji do gracza #" + sendToID);
+                //Console.WriteLine("wysłano JSON z numerami wersji do gracza #" + sendToID);
                 SendTCPData(sendToID,_packet); // wysłanie pakietu do konkretnej osoby 
             }
         }

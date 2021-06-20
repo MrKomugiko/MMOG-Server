@@ -118,6 +118,7 @@ namespace MMOG
                         using (Packet _packet = new Packet(_packetBytes))
                         {
                             int _packetId = _packet.ReadInt();
+                            if(_packetId == 0) Console.WriteLine("packet widmo -> nr. 0 ??????");
                             Server.packetHandlers[_packetId](id, _packet);
                         }
                     });

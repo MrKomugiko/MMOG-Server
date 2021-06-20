@@ -34,6 +34,8 @@ namespace MMOG
                 SimplePlayerCreditionals playerdata = Server.USERSDATABASE.Where(user=>user.Username == _username && user.Password == _password).FirstOrDefault();
                 if(playerdata != null) 
                 {
+                    try
+                    {                                
                         // obsługa multikonta na te same dane
                         foreach(var users in Server.clients.Values)
                         {
@@ -41,19 +43,23 @@ namespace MMOG
                             int alreadyLoggedInPlayer_UserId = Server.GetUserId(_username);
                             if(users.player !=  null) // jezeli taki gracz jest aktualnie dostepnmy
                             {
-                                if(users.player.UserID == alreadyLoggedInPlayer_UserId)
-                                {
-                                    //sprawdzanie Serverowego ID juz zalogowanego osobnika
-                                    // i go wyjebanie 'd
-                                    Server.clients[Server.GetPlayerByUserID(alreadyLoggedInPlayer_UserId).Id].Disconnect();
-                                }
+                                    if(users.player.UserID == alreadyLoggedInPlayer_UserId)
+                                    {
+                                        //sprawdzanie Serverowego ID juz zalogowanego osobnika
+                                        // i go wyjebanie 'd
+                                        Server.clients[Server.GetPlayerByUserID(alreadyLoggedInPlayer_UserId).Id].Disconnect();
+                                    }
                             }
                         }
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("prawdopodonie wywali bład poczas logowania gdy na serwerze sa juz boty, "+ ex.Message);
+                    }
 
                     Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
-                    Player registeredPlayer = Server.GetPlayerData(playerdata.UserID, serverID:_fromClient);
                     Console.WriteLine("ACCES GRANTED");
-                    Server.clients[_fromClient].SendIntoGame(registeredPlayer);
+                    Server.clients[_fromClient].SendIntoGame(Server.GetPlayerData(playerdata.UserID, serverID:_fromClient));
                 }
                 else
                 {
@@ -75,9 +81,10 @@ namespace MMOG
                     Console.WriteLine("chyba puste: "+players.Username);
                 }
                 Console.WriteLine($"Nowy towarzysz właśnie utworzył konto: {_username}:{_password}");
+
                 Server.Players_DATABASE.Add(new Player(_fromClient,_username));
 
-                Server.USERSDATABASE.Add(new SimplePlayerCreditionals(userID:Server.Players_DATABASE.Where(player=>player.Username == _username).First().UserID,_username,_password));
+                Server.USERSDATABASE.Add(new SimplePlayerCreditionals(userID:Server.Players_DATABASE.Where(player=>player.Username == _username).FirstOrDefault().UserID,_username,_password));
                 ServerSend.ConfirmAccountCreation(_confirmationCode:"SUCCES", _toClient: _fromClient);
             }
         }
@@ -113,20 +120,31 @@ namespace MMOG
 
         public static void SendChatMessage(int _fromClient, Packet _packet) {
             //tutaj obieram wiadomość od klienta i rozsyłam ją do wszystkich aby ją zaktualizowali na czacie
-            int _id = _packet.ReadInt();
-            string _msg = _packet.ReadString();
-            Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]:[{Server.clients[_id].player.Username}]:{_msg}");
+            try
+            {
+                int _id = _packet.ReadInt();
+                string _msg = _packet.ReadString();
+                Console.WriteLine($"[{DateTime.Now.ToShortTimeString()}]:[{Server.clients[_id].player.Username}]:{_msg}");
 
-            ServerSend.UpdateChat_NewUserPost(_id, _msg);
+                ServerSend.UpdateChat_NewUserPost(_id, _msg);
+            }
+            catch(Exception ex)
+            {
+               Console.WriteLine("bład wysylania wiadomosci na czacie :"+ex.Message);
+            }
         }
 
 
         public static void PingReceived(int _fromClient, Packet _packet) {
           try {
-                Server.listaObecnosci[_fromClient] = $"[.OK.] \t[#{_fromClient} {Server.clients[_fromClient].player.Username}]";
+
+              if(Server.clients[_fromClient].player != null)
+              {
+                    Server.listaObecnosci[_fromClient] = $"[.OK.] \t[#{_fromClient} {Server.clients[_fromClient].player.Username}]";
+              }
             } 
             catch(Exception ex) {
-               // Console.WriteLine("Cos poszło nie tak z aktualizacją statusu obecności gracza" + ex.Message);
+               Console.WriteLine("Cos poszło nie tak z aktualizacją statusu obecności gracza" + ex.Message);
            }
         }
 
@@ -294,7 +312,7 @@ TODO:
 
         public static void SendNumberOfLAtestMapUpdate(int _fromClient, Packet _packet)
         {
-            Console.WriteLine("Wyslanie do gracza info zawierające aktualny numer update'a");
+         //   Console.WriteLine("Wyslanie do gracza info zawierające aktualny numer update'a");
            //  int _id = _packet.ReadInt();
             ServerSend.SendCurrentUpdateVersionNumber(sendToID: _fromClient);
         }
