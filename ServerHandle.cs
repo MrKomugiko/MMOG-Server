@@ -22,6 +22,9 @@ namespace MMOG
                 Console.WriteLine($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
             }
             Server.clients[_fromClient].SendIntoGame(_username);
+
+
+  
         }
         public static void LoginDataReceived(int _fromClient, Packet _packet) {
             int _clientIdCheck = _packet.ReadInt();
@@ -185,14 +188,14 @@ namespace MMOG
             // inkrementacja numeru update'a
             // TODO: zaktualizować Versje dla konkretnej mapki w patchnotesie
             UpdateChecker.SERVER_UPDATE_VERSIONS._Data[_location][_mapType].UpdateVersionNumber();
-            UpdateChecker.SaveChangesToFile();
+            UpdateChecker.SaveUpdatesChangesToFile();
             
         }
 
-        private static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path)
+        public static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path)
         {
             Console.WriteLine("Zapisywanie danych mapy do pliku");
-            using (FileStream fs = new FileStream(path, FileMode.Create))
+            using (FileStream fs = new FileStream(path, FileMode.Truncate))
             {
                 using (TextWriter tw = new StreamWriter(fs))
                     

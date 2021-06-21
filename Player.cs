@@ -124,13 +124,15 @@ namespace MMOG
                    catch(InvalidOperationException ex)
                    {
                         Console.WriteLine($"nie znaleziono takiego itemu [itemName = {Server.BazaWszystkichMDanychMap[ObstacleMap_key][Position].Split("_")[1]} ] w bazie Error:"+ex.Message);
-                   }
-
-                   
+                   }                   
         
                     Inventory.TESTPOPULATEINVENTORYWITHITEMBYID(item.id);
                     ServerSend.CollectItem(ID: Id, item: item);
-                    // TODO: ServerSend.CollectItem 
+                    ServerSend.RemoveItemFromMap(CurrentLocation, MAPTYPE.Obstacle_MAP, Position );
+                    // usuwanie itemka z mapy
+                    // Server.BazaWszystkichMDanychMap[ObstacleMap_key].Remove(Position);
+                    // send to users info that this item is collected -> and update map
+                    UpdateChecker.ChangeRecord(CurrentLocation,MAPTYPE.Obstacle_MAP,Position);
                 }
             }
 

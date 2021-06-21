@@ -22,7 +22,8 @@ namespace MMOG
         SEND_MAPDATA_TO_CLIENT,
         RegistrationResponse,
         LoginResponse,
-        colectItem
+        colectItem,
+        removeItemFromMap
     }
 
     /// <summary>Sent from client to server.</summary>

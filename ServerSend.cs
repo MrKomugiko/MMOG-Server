@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using System.Text.Json;
 
 namespace MMOG
 {
@@ -160,6 +161,17 @@ namespace MMOG
             }
         }
 
+        internal static void RemoveItemFromMap(LOCATIONS currentLocation, MAPTYPE obstacle_MAP, Vector3 position)
+        {
+           using (Packet _packet = new Packet((int)ServerPackets.removeItemFromMap)) {
+                _packet.Write((int)currentLocation);
+                _packet.Write((int)obstacle_MAP);
+                _packet.Write(position);
+
+                SendTCPDataToAll(_packet);
+            }
+        }
+
         public static void Ping_ALL() {
             //nie usuwanie Serverowych kont
             Server.listaObecnosci.Clear();
@@ -207,7 +219,8 @@ namespace MMOG
         public static void SendCurrentUpdateVersionNumber(int sendToID = -1) {
             using (Packet _packet = new Packet((int)ServerPackets.sendCurrentUpdateNumber)) {
             // TODO: rozdzielenie updateów map dla kazdej z oobno
-                _packet.Write(UpdateChecker.serverJsonFile);
+             string serverJsonFile = (JsonSerializer.Serialize(UpdateChecker.SERVER_UPDATE_VERSIONS)).ToString();
+                _packet.Write(serverJsonFile);
 
                 if(sendToID == -1) {
                  //   Console.WriteLine("wysłano JSON z numerami wersji DO WSZYSTKICH");

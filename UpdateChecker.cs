@@ -79,7 +79,7 @@ namespace MMOG
         //    SaveChangesToFile();
         //}
 
-        public static void SaveChangesToFile() {
+        public static void SaveUpdatesChangesToFile() {
             serverJsonFile = (JsonSerializer.Serialize(SERVER_UPDATE_VERSIONS)).ToString();
 
             using (FileStream fs = new FileStream(Constants.PATH_NOTES_SERVER, FileMode.Create)) {
@@ -87,6 +87,7 @@ namespace MMOG
                     tw.WriteAsync(serverJsonFile);
                 }
             }
+            Console.WriteLine("zapisano informacje o update");
         }
         public static void ReadDataFromFile() {
             serverJsonFile = File.ReadAllText(Constants.PATH_NOTES_SERVER);
@@ -97,11 +98,22 @@ namespace MMOG
 
         public static void ChangeRecord(ITEMS _item, Items updatedItem) {
             updatedItem.UpdateVersionNumber();
-            UpdateChecker.SaveChangesToFile();
+            UpdateChecker.SaveUpdatesChangesToFile();
         }
-        public static void ChangeRecord(LOCATIONS _location, MAPTYPE _maptype, Maptypes Updatedmaptype ) {
+        public static void ChangeRecord(LOCATIONS _location, MAPTYPE _maptype, Vector3 position ) {
+            Console.WriteLine("aktualizacja pliku update'u");
+            Maptypes Updatedmaptype = SERVER_UPDATE_VERSIONS._Data[_location][_maptype];
+            Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(_location,_maptype)].Remove(position);
             Updatedmaptype.UpdateVersionNumber();
-            UpdateChecker.SaveChangesToFile();
+       
+          // TODO: problem z robieniem twardej kopii jest taki ze sie gra zwiesza bo serwer nie odpowiada przez te pol sekundy
+          //  UpdateChecker.SaveUpdatesChangesToFile();
+
+            // // TODO: wybrac inny moment, albo cyklicznie co  minute ? / make hardcopy in file 
+                // zły pomysł, scina na pol sekundy przy podnoszeniu itemka
+            // string path = Constants.GetFilePath(DATATYPE.Locations, (LOCATIONS)_location, (MAPTYPE)_maptype);
+            // ServerHandle.ZapiszMapeDoPliku(Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(_location,_maptype)],path);
+            // Console.WriteLine("Aktualizacja z istniejącymi danymi");
         }
         public static int GetVersionOf(LOCATIONS _location, MAPTYPE _maptype, DATATYPE _datatype = DATATYPE.Locations) => SERVER_UPDATE_VERSIONS._Data[_location][_maptype]._Version;
         public static int GetVersionOf(ITEMS _item, DATATYPE _datatype = DATATYPE.Items) => SERVER_UPDATE_VERSIONS._Data[_item]._Version;
