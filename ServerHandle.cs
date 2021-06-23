@@ -194,6 +194,16 @@ namespace MMOG
             
         }
 
+        internal static void TeleportPlayerToLocation(int _fromClient, Packet _packet)
+        {
+            LOCATIONS dungeon = (LOCATIONS)_packet.ReadInt(); // dungleon name - int LOCATIONS
+
+            // pozyskanie koordynatów wejsciowych dla lokalizacji po jej nazwie
+            Vector3 location = UpdateChecker.SERVER_UPDATE_VERSIONS._Data[dungeon]._Coordinates.ToVector3();
+            GameLogic.TeleportPlayer(_fromClient,location);
+
+        }
+
         public static void ExecutePlayerAction(int _fromClient, Packet _packet)
         {
             PlayerActions action = (PlayerActions)_packet.ReadInt();
@@ -338,8 +348,11 @@ namespace MMOG
             if (!File.Exists(path)) 
             {
                 Console.WriteLine(path);
-                Console.WriteLine("Plik nie istnieje");
-                return;
+                Console.WriteLine("Brak pliku z danymi mapy"); 
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    // sw.WriteLine();
+                }	
             }
             // ----------------------------------ZCZYTYWANIE Z PLIKU ----------------------------------
             string line;

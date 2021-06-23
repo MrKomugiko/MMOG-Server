@@ -39,7 +39,8 @@ namespace MMOG
         downloadLatestMapUpdate,
         download_recentMapVersion,
         clientChangeLocalisation,
-        PlayerMakeAction
+        PlayerMakeAction,
+        TeleportMe
     }
     public class Packet : IDisposable
     {

@@ -197,11 +197,8 @@ namespace MMOG
                 { (int)ClientPackets.downloadLatestMapUpdate, ServerHandle.SendUpdatedVersionMapDataToClient },
                 { (int)ClientPackets.download_recentMapVersion, ServerHandle.SendNumberOfLAtestMapUpdate },
                 { (int)ClientPackets.clientChangeLocalisation, ServerHandle.ChangePlayerLocalisation },
+                { (int)ClientPackets.TeleportMe, ServerHandle.TeleportPlayerToLocation },
                 { (int)ClientPackets.PlayerMakeAction, ServerHandle.ExecutePlayerAction }
-
-
-
-
             };
 
             Console.WriteLine("Initialized packets.");

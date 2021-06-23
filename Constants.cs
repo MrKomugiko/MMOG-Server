@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace MMOG
@@ -15,8 +16,14 @@ namespace MMOG
 
         public static string GetFilePath(DATATYPE dataType, LOCATIONS locations, MAPTYPE mapType)
         {
+            CreateFolder(DATATYPE.Locations,locations);
             return $"DATA\\{dataType.ToString()}\\{locations.ToString()}\\{mapType.ToString()}.txt";
         }
+          public static void CreateFolder(DATATYPE? dataType, LOCATIONS? locations)
+        {
+        //    Directory.CreateDirectory($"{Application.persistentDataPath}\\DATA\\{dataType.ToString()}\\{locations.ToString()}");
+            Directory.CreateDirectory($"DATA\\{dataType.ToString()}\\{locations.ToString()}");
+    }
 
         public static int GetKeyFromMapLocationAndType(LOCATIONS location, MAPTYPE mapType) => (int)location * 10 + (int)mapType + 1;
     }

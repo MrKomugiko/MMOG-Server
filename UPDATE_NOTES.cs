@@ -53,6 +53,9 @@ public class Vector3_json
     public float x { get; set; }
     public float y { get; set; }
     public float z { get; set; }
+
+    internal Vector3 ToVector3() => new Vector3(x,y,z);
+    
 }
 
 public class Maptypes : IDataElement

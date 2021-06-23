@@ -62,9 +62,9 @@ namespace MMOG
             Inventory = new Inventory(10);
         }
 
-        internal void Teleport(Vector3 location)
+        internal void Teleport(Vector3 _locationCordinates)
         {
-            _position = location;
+            _position = _locationCordinates;
             ServerSend.PlayerPosition(this, true);
         }
 

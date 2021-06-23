@@ -65,7 +65,7 @@ namespace MMOG
                 if (consoleCommand == "cmd_printAllPositions") PrintPlayersPositions();
                 if (consoleCommand == "cmd_showData") Console.WriteLine(UpdateChecker.serverJsonFile);
                 if (consoleCommand == "cmd_spawnNewPlayer") SpawnServerPlayer();
-                if (consoleCommand.Contains("cmd_teleportPlayer_ID_x,y,z"))
+                if (consoleCommand.Contains("cmd_teleportPlayer_")) //cmd_teleportPlayer_ID_x,y,z
                 {
                     string[] stringFullCommand = consoleCommand.Split("_");
                     int playerId = Convert.ToInt32(stringFullCommand[2]);
