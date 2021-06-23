@@ -25,7 +25,8 @@ namespace MMOG
     public enum LOCATIONS
     {
         Start_First_Floor,
-        Start_Second_Floor
+        Start_Second_Floor,
+        DUNGEON_1
     }
     public enum MAPTYPE
     {

@@ -43,17 +43,22 @@ namespace MMOG
                         $"0-0 = [{LOCATIONS.Start_First_Floor.ToString()}][{MAPTYPE.Ground_MAP.ToString()}] \n" +
                         $"0-1 = [{LOCATIONS.Start_First_Floor.ToString()}][{MAPTYPE.Obstacle_MAP.ToString()}] \n" +
                         $"1-0 = [{LOCATIONS.Start_Second_Floor.ToString()}][{MAPTYPE.Ground_MAP.ToString()}] \n" +
-                        $"1-1 = [{LOCATIONS.Start_Second_Floor.ToString()}][{MAPTYPE.Obstacle_MAP.ToString()}]");
+                        $"1-1 = [{LOCATIONS.Start_Second_Floor.ToString()}][{MAPTYPE.Obstacle_MAP.ToString()}] \n" +
+                        $"2-0 = [{LOCATIONS.DUNGEON_1.ToString()}][{MAPTYPE.Ground_MAP.ToString()}] \n" +
+                        $"2-1 = [{LOCATIONS.DUNGEON_1.ToString()}][{MAPTYPE.Obstacle_MAP.ToString()}] \n"
+                        );
                     string mapchoose = Console.ReadLine();
 
                     Console.WriteLine("podaj jeszcze ID Admina od ktorego chcesz pobrać mape");
                     int admin = Int32.Parse(Console.ReadLine());
 
                     switch(mapchoose) {
-                        case "0-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Ground_MAP); break;
-                        case "0-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Obstacle_MAP); break;
+                        case "0-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_First_Floor, mapType: MAPTYPE.Ground_MAP); break;
+                        case "0-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_First_Floor, mapType: MAPTYPE.Obstacle_MAP); break;
                         case "1-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Ground_MAP); break;
                         case "1-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Obstacle_MAP); break;
+                        case "2-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.DUNGEON_1, mapType: MAPTYPE.Ground_MAP); break;
+                        case "2-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.DUNGEON_1, mapType: MAPTYPE.Obstacle_MAP); break;
                     }
                 };
                 if (consoleCommand == "cmd_sendMapUpdateToAll") ServerSend.SendCurrentUpdateVersionNumber(); 

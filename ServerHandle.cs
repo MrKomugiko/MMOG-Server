@@ -1,4 +1,6 @@
-﻿using System.Net.Security;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
+using System.Net.Security;
 using System.Diagnostics;
 using System;
 using System.Collections.Generic;
@@ -191,6 +193,130 @@ namespace MMOG
             UpdateChecker.SaveUpdatesChangesToFile();
             
         }
+
+        public static void ExecutePlayerAction(int _fromClient, Packet _packet)
+        {
+            PlayerActions action = (PlayerActions)_packet.ReadInt();
+            bool isActive = _packet.ReadBool();
+            Console.WriteLine(action.ToString());
+
+            HandlePlayerAction(_fromClient, action, isActive);
+        }
+
+        private static void HandlePlayerAction(int _fromClient, PlayerActions action, bool isActive=false)
+        {
+            switch (action)
+            {
+                case PlayerActions.TransformToStairs:
+                    // umozliwienie zamiane gracza na schodek
+                    // tymczasowe dodanie w pamieci obektu o nazwie"schodek" w miejscu gracza , 
+                    // usuniecie obiektu wraz z anulowaniem akcji
+
+                    // pobranie lokalizacji i pozycji gracza
+                    LOCATIONS location = Server.clients[_fromClient].player.CurrentLocation;
+                    Vector3 position = Server.clients[_fromClient].player.Position;
+                    int key = Constants.GetKeyFromMapLocationAndType(location, MAPTYPE.Obstacle_MAP);
+                    if (isActive)
+                    {
+                        if (Server.BazaWszystkichMDanychMap[key].ContainsKey(position) == false)
+                        {
+                            Server.clients[_fromClient].player.PlayerTransformedIntoStairs = true;
+                            Console.WriteLine("aktywowanie ludzkiego schodka");
+                            Server.BazaWszystkichMDanychMap[key].Add(position, "schody");
+                        }
+                    }
+                    if (!isActive)
+                    {
+                        Console.WriteLine("usuniecie obiektu schodka z pamieci mapuy z pozycji "+position.ToString()  );
+                        Server.BazaWszystkichMDanychMap[key].Remove(position);
+
+                        // 1: sprawdzenie czy nad "osobą schodkiem" jest inny gracz, czy moze jest na nim kolejny "człekoschodek"
+                        // sprawdzenie czy gracz jest nad nim
+                        var connectedPlayers = Server.clients.Where(kvp =>kvp.Value.player != null).Select(p=>p.Value.player);
+                        var playerAbove = connectedPlayers.Where(p=>p.Position == new Vector3(position.X,position.Y,position.Z+2)).FirstOrDefault();
+                        
+                        if(playerAbove != null)
+                        {
+                            // nad nim jest jakiś gracz więc, zrzuć go na swoją pozycje
+                            Console.WriteLine("nad graczem znajduje sie inny gracz");
+                            if(playerAbove.PlayerTransformedIntoStairs)
+                            {
+                                Console.WriteLine("nademna jest inny człekoschodek");
+                                    MoveHumanStairOneFloorBelow(playerAbove,key);
+                            }
+                            playerAbove.Position = position;
+                            Console.WriteLine("zrzucam gracza na swoja pozycje ( pięterko niżej");
+                            ServerSend.PlayerPosition(playerAbove);
+                        }
+                       
+                        Console.WriteLine("dezaktywowanie ludzkiego schodka");
+                        Server.clients[_fromClient].player.PlayerTransformedIntoStairs = false;
+                    }
+                    
+                break;
+            }
+        }
+
+        public static void MoveHumanStairOneFloorBelow(Player człekoschodek, int mapKey)
+        {
+            // zmiana pozycji obiektu schodka w pamieci i zrzucnei go pietro nizej
+            // sprawdzenie czy nad graczem jest inny gracz / człekoschodek
+            ///////Console.WriteLine("znoszenie człekoschodka pięterko niżej "+człekoschodek.Username);
+
+            var connectedPlayers = Server.clients.Where(kvp =>kvp.Value.player != null).Select(p=>p.Value.player);
+            var playerAbove = connectedPlayers.Where(p=>p.Position == new Vector3(człekoschodek.Position.X,człekoschodek.Position.Y,człekoschodek.Position.Z+2)).FirstOrDefault();
+     
+            // sprawdzenie czy nad nim jest jakis gracz nie bedacy schodkiem
+        
+            string objectName = Server.BazaWszystkichMDanychMap[mapKey][człekoschodek.Position];
+            //Console.WriteLine("object name = (powinno bys schodek) = "+objectName);
+
+            Server.BazaWszystkichMDanychMap[mapKey].Remove(człekoschodek.Position);
+            //Console.WriteLine("usunieto przestazaly schodek z bazy");
+
+            Console.WriteLine("zmiana pozycji człekoschodka z "+człekoschodek.Position);
+            człekoschodek.Position = new Vector3(człekoschodek.Position.X,człekoschodek.Position.Y, człekoschodek.Position.Z-2);    
+            Console.WriteLine("zmiana pozycji człekoschodka na "+człekoschodek.Position);
+
+            if(Server.BazaWszystkichMDanychMap[mapKey].ContainsKey(człekoschodek.Position) == false){
+                Console.WriteLine("dodano nowe wystapnienie schodka nizej");
+                Server.BazaWszystkichMDanychMap[mapKey].Add(człekoschodek.Position,objectName);
+            }
+            else
+            {
+                Console.WriteLine("przeniesienie schodka nizej , nadpisanie mapki"+człekoschodek.Position.ToString());
+                Server.BazaWszystkichMDanychMap[mapKey][człekoschodek.Position] = objectName;
+            }
+            
+            if(playerAbove != null)
+            {
+                Console.WriteLine("nad człekoschodkiem jest innyc gracz");
+
+                if(playerAbove.PlayerTransformedIntoStairs)
+                {
+                    Console.WriteLine("nademna jest inny shcodek, przystepuje do procedury zrzucenia go nizej");
+                    MoveHumanStairOneFloorBelow(playerAbove,mapKey);
+                }
+                else
+                {
+                    Console.WriteLine("Zrzucenie gracza nizej");
+                    playerAbove.Position = człekoschodek.Position;
+                    ServerSend.PlayerPosition(playerAbove);
+                }
+            }
+        }
+        public static void ClearAllExecutingPlayerAction(int _clientId)
+        {
+            foreach(var action in Enum.GetValues(typeof(PlayerActions)))
+            {
+                HandlePlayerAction(_clientId,(PlayerActions)action);
+            }
+        }
+        public enum PlayerActions
+        {
+            TransformToStairs = 1
+        }
+           
 
         public static void ZapiszMapeDoPliku(Dictionary<Vector3, string> mapData, string path)
         {

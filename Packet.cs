@@ -38,8 +38,9 @@ namespace MMOG
         SEND_MAPDATA_TO_SERVER,
         downloadLatestMapUpdate,
         download_recentMapVersion,
-        clientChangeLocalisation
-}
+        clientChangeLocalisation,
+        PlayerMakeAction
+    }
     public class Packet : IDisposable
     {
         private List<byte> buffer;

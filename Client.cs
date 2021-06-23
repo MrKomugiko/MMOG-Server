@@ -233,6 +233,8 @@ namespace MMOG
                 ServerHandle.PlayersMoveInputRequests[player.Id] =0;
 
                 Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.Username}] has disconnected.");
+                // anulowanie wykonywanych akcji przed wylogowaniem
+                ServerHandle.ClearAllExecutingPlayerAction(player.Id);
 
                 ServerSend.UpdateChat($"[{player.Username}] has disconnected.");
 

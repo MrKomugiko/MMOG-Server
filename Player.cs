@@ -42,6 +42,8 @@ namespace MMOG
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
 
+        // Actions
+        public bool PlayerTransformedIntoStairs = false;
         #endregion
 
         public Player(int id, string username, int userID = 0)
@@ -170,16 +172,6 @@ namespace MMOG
                 }
             }
 
-            // jezeli chodzimy po ziemi jest git ;d
-            if (Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(_groundPosition))
-            {
-                if (Server.BazaWszystkichMDanychMap[ObstacleMap_key][_groundPosition].Contains("schody"))
-                {
-                    // Console.WriteLine("Graczwchodzi na schodek -2L = poziom gracza");// => zwykłe przemeiszczenie sie w poziomo, w razie gdyby shcvody w pewnym momencie sie wydluzaly prosto ?
-                    output = true;
-                }
-            }
-
             if (Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(_newPosition))
             {
                 // jezeli przed nami jest klocek sciany => 
@@ -191,12 +183,35 @@ namespace MMOG
                 // gracz ma przed sobą schodek i chce na neigo wejsc
                 if (Server.BazaWszystkichMDanychMap[ObstacleMap_key][_newPosition].Contains("schody"))
                 {
+
+                     // sprawdzenie czy nie udezy sie na sciane ze schodow
+                    Vector3 _upstairsPosition = _newPosition + Vector3FloorUP;
+                     if (Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(_upstairsPosition))
+                     {
+                         if (Server.BazaWszystkichMDanychMap[ObstacleMap_key][_upstairsPosition].Contains("schody"))
+                         {
+                             // udezenie w sciane
+                            return output = false;
+                         }
+                     }
                     walkIntoStairs = true;
                     stairsDirection = Vector3FloorUP;
                     return output = true;
                 }
             }
 
+            // jezeli chodzimy po ziemi jest git ;d
+            if (Server.BazaWszystkichMDanychMap[ObstacleMap_key].ContainsKey(_groundPosition))
+            {
+                if (Server.BazaWszystkichMDanychMap[ObstacleMap_key][_groundPosition].Contains("schody"))
+                {
+                   
+                    // Console.WriteLine("Graczwchodzi na schodek -2L = poziom gracza");// => zwykłe przemeiszczenie sie w poziomo, w razie gdyby shcvody w pewnym momencie sie wydluzaly prosto ?
+                    walkIntoStairs = true;
+                    stairsDirection = Vector3.Zero;
+                    return output = true;
+                }
+            }
             //---------------------------------------------------
             // gracz schodzi na dol opuszczajac schody
             // jezeli w docelowym miejjscu za schodkiem jest ziemia
