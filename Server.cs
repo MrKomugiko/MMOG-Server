@@ -95,6 +95,8 @@ namespace MMOG
             }
         }
         
+        static public List<DungeonLobby> dungeonLobbyRooms = new List<DungeonLobby>();
+        
         private static void TCPConnectCallback(IAsyncResult _result)
         {
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
@@ -164,6 +166,21 @@ namespace MMOG
             }
         }
 
+        internal static void ShowDungeonLobbyRoomsInfo()
+        {
+            foreach(DungeonLobby room in dungeonLobbyRooms)
+            {
+                Console.WriteLine($"[{room.DungeonLocation.ToString()}]");
+                foreach(Player player in room.Players)
+                {
+                    if(player == room.LobbyOwner) 
+                        Console.WriteLine($"\t{player.Username} [Leader]");
+                    else 
+                        Console.WriteLine($"\t{player.Username}");
+                }
+            }
+        }
+
         public static void SendUDPData(IPEndPoint _clientEndPoint, Packet _packet)
         {
             try
@@ -198,7 +215,10 @@ namespace MMOG
                 { (int)ClientPackets.download_recentMapVersion, ServerHandle.SendNumberOfLAtestMapUpdate },
                 { (int)ClientPackets.clientChangeLocalisation, ServerHandle.ChangePlayerLocalisation },
                 { (int)ClientPackets.TeleportMe, ServerHandle.TeleportPlayerToLocation },
-                { (int)ClientPackets.PlayerMakeAction, ServerHandle.ExecutePlayerAction }
+                { (int)ClientPackets.PlayerMakeAction, ServerHandle.ExecutePlayerAction },
+
+                { (int)ClientPackets.CreateLobby, DungeonLobby.CreateNewLobby }
+
             };
 
             Console.WriteLine("Initialized packets.");

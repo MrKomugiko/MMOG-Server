@@ -8,7 +8,7 @@ using System.Text;
 
 namespace MMOG
 {
-    class Player
+    public class Player
     {
         #region variables
         private bool _RegisteredUser = false;

@@ -218,7 +218,7 @@ namespace MMOG
         // wyslanie info o aktualnej wesji update`a
         public static void SendCurrentUpdateVersionNumber(int sendToID = -1) {
             using (Packet _packet = new Packet((int)ServerPackets.sendCurrentUpdateNumber)) {
-            // TODO: rozdzielenie updateów map dla kazdej z oobno
+        
              string serverJsonFile = (JsonSerializer.Serialize(UpdateChecker.SERVER_UPDATE_VERSIONS)).ToString();
                 _packet.Write(serverJsonFile);
 

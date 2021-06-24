@@ -83,6 +83,7 @@ namespace MMOG
                     //  Server.clients[playerId].player.Inventory.TESTPOPULATEINVENTORYWITHITEMBYID(itemId);
                     Server.Players_DATABASE.Where(p=>p.UserID == playerId).First().Inventory.TESTPOPULATEINVENTORYWITHITEMBYID(itemId);
                 }
+                if (consoleCommand == "cmd_showDungeonLobbyRoomsInfo") Server.ShowDungeonLobbyRoomsInfo();
                 //  if (consoleCommand == "cmd_dataTest") {
                //     TestAktualizacjiIWyswietlaniaDanychZBAzy();
                // }

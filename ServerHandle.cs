@@ -431,25 +431,6 @@ namespace MMOG
             LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
             Server.clients[_fromClient].player.CurrentLocation = _location;
             Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.Username}] zmienił mapę na: [{_location.ToString()}]");
-
-/*
-TODO:
-    - pobranie od admina nowej mapki i rozesłanie jej do innych klientow
-    
-    - lista graczy ma zawierac info o aktualnej swojej lokalizacji
-    - zmodyfikowac weryfikacje poruszania sie uwzględniając dane odpowiednie dla odpowiadającej graczu lokalizacji
-    - jezeli gracz ma nieaktualną lokalizacje wysłać mu aktualizacje
-    - //TODO: CZY GRACZ NA INNEJ MAPIE POWIENIEN DOSTAWAĆ INFO O INNYCH GRACZACH ?
-        -- w przypadku mapy z 'widokiem na inne piętro = tak"
-        -- zamknięte pomieszczenie = nie, do czasu ew. włączenia punktu widokowego
-        --  
-    - ...
-
-
-
-
-*/
-
         }
 
         public static void SendNumberOfLAtestMapUpdate(int _fromClient, Packet _packet)
