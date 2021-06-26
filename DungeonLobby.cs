@@ -1,4 +1,5 @@
 
+using System.Linq.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -20,8 +21,10 @@ namespace MMOG
 
         public enum DUNGEONS // nazwa jednakowa z tą w locations !
         {
-            DUNGEON_1
+            DUNGEON_1 = 1,
+            DUNGEON_2
         }
+
         public DungeonLobby(int _lobbyID, Player _lobbyOwner, LOCATIONS _dungeonLocation,int _maxPlayersCapacity = 2)
         {
             Console.WriteLine("utworzono nowe lobby dungeonu");
@@ -75,7 +78,7 @@ namespace MMOG
         {
             var roomLeader = Server.clients[_fromClient].player;
 
-            var dungeon = (LOCATIONS)_packet.ReadInt();
+            var dungeon = (DUNGEONS)_packet.ReadInt();
             var roomID = _packet.ReadInt();
             var _dungeonLobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault();
 
@@ -98,16 +101,56 @@ namespace MMOG
                     Console.WriteLine("Dziwne, gracz, nie będący liderem pokoju, chce go usunac? [ nie powinno sie zdazyc ]");
             }
 
-             ServerSend.SendCurrentUpdatedDungeonLobbyData();
+             ServerSend.RemoveDeletedRoom(dungeon: dungeon, roomId: roomID);
+             ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon: dungeon);
         }
 
         public static void JoinToRoom(int _fromClient, Packet _packet)
         {
-            Player player = Server.clients[_fromClient].player;
+            Player playerWhoJoin = Server.clients[_fromClient].player;
 
-            Server.dungeonLobbyRooms.Where(room=>room.LobbyID == _packet.ReadInt()).First().Players.Add(player);
+            int roomID = _packet.ReadInt();
 
-            ServerSend.SendCurrentUpdatedDungeonLobbyData();
+            Console.WriteLine($"gracz {playerWhoJoin.Username} dołączył do pokoju o id:{roomID}");
+            Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).First().Players.Add(playerWhoJoin);
+
+            DungeonLobby room = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).First();
+            DUNGEONS dungeon;
+            Enum.TryParse<DUNGEONS>(room.DungeonLocation.ToString(),out dungeon);
+           
+            foreach(var player in room.Players)
+            {
+                Console.WriteLine($"powiadomienie gracza: {player.Username}, ze dołączył nowy gracz trzeba zaktualizowac liste");
+
+                ServerSend.SendCurrentUpdatedDungeonLobbyData(_toClient:player.Id, dungeon:dungeon, _action:"PlayerJoinToRoom");
+            }
+        }
+        public static void LeaveRoomByPlayer(int _fromClient, Packet _packet)
+        {           
+                Player playerWhoLeaved = Server.clients[_fromClient].player;
+                int roomID = _packet.ReadInt();
+
+                var room = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault();
+                Console.WriteLine($"gracz {playerWhoLeaved.Username} opuscil pokoj z id:{roomID}");
+               
+                room.Players.Remove(playerWhoLeaved);
+                Console.WriteLine("usuniecie gracza z listy uczestnikow pokoju");
+                DUNGEONS dungeon;
+                Enum.TryParse<DUNGEONS>(Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault().DungeonLocation.ToString(),out dungeon);
+                // wyslanie tego tylko do graczy w pokoju zeby przeładowali liste i usuneli stary obiekt
+                foreach(var player in room.Players)
+                {
+                    Console.WriteLine($"powiadomienie gracza: {player.Username}, ze gracz wyszeedł i trzeba zaktualizowac liste");
+
+                    ServerSend.SendCurrentUpdatedDungeonLobbyData(_toClient:player.Id, dungeon:dungeon, _action:"PlayerLeftRooom");
+                }
+
+        }
+        public static void SendInitDataToClient(int _fromClient, Packet _packet)
+        {
+            Console.WriteLine("wyslano dane inicializujace liste dungeonow-lobby do nowego gracza");
+            DUNGEONS dungeon = (DUNGEONS)_packet.ReadInt();
+            ServerSend.SendCurrentUpdatedDungeonLobbyData(_fromClient, dungeon);
         }
     }
 }

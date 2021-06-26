@@ -33,7 +33,8 @@ namespace MMOG
     {
         Start_First_Floor,
         Start_Second_Floor,
-        DUNGEON_1
+        DUNGEON_1,
+        DUNGEON_2
     }
     public enum MAPTYPE
     {

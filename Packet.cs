@@ -26,6 +26,7 @@ namespace MMOG
         removeItemFromMap,
         kickFromDungeonRoom,
         CurrentDungeonRoomsStatus,
+        removeLobbyRoom
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -45,7 +46,9 @@ namespace MMOG
         TeleportMe,
         CreateLobby,
         RemoveLobby,
-        JoinLobby
+        JoinLobby,
+        InitDataDungeonLobby,
+        LeaveRoomBylayer
     }
     public class Packet : IDisposable
     {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -134,27 +135,75 @@ namespace MMOG
             }
         }
 
-        internal static void SendCurrentUpdatedDungeonLobbyData()
+        public static void SendCurrentUpdatedDungeonLobbyData(int? _toClient = null, DungeonLobby.DUNGEONS dungeon = default, string _action = "null", int _roomID = 0)
         {
-            Console.WriteLine("Send to players current dungeon lobby status");
+            if(Server.dungeonLobbyRooms == null) Server.dungeonLobbyRooms = new List<DungeonLobby>();
             var data = Server.dungeonLobbyRooms;
+
+            Console.WriteLine("send dungeon list-lobby update");
+            
             using (Packet _packet = new Packet((int)ServerPackets.CurrentDungeonRoomsStatus))
               {
-                _packet.Write(data.Count);
-
-                foreach(var room in data)
+                _packet.Write(_action);                                                                                      
+                Console.WriteLine("_action: "+_action);                
+                
+                if(dungeon == default)
                 {
-                    _packet.Write(room.LobbyID);
-                    _packet.Write(room.LobbyOwner.Username);
-                    _packet.Write((int)room.DungeonLocation);
-                    _packet.Write(room.MaxPlayersCapacity);
-
-                    _packet.Write(room.PlayersCount);
-                    foreach(var player in room.Players)
+                    Console.WriteLine("Nie sprecyzowano typu dingeona, wysłane zostaną wszystkie dostępne");
+                    data = data;
+                }
+                else
+                {
+                    Console.WriteLine("zdefiniowano rodzaj lobby-dungeonu = "+dungeon.ToString());
+                    // jezeli jest jakis wpis
+                    if(data.Count>0)
                     {
-                        _packet.Write(player.Username);
+                        data.Where(dungeon=>dungeon.DungeonLocation.ToString() == dungeon.ToString());
+                    }
+                    else
+                    {
+                        Console.WriteLine("brak danych");
                     }
                 }
+                
+                _packet.Write(data.Count);
+                Console.WriteLine("Count: "+data.Count);
+                Console.WriteLine("Count of rooms: "+data.Where(room=>room != null).Count());
+
+
+                if(data.Count>0)
+                {
+                    foreach(var room in data)
+                    {
+                        if(room == null) continue;
+                        
+                        _packet.Write(room.LobbyID);                    Console.WriteLine(" *LobbyID: "+room.LobbyID);
+                        _packet.Write(room.LobbyOwner.Username);        Console.WriteLine(" *LobbyOwner.Username: "+room.LobbyOwner.Username);
+                        _packet.Write((int)room.DungeonLocation);       Console.WriteLine(" *DungeonLocation: "+room.DungeonLocation);
+                        _packet.Write(room.MaxPlayersCapacity);         Console.WriteLine(" *MaxPlayersCapacity: "+room.MaxPlayersCapacity);
+                        _packet.Write(room.PlayersCount);               Console.WriteLine(" *PlayersCount: "+room.PlayersCount);
+                        foreach(var player in room.Players)
+                        {
+                            _packet.Write(player.Username);             Console.WriteLine(" \t - player: "+player.Username);
+                        }
+                    }
+
+                    if(_toClient != null) 
+                      SendTCPData((int)_toClient,_packet);
+                    else 
+                      SendTCPDataToAll(_packet);
+                }
+            }
+        }
+
+        internal static void RemoveDeletedRoom(DungeonLobby.DUNGEONS dungeon, int roomId)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.removeLobbyRoom)) 
+            {
+                Console.WriteLine("wyslanie info czyczczace nieistniejacy juz pokoj");
+                _packet.Write((int)dungeon);
+                _packet.Write(roomId);
+
                 SendTCPDataToAll(_packet);
             }
         }

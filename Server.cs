@@ -217,9 +217,13 @@ namespace MMOG
                 { (int)ClientPackets.TeleportMe, ServerHandle.TeleportPlayerToLocation },
                 { (int)ClientPackets.PlayerMakeAction, ServerHandle.ExecutePlayerAction },
 
+                { (int)ClientPackets.InitDataDungeonLobby, DungeonLobby.SendInitDataToClient },
                 { (int)ClientPackets.CreateLobby, DungeonLobby.CreateNewLobby },
                 { (int)ClientPackets.RemoveLobby, DungeonLobby.RemoveExistingLobby },
-                { (int)ClientPackets.JoinLobby, DungeonLobby.JoinToRoom }
+                { (int)ClientPackets.JoinLobby, DungeonLobby.JoinToRoom },
+                { (int)ClientPackets.LeaveRoomBylayer, DungeonLobby.LeaveRoomByPlayer }
+
+                
 
                 
 
