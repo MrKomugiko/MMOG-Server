@@ -122,6 +122,43 @@ namespace MMOG
                 SendTCPData(_toClient, _packet);
             }
         }
+
+        internal static void KickedFromDungeonRoom(int  _toClient, DungeonLobby _dungeonlobby)
+        {
+             using (Packet _packet = new Packet((int)ServerPackets.kickFromDungeonRoom))
+              {
+                // bez szczegolow, generalnie info zeby wyjsc
+                _packet.Write(_dungeonlobby.LobbyID); // int -> dungeon ID
+
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
+        internal static void SendCurrentUpdatedDungeonLobbyData()
+        {
+            Console.WriteLine("Send to players current dungeon lobby status");
+            var data = Server.dungeonLobbyRooms;
+            using (Packet _packet = new Packet((int)ServerPackets.CurrentDungeonRoomsStatus))
+              {
+                _packet.Write(data.Count);
+
+                foreach(var room in data)
+                {
+                    _packet.Write(room.LobbyID);
+                    _packet.Write(room.LobbyOwner.Username);
+                    _packet.Write((int)room.DungeonLocation);
+                    _packet.Write(room.MaxPlayersCapacity);
+
+                    _packet.Write(room.PlayersCount);
+                    foreach(var player in room.Players)
+                    {
+                        _packet.Write(player.Username);
+                    }
+                }
+                SendTCPDataToAll(_packet);
+            }
+        }
+
         public static void PlayerPosition(Player _player, bool _isTeleported = false) {
             // odblokowanie ruchu gracza
             // ServerHandle.PlayersMoveInputRequests[_player.id] = 0;

@@ -23,7 +23,9 @@ namespace MMOG
         RegistrationResponse,
         LoginResponse,
         colectItem,
-        removeItemFromMap
+        removeItemFromMap,
+        kickFromDungeonRoom,
+        CurrentDungeonRoomsStatus,
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -41,7 +43,9 @@ namespace MMOG
         clientChangeLocalisation,
         PlayerMakeAction,
         TeleportMe,
-        CreateLobby
+        CreateLobby,
+        RemoveLobby,
+        JoinLobby
     }
     public class Packet : IDisposable
     {
