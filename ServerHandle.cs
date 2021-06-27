@@ -62,13 +62,13 @@ namespace MMOG
                         Console.WriteLine("prawdopodonie wywali bład poczas logowania gdy na serwerze sa juz boty, "+ ex.Message);
                     }
 
-                    Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
+                 //   Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
                     Console.WriteLine("ACCES GRANTED");
                     Server.clients[_fromClient].SendIntoGame(Server.GetPlayerData(playerdata.UserID, serverID:_fromClient));
                 }
                 else
                 {
-                    Console.WriteLine("ACCES DENIED");
+                  //  Console.WriteLine("ACCES DENIED");
                     ServerSend.LoginResponse(_fromClient);
                   
                 }
@@ -81,11 +81,12 @@ namespace MMOG
                     ServerSend.ConfirmAccountCreation(_confirmationCode:"FAILED", _toClient: _fromClient);
                     return;
                 }
+                Console.WriteLine("Lista zarejestrowyanych graczy:");
                 foreach(var players in Server.Players_DATABASE)
                 {
-                    Console.WriteLine("chyba puste: "+players.Username);
+                   Console.WriteLine(" - "+players.Username);
                 }
-                Console.WriteLine($"Nowy towarzysz właśnie utworzył konto: {_username}:{_password}");
+              //  Console.WriteLine($"Nowy towarzysz właśnie utworzył konto: {_username}:{_password}");
 
                 Server.Players_DATABASE.Add(new Player(_fromClient,_username));
 
@@ -95,11 +96,11 @@ namespace MMOG
         }
 
 
-        public static void UDPTestReceived(int _fromClient, Packet _packet) {
-            string _msg = _packet.ReadString();
+        // public static void UDPTestReceived(int _fromClient, Packet _packet) {
+        //     string _msg = _packet.ReadString();
 
-            Console.WriteLine($"Received packet via UDP. Contains message: {_msg}");
-        }
+        //     Console.WriteLine($"Received packet via UDP. Contains message: {_msg}");
+        // }
 
         public static int[] PlayersMoveInputRequests = new int[50];
         
@@ -160,7 +161,7 @@ namespace MMOG
             LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
             MAPTYPE _mapType = (MAPTYPE)_packet.ReadInt();
 
-            Console.WriteLine($"Otrzymano: {_dataSize} / {_location} / {_mapType}");
+           // Console.WriteLine($"Otrzymano: {_dataSize} / {_location} / {_mapType}");
             for (int i = 0; i < _dataSize; i++) 
             {
                 var key = _packet.ReadVector3();
@@ -182,7 +183,7 @@ namespace MMOG
             //}
             string path = Constants.GetFilePath((DATATYPE)_datatype, (LOCATIONS)_location, (MAPTYPE)_mapType);
             ZapiszMapeDoPliku(tempDict,path);
-            Console.WriteLine("Aktualizacja z istniejącymi danymi");
+          //  Console.WriteLine("Aktualizacja z istniejącymi danymi");
 
            // int bazaWszystkichMapKeyToRefference = Constants.GetKeyFromMapLocationAndType(_location, _mapType);
             LoadMapDataFromFile ((LOCATIONS)_location, (MAPTYPE)_mapType, path );
@@ -231,13 +232,13 @@ namespace MMOG
                         if (Server.BazaWszystkichMDanychMap[key].ContainsKey(position) == false)
                         {
                             Server.clients[_fromClient].player.PlayerTransformedIntoStairs = true;
-                            Console.WriteLine("aktywowanie ludzkiego schodka");
+                         //   Console.WriteLine("aktywowanie ludzkiego schodka");
                             Server.BazaWszystkichMDanychMap[key].Add(position, "schody");
                         }
                     }
                     if (!isActive)
                     {
-                        Console.WriteLine("usuniecie obiektu schodka z pamieci mapuy z pozycji "+position.ToString()  );
+                     //   Console.WriteLine("usuniecie obiektu schodka z pamieci mapuy z pozycji "+position.ToString()  );
                         Server.BazaWszystkichMDanychMap[key].Remove(position);
 
                         // 1: sprawdzenie czy nad "osobą schodkiem" jest inny gracz, czy moze jest na nim kolejny "człekoschodek"
@@ -248,18 +249,18 @@ namespace MMOG
                         if(playerAbove != null)
                         {
                             // nad nim jest jakiś gracz więc, zrzuć go na swoją pozycje
-                            Console.WriteLine("nad graczem znajduje sie inny gracz");
+                         //   Console.WriteLine("nad graczem znajduje sie inny gracz");
                             if(playerAbove.PlayerTransformedIntoStairs)
                             {
-                                Console.WriteLine("nademna jest inny człekoschodek");
+                           //     Console.WriteLine("nademna jest inny człekoschodek");
                                     MoveHumanStairOneFloorBelow(playerAbove,key);
                             }
                             playerAbove.Position = position;
-                            Console.WriteLine("zrzucam gracza na swoja pozycje ( pięterko niżej");
+                          //  Console.WriteLine("zrzucam gracza na swoja pozycje ( pięterko niżej");
                             ServerSend.PlayerPosition(playerAbove);
                         }
                        
-                        Console.WriteLine("dezaktywowanie ludzkiego schodka");
+                        //Console.WriteLine("dezaktywowanie ludzkiego schodka");
                         Server.clients[_fromClient].player.PlayerTransformedIntoStairs = false;
                     }
                     
@@ -284,32 +285,32 @@ namespace MMOG
             Server.BazaWszystkichMDanychMap[mapKey].Remove(człekoschodek.Position);
             //Console.WriteLine("usunieto przestazaly schodek z bazy");
 
-            Console.WriteLine("zmiana pozycji człekoschodka z "+człekoschodek.Position);
+         //   Console.WriteLine("zmiana pozycji człekoschodka z "+człekoschodek.Position);
             człekoschodek.Position = new Vector3(człekoschodek.Position.X,człekoschodek.Position.Y, człekoschodek.Position.Z-2);    
-            Console.WriteLine("zmiana pozycji człekoschodka na "+człekoschodek.Position);
+        //    Console.WriteLine("zmiana pozycji człekoschodka na "+człekoschodek.Position);
 
             if(Server.BazaWszystkichMDanychMap[mapKey].ContainsKey(człekoschodek.Position) == false){
-                Console.WriteLine("dodano nowe wystapnienie schodka nizej");
+             //   Console.WriteLine("dodano nowe wystapnienie schodka nizej");
                 Server.BazaWszystkichMDanychMap[mapKey].Add(człekoschodek.Position,objectName);
             }
             else
             {
-                Console.WriteLine("przeniesienie schodka nizej , nadpisanie mapki"+człekoschodek.Position.ToString());
+             //   Console.WriteLine("przeniesienie schodka nizej , nadpisanie mapki"+człekoschodek.Position.ToString());
                 Server.BazaWszystkichMDanychMap[mapKey][człekoschodek.Position] = objectName;
             }
             
             if(playerAbove != null)
             {
-                Console.WriteLine("nad człekoschodkiem jest innyc gracz");
+              //  Console.WriteLine("nad człekoschodkiem jest innyc gracz");
 
                 if(playerAbove.PlayerTransformedIntoStairs)
                 {
-                    Console.WriteLine("nademna jest inny shcodek, przystepuje do procedury zrzucenia go nizej");
+               //     Console.WriteLine("nademna jest inny shcodek, przystepuje do procedury zrzucenia go nizej");
                     MoveHumanStairOneFloorBelow(playerAbove,mapKey);
                 }
                 else
                 {
-                    Console.WriteLine("Zrzucenie gracza nizej");
+                //    Console.WriteLine("Zrzucenie gracza nizej");
                     playerAbove.Position = człekoschodek.Position;
                     ServerSend.PlayerPosition(playerAbove);
                 }
@@ -430,7 +431,7 @@ namespace MMOG
         {
             LOCATIONS _location = (LOCATIONS)_packet.ReadInt();
             Server.clients[_fromClient].player.CurrentLocation = _location;
-            Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.Username}] zmienił mapę na: [{_location.ToString()}]");
+          //  Console.WriteLine($"Gracz [{Server.clients[_fromClient].player.Username}] zmienił mapę na: [{_location.ToString()}]");
         }
 
         public static void SendNumberOfLAtestMapUpdate(int _fromClient, Packet _packet)
@@ -448,7 +449,7 @@ namespace MMOG
             var mapTypesCount = Enum.GetNames(typeof(MAPTYPE)).Length;
             if (_isRequestSpecified == false) {
                 // WYSYŁAMY WSZYSTKO CO MAMY
-                Console.WriteLine("wysłanie do gracza " + _id + " mapy w ilości: " + (LocationCount * mapTypesCount));
+       //         Console.WriteLine("wysłanie do gracza " + _id + " mapy w ilości: " + (LocationCount * mapTypesCount));
 
                 for (int location = 0; location < LocationCount; location++) {
                     for (int maptype = 0; maptype < mapTypesCount; maptype++) {
@@ -465,7 +466,7 @@ namespace MMOG
 
                 int key = Constants.GetKeyFromMapLocationAndType(_location, _maptype);
 
-                Console.WriteLine($"wysyłanie: LOCATION:{_location} / MAPTYPE:{_maptype}");
+         //       Console.WriteLine($"wysyłanie: LOCATION:{_location} / MAPTYPE:{_maptype}");
                // Console.WriteLine($"wysłanie do gracza {_id} konkretnej mapy [{_location.ToString()}][{_maptype.ToString()}]");
                 //Console.WriteLine("serwer przechowuje w pamięci "+Server.BazaWszystkichMDanychMap.Count +" map.");
                 ServerSend.SendMapDataToClient(_id, _location, _maptype, Server.BazaWszystkichMDanychMap[key]);

@@ -27,18 +27,18 @@ namespace MMOG
 
         public DungeonLobby(int _lobbyID, Player _lobbyOwner, LOCATIONS _dungeonLocation,int _maxPlayersCapacity = 2)
         {
-            Console.WriteLine("utworzono nowe lobby dungeonu");
-            Console.WriteLine("Założycielem lobby jest : "+ _lobbyOwner.Username);
+          //  Console.WriteLine("utworzono nowe lobby dungeonu");
+          //  Console.WriteLine("Założycielem lobby jest : "+ _lobbyOwner.Username);
             LobbyID = _lobbyID;                 // powinno byc unikalne
             LobbyOwner = _lobbyOwner;           // unikalny
             DungeonLocation = _dungeonLocation; // jeden na lobby
             MaxPlayersCapacity = _maxPlayersCapacity;
             Players.Add(LobbyOwner);            // na starcie wliczajac zalozyciela do puli graczy
             
-            Console.WriteLine("Ładowanie kopi danych mapy");
+            Console.WriteLine("Ładowanie kopi danych mapy do obiektu lobby");
             DungeonMAPDATA = Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Obstacle_MAP)];
             DungeonMAPDATA_Ground = Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Ground_MAP)];
-            Console.WriteLine($"załadowano:{DungeonMAPDATA.Count}[Obstacle] / {DungeonMAPDATA_Ground.Count}[Ground]");
+          //  Console.WriteLine($"załadowano:{DungeonMAPDATA.Count}[Obstacle] / {DungeonMAPDATA_Ground.Count}[Ground]");
         }
 
         // public void Join(Player playerWhoWantJoin)
@@ -63,7 +63,7 @@ namespace MMOG
         // }
         public static void CreateNewLobby(int _fromClient, Packet _packet)
         {
-            Console.WriteLine("tworzenie nowego lobby-servera");
+            //Console.WriteLine("tworzenie nowego lobby-servera");
             Player roomLeader = Server.clients[_fromClient].player;
             int roomId = _packet.ReadInt();                             // losowa wartosc miedzy <0; 1`000`000)
             LOCATIONS dungeon = (LOCATIONS)_packet.ReadInt();
@@ -95,14 +95,16 @@ namespace MMOG
                   
                     }
                     Server.dungeonLobbyRooms.Remove(_dungeonLobby);
-                    Console.WriteLine("usuniecie isniejacego lobby-servera");
+                   // Console.WriteLine("usuniecie isniejacego lobby-servera");
                 }
                 else
                     Console.WriteLine("Dziwne, gracz, nie będący liderem pokoju, chce go usunac? [ nie powinno sie zdazyc ]");
+            
+             ServerSend.RemoveDeletedRoom(dungeon: dungeon, roomId: roomID, _dungeonLobby);
             }
-
-             ServerSend.RemoveDeletedRoom(dungeon: dungeon, roomId: roomID);
+             
              ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon: dungeon);
+
         }
 
         public static void JoinToRoom(int _fromClient, Packet _packet)
@@ -120,7 +122,7 @@ namespace MMOG
            
             foreach(var player in room.Players)
             {
-                Console.WriteLine($"powiadomienie gracza: {player.Username}, ze dołączył nowy gracz trzeba zaktualizowac liste");
+              //  Console.WriteLine($"powiadomienie gracza: {player.Username}, ze dołączył nowy gracz trzeba zaktualizowac liste");
 
                 ServerSend.SendCurrentUpdatedDungeonLobbyData(_toClient:player.Id, dungeon:dungeon, _action:"PlayerJoinToRoom");
             }
@@ -131,16 +133,20 @@ namespace MMOG
                 int roomID = _packet.ReadInt();
 
                 var room = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault();
+                if(room == null){ 
+                    Console.WriteLine("nie mozna opuscic pokoju, gdy ten nie isnieje");
+                    return;
+                }
                 Console.WriteLine($"gracz {playerWhoLeaved.Username} opuscil pokoj z id:{roomID}");
                
                 room.Players.Remove(playerWhoLeaved);
-                Console.WriteLine("usuniecie gracza z listy uczestnikow pokoju");
+           //     Console.WriteLine("usuniecie gracza z listy uczestnikow pokoju");
                 DUNGEONS dungeon;
                 Enum.TryParse<DUNGEONS>(Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault().DungeonLocation.ToString(),out dungeon);
                 // wyslanie tego tylko do graczy w pokoju zeby przeładowali liste i usuneli stary obiekt
                 foreach(var player in room.Players)
                 {
-                    Console.WriteLine($"powiadomienie gracza: {player.Username}, ze gracz wyszeedł i trzeba zaktualizowac liste");
+                   // Console.WriteLine($"powiadomienie gracza: {player.Username}, ze gracz wyszeedł i trzeba zaktualizowac liste");
 
                     ServerSend.SendCurrentUpdatedDungeonLobbyData(_toClient:player.Id, dungeon:dungeon, _action:"PlayerLeftRooom");
                 }
@@ -148,7 +154,7 @@ namespace MMOG
         }
         public static void SendInitDataToClient(int _fromClient, Packet _packet)
         {
-            Console.WriteLine("wyslano dane inicializujace liste dungeonow-lobby do nowego gracza");
+          //  Console.WriteLine("wyslano dane inicializujace liste dungeonow-lobby do nowego gracza");
             DUNGEONS dungeon = (DUNGEONS)_packet.ReadInt();
             ServerSend.SendCurrentUpdatedDungeonLobbyData(_fromClient, dungeon);
         }

@@ -140,7 +140,7 @@ namespace MMOG
             if(Server.dungeonLobbyRooms == null) Server.dungeonLobbyRooms = new List<DungeonLobby>();
             var data = Server.dungeonLobbyRooms;
 
-            Console.WriteLine("send dungeon list-lobby update");
+           // Console.WriteLine("send dungeon list-lobby update");
             
             using (Packet _packet = new Packet((int)ServerPackets.CurrentDungeonRoomsStatus))
               {
@@ -149,12 +149,12 @@ namespace MMOG
                 
                 if(dungeon == default)
                 {
-                    Console.WriteLine("Nie sprecyzowano typu dingeona, wysłane zostaną wszystkie dostępne");
+                   // Console.WriteLine("Nie sprecyzowano typu dungeona, wysłane zostaną wszystkie dostępne");
                     data = data;
                 }
                 else
                 {
-                    Console.WriteLine("zdefiniowano rodzaj lobby-dungeonu = "+dungeon.ToString());
+                 //   Console.WriteLine("zdefiniowano rodzaj lobby-dungeonu = "+dungeon.ToString());
                     // jezeli jest jakis wpis
                     if(data.Count>0)
                     {
@@ -167,8 +167,8 @@ namespace MMOG
                 }
                 
                 _packet.Write(data.Count);
-                Console.WriteLine("Count: "+data.Count);
-                Console.WriteLine("Count of rooms: "+data.Where(room=>room != null).Count());
+             //   Console.WriteLine("Count: "+data.Count);
+              //  Console.WriteLine("Count of rooms: "+data.Where(room=>room != null).Count());
 
 
                 if(data.Count>0)
@@ -189,22 +189,25 @@ namespace MMOG
                     }
 
                     if(_toClient != null) 
-                      SendTCPData((int)_toClient,_packet);
+                     // SendTCPData((int)_toClient,_packet);
+                     // TODO: zmienic odbiorcow, i wysylac tylko osoba zainteresowanym xD 
+                      SendTCPDataToAll(_packet);
+
                     else 
                       SendTCPDataToAll(_packet);
                 }
             }
         }
 
-        internal static void RemoveDeletedRoom(DungeonLobby.DUNGEONS dungeon, int roomId)
+        internal static void RemoveDeletedRoom(DungeonLobby.DUNGEONS dungeon, int roomId, DungeonLobby _dungeonLobby)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.removeLobbyRoom)) 
+            using (Packet _packet = new Packet((int)ServerPackets.removeLobbyRoom))
             {
-                Console.WriteLine("wyslanie info czyczczace nieistniejacy juz pokoj");
+                //Console.WriteLine("wyslanie info czyczczace nieistniejacy juz pokoj");
                 _packet.Write((int)dungeon);
                 _packet.Write(roomId);
 
-                SendTCPDataToAll(_packet);
+                SendTCPDataToAll(_exceptClient:_dungeonLobby.LobbyOwner.Id, _packet);
             }
         }
 
