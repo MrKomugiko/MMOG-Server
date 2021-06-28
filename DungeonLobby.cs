@@ -16,8 +16,8 @@ namespace MMOG
         public int PlayersCount { get => Players.Count; }
         public int MaxPlayersCapacity { get; private set; }
 
-        private Dictionary<Vector3, string> DungeonMAPDATA { get; set; } = new Dictionary<Vector3, string>();
-        private Dictionary<Vector3, string> DungeonMAPDATA_Ground { get; set; }= new Dictionary<Vector3, string>();
+        public Dictionary<Vector3, string> DungeonMAPDATA { get; set; } = new Dictionary<Vector3, string>();
+        public Dictionary<Vector3, string> DungeonMAPDATA_Ground { get; set; }= new Dictionary<Vector3, string>();
 
         public enum DUNGEONS // nazwa jednakowa z tą w locations !
         {
@@ -36,8 +36,8 @@ namespace MMOG
             Players.Add(LobbyOwner);            // na starcie wliczajac zalozyciela do puli graczy
             
             Console.WriteLine("Ładowanie kopi danych mapy do obiektu lobby");
-            DungeonMAPDATA = Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Obstacle_MAP)];
-            DungeonMAPDATA_Ground = Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Ground_MAP)];
+            DungeonMAPDATA = new Dictionary<Vector3,string>(Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Obstacle_MAP)]);
+            DungeonMAPDATA_Ground = new Dictionary<Vector3,string>(Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Ground_MAP)]);
           //  Console.WriteLine($"załadowano:{DungeonMAPDATA.Count}[Obstacle] / {DungeonMAPDATA_Ground.Count}[Ground]");
         }
 
@@ -105,6 +105,39 @@ namespace MMOG
              
              ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon: dungeon);
 
+        }
+         public static void RemoveExistingLobby(DungeonLobby _room)
+        {
+
+            Player roomLeader = _room.LobbyOwner; 
+            DUNGEONS dungeon;
+            Enum.TryParse<DUNGEONS>(_room.DungeonLocation.ToString(),out dungeon);
+          
+            int roomID = _room.LobbyID;
+            var _dungeonLobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault();
+
+            if(_dungeonLobby != null)
+            {
+                if(_dungeonLobby.LobbyOwner == roomLeader)
+                {
+                    // wyciągniecie listy graczy i rozesłanie do nich info ze nie naleza juz do zadnego pokoju 
+                    foreach(var player in _dungeonLobby.Players)
+                    {
+                        //pomin lidera 
+                        if(player == roomLeader) continue;
+                        ServerSend.KickedFromDungeonRoom(player.Id, _dungeonLobby);
+                  
+                    }
+                    Server.dungeonLobbyRooms.Remove(_dungeonLobby);
+                   // Console.WriteLine("usuniecie isniejacego lobby-servera");
+                }
+                else
+                    Console.WriteLine("Dziwne, gracz, nie będący liderem pokoju, chce go usunac? [ nie powinno sie zdazyc ]");
+            
+             ServerSend.RemoveDeletedRoom(dungeon: dungeon, roomId: roomID, _dungeonLobby);
+            }
+             
+             ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon: dungeon);
         }
 
         public static void JoinToRoom(int _fromClient, Packet _packet)

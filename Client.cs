@@ -233,6 +233,19 @@ namespace MMOG
                 ServerHandle.PlayersMoveInputRequests[player.Id] =0;
 
                 Console.WriteLine($"[{tcp.socket.Client.RemoteEndPoint}][{player.Username}] has disconnected.");
+
+
+                DungeonLobby room = Server.dungeonLobbyRooms.Where(room=>room.Players.Contains(player)).FirstOrDefault();
+                
+                if(room != null)
+                {
+                    if(room.LobbyOwner == player)
+                    {
+                        DungeonLobby.RemoveExistingLobby(_room: room);
+                    }
+                    Server.dungeonLobbyRooms.Where(room=>room.Players.Contains(player)).First().Players.Remove(player);
+                }
+            
                 // anulowanie wykonywanych akcji przed wylogowaniem
                 ServerHandle.ClearAllExecutingPlayerAction(player.Id);
 

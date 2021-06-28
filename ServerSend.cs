@@ -147,13 +147,8 @@ namespace MMOG
                 _packet.Write(_action);                                                                                      
                 Console.WriteLine("_action: "+_action);                
                 
-                if(dungeon == default)
-                {
-                   // Console.WriteLine("Nie sprecyzowano typu dungeona, wysłane zostaną wszystkie dostępne");
-                    data = data;
-                }
-                else
-                {
+                if(dungeon != default){
+
                  //   Console.WriteLine("zdefiniowano rodzaj lobby-dungeonu = "+dungeon.ToString());
                     // jezeli jest jakis wpis
                     if(data.Count>0)
