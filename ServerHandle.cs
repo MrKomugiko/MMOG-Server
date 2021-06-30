@@ -39,8 +39,7 @@ namespace MMOG
                 SimplePlayerCreditionals playerdata = Server.USERSDATABASE.Where(user=>user.Username == _username && user.Password == _password).FirstOrDefault();
                 if(playerdata != null) 
                 {
-                    try
-                    {                                
+                                           
                         // obsługa multikonta na te same dane
                         foreach(var users in Server.clients.Values)
                         {
@@ -56,15 +55,13 @@ namespace MMOG
                                     }
                             }
                         }
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine("prawdopodonie wywali bład poczas logowania gdy na serwerze sa juz boty, "+ ex.Message);
-                    }
+          
 
                  //   Console.WriteLine($"ktos id:({_username}) chce sie zalogowac na swoje konto");
                     Console.WriteLine("ACCES GRANTED");
-                    Server.clients[_fromClient].SendIntoGame(Server.GetPlayerData(playerdata.UserID, serverID:_fromClient));
+                    Player player = Server.GetPlayerData(playerdata.UserID, serverID:_fromClient);
+                    Server.clients[_fromClient].SendIntoGame(player);
+                    Console.WriteLine("Logowanie gracza: "+player.Username + "/ clientID = "+_fromClient + "/ player-clientID = "+player.Id);
                 }
                 else
                 {

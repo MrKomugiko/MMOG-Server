@@ -107,7 +107,7 @@ namespace MMOG
                 if (clients[i].tcp.socket == null)
                 {
                     clients[i].tcp.Connect(_client);
-                    Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
+                    //Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
                     return;
                 }
             }

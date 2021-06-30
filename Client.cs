@@ -212,17 +212,22 @@ namespace MMOG
         public void SendIntoGame(Player registeredPlayerData) {
             // przypisanie aktualnego gracza
             player = registeredPlayerData;
+            Console.WriteLine("sendintogame "+ player.Username );
 
            // spawn nowego gracza - lokalnego
             foreach(Client _client in Server.clients.Values.Where(client=>client.player != null)) {
-                if(_client.id != id) {
+                if(_client.id != id) 
+                {
                    // Console.WriteLine($"Spawn Gracza [{_client.player.username}]");
-                    ServerSend.SpawnPlayer(id, _client.player);
+                   Console.WriteLine("1. spawnplayer : id="+player.Id+" client.player = " +_client.player.Username);
+                    ServerSend.SpawnPlayer(player.Id, _client.player);
                 }
             }
 
             // wysłanie info do wszystkich pozostałych graczy, że pojawił się nowy
             foreach (Client _client in Server.clients.Values.Where(client => client.player != null)) {
+
+                Console.WriteLine("2. spawnplayer : id="+_client.id+" client.player = " +player.Username);
                 ServerSend.SpawnPlayer(_client.id, player);
             }
         }
