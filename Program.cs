@@ -191,20 +191,20 @@ namespace MMOG
                         catch(Exception ex) { Console.WriteLine("UPDATE LOOP: "+ex.Message); };
                     }
 
-                    afkCleanerCounter -= (int)Constants.MS_PER_TICK;
-                    if (afkCleanerCounter < 0) {
-                        //Console.WriteLine("Kicking ghost-afk users");
-                        foreach (KeyValuePair<int, string> obecnosc in Server.listaObecnosci) {
-                            if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
-                            {
-                                ServerSend.RemoveOfflinePlayer(obecnosc.Key);
-                                Server.clients[obecnosc.Key].Disconnect();
-                                Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
-                            }
-                        }
-                        ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
-                        afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK * 1000;
-                   }
+                    // afkCleanerCounter -= (int)Constants.MS_PER_TICK;
+                    // if (afkCleanerCounter < 0) {
+                    //     //Console.WriteLine("Kicking ghost-afk users");
+                    //     foreach (KeyValuePair<int, string> obecnosc in Server.listaObecnosci) {
+                    //         if (obecnosc.Value.Contains("[....]"))// jest AFKIEM nie zdazyl przyslac odpowiedzi w podanym czasie 
+                    //         {
+                    //             ServerSend.RemoveOfflinePlayer(obecnosc.Key);
+                    //             Server.clients[obecnosc.Key].Disconnect();
+                    //             Server.ZaktualizujListeObecnosci(afkId: obecnosc.Key);
+                    //         }
+                    //     }
+                    //     ServerSend.Ping_ALL(); // wykonac raz co x sekund na poczatku
+                    //     afkCleanerCounter = Constants.TIME_IN_SEC_TO_RESPOND_BEFORE_KICK * 1000;
+                    // }
                 }
             }
         }
