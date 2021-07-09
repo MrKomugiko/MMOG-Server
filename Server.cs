@@ -222,12 +222,11 @@ namespace MMOG
                 { (int)ClientPackets.RemoveLobby, DungeonLobby.RemoveExistingLobby },
                 { (int)ClientPackets.JoinLobby, DungeonLobby.JoinToRoom },
                 { (int)ClientPackets.LeaveRoomBylayer, DungeonLobby.LeaveRoomByPlayer },
-                { (int)ClientPackets.GroupTeleport, ServerHandle.GRoupRoomPlayersTeleport }
+                { (int)ClientPackets.GroupTeleport, ServerHandle.GroupRoomPlayersTeleport },
+                { (int)ClientPackets.GroupEnteredDungeon, ServerHandle.HidePlayersFromGlobalScene }
+
 
                 
-
-                
-
             };
 
             Console.WriteLine("Initialized packets.");

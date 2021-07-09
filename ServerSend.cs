@@ -119,6 +119,8 @@ namespace MMOG
                 _packet.Write(_player.Rotation);
                 _packet.Write((int)_player.CurrentLocation); // iint
                 _packet.Write(_player.CurrentFloor);
+                _packet.Write(_player.dungeonRoom); // current dungeon room id
+
              
                 SendTCPData(_toClient, _packet);
             }
@@ -206,10 +208,8 @@ namespace MMOG
             }
         }
 
-        public static void PlayerPosition(Player _player, bool _isTeleported = false) {
-            // odblokowanie ruchu gracza
-            // ServerHandle.PlayersMoveInputRequests[_player.id] = 0;
-            //Console.WriteLine($"[{_player.username}] wykonał ruch.");
+        public static void PlayerPositionToALL(Player _player, bool _isTeleported = false) {
+            ;
             using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
                 _packet.Write(_isTeleported);
                 _packet.Write(_player.Id);
@@ -219,6 +219,24 @@ namespace MMOG
             }
             ServerHandle.PlayersMoveInputRequests[_player.Id]=0;
         }      
+
+         public static void PlayerPositionToGroup(List<Player> _group, Player _player, bool _isTeleported = false) {
+            
+            foreach(var player in _group)
+            {
+                using (Packet _packet = new Packet((int)ServerPackets.playerPosition)) {
+                    _packet.Write(_isTeleported);
+                    _packet.Write(_player.Id);
+                    _packet.Write(_player.Position);
+
+                    SendTCPData(player.Id,_packet);
+
+                    Console.WriteLine($"wyslano info o przeteleportowaniu do {player.Username}");
+                }
+            }
+            ServerHandle.PlayersMoveInputRequests[_player.Id]=0;
+        }   
+
         public static void UpdateChat(string _msg) {
             using (Packet _packet = new Packet((int)ServerPackets.updateChat)) {
                 _packet.Write(_msg);

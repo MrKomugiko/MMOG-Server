@@ -61,11 +61,14 @@ namespace MMOG
             set {
                 _inDungeon = value; 
                 if(value == false) return; 
-                SetMapDataRefernece(Server.dungeonLobbyRooms.Where(room=>room.Players.Contains(this)).FirstOrDefault());
+                var room = Server.dungeonLobbyRooms.Where(room=>room.Players.Contains(this)).FirstOrDefault();
+                SetMapDataRefernece(room);
+                dungeonRoom = (room != null)?(int)room.LobbyID:0;
             } 
         }
 
         private bool _inDungeon = false;
+        public int dungeonRoom = 0;
         //  private float moveSpeed = 5f / Constants.TICKS_PER_SEC; // dlatego że serwer odbiera 30 wiadomości na sekunde
         // odpowiadałoby to speed / time.deltatime w unity
 
@@ -90,7 +93,12 @@ namespace MMOG
         internal void Teleport(Vector3 _locationCordinates)
         {
             _position = _locationCordinates;
-            ServerSend.PlayerPosition(this, true);
+            ServerSend.PlayerPositionToALL(this, true);
+        }
+         internal void TeleportGroup(List<Player> _group, Vector3 _locationCordinates)
+        {
+            _position = _locationCordinates;
+            ServerSend.PlayerPositionToGroup(_group,this, true);
         }
         public void Update()
         {
@@ -126,7 +134,7 @@ namespace MMOG
 
             }
 
-            ServerSend.PlayerPosition(this);
+            ServerSend.PlayerPositionToALL(this);
         }
         private void CheckForItems()
         {

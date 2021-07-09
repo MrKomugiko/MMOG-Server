@@ -211,7 +211,7 @@ namespace MMOG
             HandlePlayerAction(_fromClient, action, isActive);
         }
 
-        public static void GRoupRoomPlayersTeleport(int _fromClient, Packet _packet)
+        public static void GroupRoomPlayersTeleport(int _fromClient, Packet _packet)
         {
             Console.WriteLine("Grupowy teleport czlonkow pokoju na nowa mape.");
           // TODO: przeteestowac
@@ -227,10 +227,19 @@ namespace MMOG
                     {
                         // pozyskanie koordynatów wejsciowych dla lokalizacji po jej nazwie
                         player.InDungeon = true;
-                        GameLogic.TeleportPlayer(player.Id,location);
-                        
+                        player.TeleportGroup(listaGraczy,location);
                     }
                 }
+        }
+
+        internal static void HidePlayersFromGlobalScene(int _fromClient, Packet _packet)
+        {
+            Console.WriteLine("wyslanie pingu o ukrycie graczy ktory tepneli sie do dungeona");
+            int LobbyID = _packet.ReadInt();
+
+            DungeonLobby lobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == LobbyID).FirstOrDefault();
+            
+            
         }
 
         private static void HandlePlayerAction(int _fromClient, PlayerActions action, bool isActive=false)
@@ -274,7 +283,7 @@ namespace MMOG
                             }
                             playerAbove.Position = player.Position;
                           //  Console.WriteLine("zrzucam gracza na swoja pozycje ( pięterko niżej");
-                            ServerSend.PlayerPosition(playerAbove);
+                            ServerSend.PlayerPositionToALL(playerAbove);
                         }
                        
                         //Console.WriteLine("dezaktywowanie ludzkiego schodka");
@@ -329,7 +338,7 @@ namespace MMOG
                 {
                 //    Console.WriteLine("Zrzucenie gracza nizej");
                     playerAbove.Position = człekoschodek.Position;
-                    ServerSend.PlayerPosition(playerAbove);
+                    ServerSend.PlayerPositionToALL(playerAbove);
                 }
             }
         }

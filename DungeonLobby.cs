@@ -76,6 +76,7 @@ namespace MMOG
 
         public static void RemoveExistingLobby(int _fromClient, Packet _packet)
         {
+           Console.WriteLine("zadanie rozeslania info o usunieciu pokoju");
             var roomLeader = Server.clients[_fromClient].player;
 
             var dungeon = (DUNGEONS)_packet.ReadInt();
