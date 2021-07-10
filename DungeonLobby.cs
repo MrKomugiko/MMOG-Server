@@ -79,68 +79,51 @@ namespace MMOG
 
         public static void RemoveExistingLobby(int _fromClient, Packet _packet)
         {
-           Console.WriteLine("zadanie rozeslania info o usunieciu pokoju");
+            Console.WriteLine("zadanie rozeslania info o usunieciu pokoju");
             var roomLeader = Server.clients[_fromClient].player;
 
             var dungeon = (DUNGEONS)_packet.ReadInt();
             var roomID = _packet.ReadInt();
-            var _dungeonLobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault();
+            RemoveDungeonLobby(roomLeader, dungeon, roomID);
+        }
 
-            if(_dungeonLobby != null)
+        private static void RemoveDungeonLobby(Player roomLeader, DUNGEONS dungeon, int roomID)
+        {
+            var _dungeonLobby = Server.dungeonLobbyRooms.Where(room => room.LobbyID == roomID).FirstOrDefault();
+
+            if (_dungeonLobby != null)
             {
-                if(_dungeonLobby.LobbyOwner == roomLeader)
+                if (_dungeonLobby.LobbyOwner == roomLeader)
                 {
                     // wyciągniecie listy graczy i rozesłanie do nich info ze nie naleza juz do zadnego pokoju 
-                    foreach(var player in _dungeonLobby.Players)
+                    foreach (var player in _dungeonLobby.Players)
                     {
                         //pomin lidera 
-                        if(player == roomLeader) continue;
+                        if (player == roomLeader) continue;
                         ServerSend.KickedFromDungeonRoom(player.Id, _dungeonLobby);
-                  
+
                     }
                     Server.dungeonLobbyRooms.Remove(_dungeonLobby);
-                   // Console.WriteLine("usuniecie isniejacego lobby-servera");
+                    // Console.WriteLine("usuniecie isniejacego lobby-servera");
                 }
                 else
                     Console.WriteLine("Dziwne, gracz, nie będący liderem pokoju, chce go usunac? [ nie powinno sie zdazyc ]");
-            
-             ServerSend.RemoveDeletedRoom(dungeon: dungeon, roomId: roomID, _dungeonLobby);
-            }
-             
-             ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon: dungeon);
 
+                ServerSend.RemoveDeletedRoom(dungeon: dungeon, roomId: roomID, _dungeonLobby);
+            }
+
+            ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon: dungeon);
         }
-         public static void RemoveExistingLobby(DungeonLobby _room)
+
+        public static void RemoveExistingLobby(DungeonLobby _room)
         {
             Player roomLeader = _room.LobbyOwner; 
             DUNGEONS dungeon;
             Enum.TryParse<DUNGEONS>(_room.DungeonLocation.ToString(),out dungeon);
           
             int roomID = _room.LobbyID;
-            var _dungeonLobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == roomID).FirstOrDefault();
 
-            if(_dungeonLobby != null)
-            {
-                if(_dungeonLobby.LobbyOwner == roomLeader)
-                {
-                    // wyciągniecie listy graczy i rozesłanie do nich info ze nie naleza juz do zadnego pokoju 
-                    foreach(var player in _dungeonLobby.Players)
-                    {
-                        //pomin lidera 
-                        if(player == roomLeader) continue;
-                        ServerSend.KickedFromDungeonRoom(player.Id, _dungeonLobby);
-                  
-                    }
-                    Server.dungeonLobbyRooms.Remove(_dungeonLobby);
-                   // Console.WriteLine("usuniecie isniejacego lobby-servera");
-                }
-                else
-                    Console.WriteLine("Dziwne, gracz, nie będący liderem pokoju, chce go usunac? [ nie powinno sie zdazyc ]");
-            
-             ServerSend.RemoveDeletedRoom(dungeon: dungeon, roomId: roomID, _dungeonLobby);
-            }
-             
-             ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon: dungeon);
+            RemoveDungeonLobby(roomLeader, dungeon, roomID);
         }
 
         public static void JoinToRoom(int _fromClient, Packet _packet)
