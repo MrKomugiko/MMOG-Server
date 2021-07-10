@@ -92,13 +92,6 @@ namespace MMOG
             }
         }
 
-
-        // public static void UDPTestReceived(int _fromClient, Packet _packet) {
-        //     string _msg = _packet.ReadString();
-
-        //     Console.WriteLine($"Received packet via UDP. Contains message: {_msg}");
-        // }
-
         public static int[] PlayersMoveInputRequests = new int[50];
         
         public static void PlayerMovement(int _fromClient, Packet _packet) 
@@ -232,15 +225,7 @@ namespace MMOG
                 }
         }
 
-        internal static void HidePlayersFromGlobalScene(int _fromClient, Packet _packet)
-        {
-            Console.WriteLine("wyslanie pingu o ukrycie graczy ktory tepneli sie do dungeona");
-            int LobbyID = _packet.ReadInt();
-
-            DungeonLobby lobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == LobbyID).FirstOrDefault();
-            
-            
-        }
+    
 
         private static void HandlePlayerAction(int _fromClient, PlayerActions action, bool isActive=false)
         {

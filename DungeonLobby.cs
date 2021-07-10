@@ -15,6 +15,8 @@ namespace MMOG
         public List<Player> Players { get; set; } = new List<Player>();
         public int PlayersCount { get => Players.Count; }
         public int MaxPlayersCapacity { get; private set; }
+        public bool IsStarted { get; set; }
+
 
         public Dictionary<Vector3, string> DungeonMAPDATA { get; set; } = new Dictionary<Vector3, string>();
         public Dictionary<Vector3, string> DungeonMAPDATA_Ground { get; set; }= new Dictionary<Vector3, string>();
@@ -33,7 +35,8 @@ namespace MMOG
             LobbyOwner = _lobbyOwner;           // unikalny
             DungeonLocation = _dungeonLocation; // jeden na lobby
             MaxPlayersCapacity = _maxPlayersCapacity;
-            Players.Add(LobbyOwner);            // na starcie wliczajac zalozyciela do puli graczy
+            Players.Add(LobbyOwner);   
+                   // na starcie wliczajac zalozyciela do puli graczy
             
             Console.WriteLine("Ładowanie kopi danych mapy do obiektu lobby");
             DungeonMAPDATA = new Dictionary<Vector3,string>(Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Obstacle_MAP)]);
@@ -109,7 +112,6 @@ namespace MMOG
         }
          public static void RemoveExistingLobby(DungeonLobby _room)
         {
-
             Player roomLeader = _room.LobbyOwner; 
             DUNGEONS dungeon;
             Enum.TryParse<DUNGEONS>(_room.DungeonLocation.ToString(),out dungeon);
@@ -185,6 +187,18 @@ namespace MMOG
                     ServerSend.SendCurrentUpdatedDungeonLobbyData(_toClient:player.Id, dungeon:dungeon, _action:"PlayerLeftRooom");
                 }
 
+        }
+        internal static void LockRoomBecauseAlreadyStartes(int _fromClient, Packet _packet)
+        {
+            Console.WriteLine("wyslanie pingu o zablokowanie dostepu do pokoju bo jest w trakcie gry");
+            int LobbyID = _packet.ReadInt();
+
+            DungeonLobby lobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == LobbyID).FirstOrDefault();   
+            DUNGEONS dungeon;
+            Enum.TryParse<DUNGEONS>(lobby.DungeonLocation.ToString(),out dungeon);
+            lobby.IsStarted = true;
+            ServerSend.SendCurrentUpdatedDungeonLobbyData(dungeon:dungeon, _action:"GameStarted");
+         
         }
         public static void SendInitDataToClient(int _fromClient, Packet _packet)
         {

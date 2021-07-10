@@ -175,13 +175,14 @@ namespace MMOG
                         if(room == null) continue;
                         
                         _packet.Write(room.LobbyID);                    Console.WriteLine(" *LobbyID: "+room.LobbyID);
-                        _packet.Write(room.LobbyOwner.Username);        Console.WriteLine(" *LobbyOwner.Username: "+room.LobbyOwner.Username);
-                        _packet.Write((int)room.DungeonLocation);       Console.WriteLine(" *DungeonLocation: "+room.DungeonLocation);
-                        _packet.Write(room.MaxPlayersCapacity);         Console.WriteLine(" *MaxPlayersCapacity: "+room.MaxPlayersCapacity);
-                        _packet.Write(room.PlayersCount);               Console.WriteLine(" *PlayersCount: "+room.PlayersCount);
+                        _packet.Write(room.LobbyOwner.Username);        //Console.WriteLine(" *LobbyOwner.Username: "+room.LobbyOwner.Username);
+                        _packet.Write((int)room.DungeonLocation);       //Console.WriteLine(" *DungeonLocation: "+room.DungeonLocation);
+                        _packet.Write(room.MaxPlayersCapacity);         //Console.WriteLine(" *MaxPlayersCapacity: "+room.MaxPlayersCapacity);
+                        _packet.Write(room.IsStarted);                  Console.WriteLine(" *IsStarted: "+room.IsStarted);
+                        _packet.Write(room.PlayersCount);               //Console.WriteLine(" *PlayersCount: "+room.PlayersCount);
                         foreach(var player in room.Players)
                         {
-                            _packet.Write(player.Username);             Console.WriteLine(" \t - player: "+player.Username);
+                            _packet.Write(player.Username);             //Console.WriteLine(" \t - player: "+player.Username);
                         }
                     }
 

@@ -223,7 +223,7 @@ namespace MMOG
                 { (int)ClientPackets.JoinLobby, DungeonLobby.JoinToRoom },
                 { (int)ClientPackets.LeaveRoomBylayer, DungeonLobby.LeaveRoomByPlayer },
                 { (int)ClientPackets.GroupTeleport, ServerHandle.GroupRoomPlayersTeleport },
-                { (int)ClientPackets.GroupEnteredDungeon, ServerHandle.HidePlayersFromGlobalScene }
+                { (int)ClientPackets.GroupEnteredDungeon, DungeonLobby.LockRoomBecauseAlreadyStartes }
 
 
                 
