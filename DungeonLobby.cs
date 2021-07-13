@@ -26,7 +26,12 @@ namespace MMOG
             DUNGEON_1 = 1,
             DUNGEON_2
         }
-
+        public DUNGEONS Get_DUNGEONS(){
+            DUNGEONS dungeon;
+               Enum.TryParse<DUNGEONS>(DungeonLocation.ToString(),out dungeon);
+               Console.WriteLine(DungeonLocation.ToString());
+               return dungeon;
+        }
         public DungeonLobby(int _lobbyID, Player _lobbyOwner, LOCATIONS _dungeonLocation,int _maxPlayersCapacity = 2)
         {
           //  Console.WriteLine("utworzono nowe lobby dungeonu");
@@ -87,8 +92,9 @@ namespace MMOG
             RemoveDungeonLobby(roomLeader, dungeon, roomID);
         }
 
-        private static void RemoveDungeonLobby(Player roomLeader, DUNGEONS dungeon, int roomID)
+        public static void RemoveDungeonLobby(Player roomLeader, DUNGEONS dungeon, int roomID)
         {
+            Console.WriteLine("removing lobby room");
             var _dungeonLobby = Server.dungeonLobbyRooms.Where(room => room.LobbyID == roomID).FirstOrDefault();
 
             if (_dungeonLobby != null)
@@ -104,7 +110,7 @@ namespace MMOG
 
                     }
                     Server.dungeonLobbyRooms.Remove(_dungeonLobby);
-                    // Console.WriteLine("usuniecie isniejacego lobby-servera");
+                    Console.WriteLine("usuniecie isniejacego lobby-servera");
                 }
                 else
                     Console.WriteLine("Dziwne, gracz, nie będący liderem pokoju, chce go usunac? [ nie powinno sie zdazyc ]");

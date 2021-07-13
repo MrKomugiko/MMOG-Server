@@ -222,8 +222,9 @@ namespace MMOG
                 { (int)ClientPackets.RemoveLobby, DungeonLobby.RemoveExistingLobby },
                 { (int)ClientPackets.JoinLobby, DungeonLobby.JoinToRoom },
                 { (int)ClientPackets.LeaveRoomBylayer, DungeonLobby.LeaveRoomByPlayer },
+                { (int)ClientPackets.GroupEnteredDungeon, DungeonLobby.LockRoomBecauseAlreadyStartes },
                 { (int)ClientPackets.GroupTeleport, ServerHandle.GroupRoomPlayersTeleport },
-                { (int)ClientPackets.GroupEnteredDungeon, DungeonLobby.LockRoomBecauseAlreadyStartes }
+                { (int)ClientPackets.GroupLeaveTeleport, ServerHandle.GroupRoomPlayersLeaveDungeonTeleport }
 
 
                 

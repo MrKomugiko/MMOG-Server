@@ -207,22 +207,48 @@ namespace MMOG
         public static void GroupRoomPlayersTeleport(int _fromClient, Packet _packet)
         {
             Console.WriteLine("Grupowy teleport czlonkow pokoju na nowa mape.");
-          // TODO: przeteestowac
-                LOCATIONS dungeon = (LOCATIONS)_packet.ReadInt(); // dungleon name - int LOCATIONS
-                int LobbyID = _packet.ReadInt(); // lobby ID - int LOCATIONS
 
-                Vector3 location = UpdateChecker.SERVER_UPDATE_VERSIONS._Data[dungeon]._Coordinates.ToVector3();
-                DungeonLobby lobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == LobbyID).FirstOrDefault();
-                if(lobby != null)
+            LOCATIONS dungeon = (LOCATIONS)_packet.ReadInt(); // dungleon name - int LOCATIONS
+            int LobbyID = _packet.ReadInt(); // lobby ID - int LOCATIONS
+
+            Vector3 location = UpdateChecker.SERVER_UPDATE_VERSIONS._Data[dungeon]._Coordinates.ToVector3();
+            DungeonLobby lobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == LobbyID).FirstOrDefault();
+            if(lobby != null)
+            {
+                var listaGraczy = lobby.Players;
+                foreach(var player in listaGraczy)
                 {
-                    var listaGraczy = lobby.Players;
-                    foreach(var player in listaGraczy)
-                    {
-                        // pozyskanie koordynatów wejsciowych dla lokalizacji po jej nazwie
-                        player.InDungeon = true;
-                        player.TeleportGroup(listaGraczy,location);
-                    }
+                    // pozyskanie koordynatów wejsciowych dla lokalizacji po jej nazwie
+                    player.InDungeon = true;
+                    player.TeleportGroup(listaGraczy,location);
                 }
+            }
+        }
+         public static void GroupRoomPlayersLeaveDungeonTeleport(int _fromClient, Packet _packet)
+        {
+            Console.WriteLine("Grupowy teleport czlonkow pokoju na startowa mape.");
+
+            int LobbyID = _packet.ReadInt(); // lobby ID - int LOCATIONS
+
+            Vector3 location = new Vector3(2,-11,2);
+            DungeonLobby lobby = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == LobbyID).FirstOrDefault();
+            if(lobby != null)
+            {
+                var listaGraczy = lobby.Players;
+
+                foreach(var player in listaGraczy)
+                {
+
+                    DungeonLobby.RemoveDungeonLobby(player,lobby.Get_DUNGEONS(), LobbyID);
+                    // pozyskanie koordynatów wejsciowych dla lokalizacji po jej nazwie
+                    player.InDungeon = false;
+                    //player.CurrentLocation = LOCATIONS.Start_First_Floor;
+                   // player.dungeonRoom = 0;
+                    player.TeleportGroup(listaGraczy,location);
+                }
+
+                Server.dungeonLobbyRooms.Remove(lobby);
+            }
         }
 
     

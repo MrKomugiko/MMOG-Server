@@ -1,11 +1,7 @@
-﻿using System.Globalization;
-using System.Net;
-using System.Linq;
+﻿using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-
 namespace MMOG
 {
     public class Player
@@ -22,7 +18,7 @@ namespace MMOG
         private int currentFloor;
         private bool[] _inputs; // wciśnięte klawisze przez gracza
         private Inventory _inventory;
-
+        
         public DateTime _registrationDate;
         public DateTime LastLoginDate;
 
@@ -55,15 +51,20 @@ namespace MMOG
         public int CurrentFloor { get => currentFloor; set => currentFloor = value; }
 
         public Inventory Inventory { get => _inventory; set => _inventory = value; }
+        public DungeonLobby myDungeonLobbyRoom;
         public bool InDungeon
         { 
             get => _inDungeon; 
             set {
                 _inDungeon = value; 
-                if(value == false) return; 
-                var room = Server.dungeonLobbyRooms.Where(room=>room.Players.Contains(this)).FirstOrDefault();
-                SetMapDataRefernece(room);
-                dungeonRoom = (room != null)?(int)room.LobbyID:0;
+                if(value == false) 
+                {
+                    myDungeonLobbyRoom = null;
+                    return;
+                }
+                myDungeonLobbyRoom = Server.dungeonLobbyRooms.Where(room=>room.Players.Contains(this)).FirstOrDefault();
+                SetMapDataRefernece(myDungeonLobbyRoom);
+                dungeonRoom = (myDungeonLobbyRoom != null)?(int)myDungeonLobbyRoom.LobbyID:0;
             } 
         }
 
@@ -98,7 +99,10 @@ namespace MMOG
          internal void TeleportGroup(List<Player> _group, Vector3 _locationCordinates)
         {
             _position = _locationCordinates;
-            ServerSend.PlayerPositionToGroup(_group,this, true);
+            // TODO:
+            //ServerSend.PlayerPositionToGroup(_group,this, true);
+            ServerSend.PlayerPositionToALL(this, true);
+
         }
         public void Update()
         {
@@ -117,6 +121,7 @@ namespace MMOG
         private bool walkIntoStairs;
         public void Move(Vector2 _direction)
         {
+            Console.WriteLine("move");
             Inputs = new bool[4];
 
             Vector3 newPosition = Position + new Vector3(_direction.X, _direction.Y, 0);
@@ -131,11 +136,38 @@ namespace MMOG
                     CurrentFloor += (int)stairsDirection.Z;
                 }
                 CheckForItems();
+                if(InDungeon)
+                {
+                    CheckForExitFromDungeon(Position,myDungeonLobbyRoom.Get_DUNGEONS());
+                }
 
             }
 
             ServerSend.PlayerPositionToALL(this);
         }
+
+        private void CheckForExitFromDungeon(Vector3 position, DungeonLobby.DUNGEONS dungeon)
+        {
+            bool checkValue = false;
+        // Exit positions
+           switch(dungeon)
+           {
+               case DungeonLobby.DUNGEONS.DUNGEON_1:
+                    if(position == new Vector3(3,2,2)) checkValue = true;
+                    if(position == new Vector3(3,1,2)) checkValue = true;
+               break;
+           };
+
+            if(checkValue) 
+            {
+                Console.WriteLine("aktywowanie procesu wyjscia z dungeonu ");
+                foreach(var player in myDungeonLobbyRoom.Players)
+                {
+                    ServerSend.RunExitDungeonCounter(player.Id,myDungeonLobbyRoom);
+                }
+            }
+        }
+
         private void CheckForItems()
         {
             if (obstacleData_Ref.ContainsKey(Position))
@@ -206,7 +238,6 @@ namespace MMOG
                 Console.WriteLine("podmiana referencji map na dungeonowe odpowiednikiL:");
                 groundData_Ref = _dungeonLobby.DungeonMAPDATA_Ground;
                 obstacleData_Ref = _dungeonLobby.DungeonMAPDATA;
-
             }
         }
 

@@ -1,9 +1,7 @@
-﻿using MMOG;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 
 namespace MMOG
@@ -136,6 +134,17 @@ namespace MMOG
                 SendTCPData(_toClient, _packet);
             }
         }
+    public static void RunExitDungeonCounter(int _toClient, DungeonLobby _dungeonlobby)
+        {
+            Console.WriteLine("tworzenie pakietu RunCounter");
+            using (Packet _packet = new Packet((int)ServerPackets.RunCounter))
+            {
+                _packet.Write(_dungeonlobby.LobbyID);           
+                Console.WriteLine("wyslanie pakietu do klienta o ID = "+ _toClient);
+                SendTCPData(_toClient, _packet);  
+            }
+        }
+        
 
         public static void SendCurrentUpdatedDungeonLobbyData(int? _toClient = null, DungeonLobby.DUNGEONS dungeon = default, string _action = "null", int _roomID = 0)
         {
@@ -205,7 +214,8 @@ namespace MMOG
                 _packet.Write((int)dungeon);
                 _packet.Write(roomId);
 
-                SendTCPDataToAll(_exceptClient:_dungeonLobby.LobbyOwner.Id, _packet);
+                //SendTCPDataToAll(_exceptClient:_dungeonLobby.LobbyOwner.Id, _packet);
+                SendTCPDataToAll(_packet);
             }
         }
 
