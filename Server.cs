@@ -18,7 +18,7 @@ namespace MMOG
             new SimplePlayerCreditionals(9000,"[GM]", "admin"),
         };
         public static List<Player> Players_DATABASE = new List<Player>(){
-            new Player(0,"[GM]",9000)
+            new Player(2,"[GM]",9000)
         };
         public static int GetUserId(string _username) => Players_DATABASE.Where(user=>user.Username == _username).FirstOrDefault().UserID;
         public static Player GetPlayerByUserID(int _userId) =>  Players_DATABASE.Where(user=>user.UserID == _userId).FirstOrDefault();
@@ -224,7 +224,11 @@ namespace MMOG
                 { (int)ClientPackets.LeaveRoomBylayer, DungeonLobby.LeaveRoomByPlayer },
                 { (int)ClientPackets.GroupEnteredDungeon, DungeonLobby.LockRoomBecauseAlreadyStartes },
                 { (int)ClientPackets.GroupTeleport, ServerHandle.GroupRoomPlayersTeleport },
-                { (int)ClientPackets.GroupLeaveTeleport, ServerHandle.GroupRoomPlayersLeaveDungeonTeleport }
+                { (int)ClientPackets.GroupLeaveTeleport, ServerHandle.GroupRoomPlayersLeaveDungeonTeleport },
+                { (int)ClientPackets.CancelCounter_leavingRoom, ServerSend.CancelExitDungeonCounter }
+
+
+                
 
 
                 

@@ -27,7 +27,8 @@ namespace MMOG
         kickFromDungeonRoom,
         CurrentDungeonRoomsStatus,
         removeLobbyRoom,
-        RunCounter = 50
+        RunCounter,
+        CancelCounter
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -52,7 +53,8 @@ namespace MMOG
         LeaveRoomBylayer,
         GroupTeleport,
         GroupEnteredDungeon,
-        GroupLeaveTeleport
+        GroupLeaveTeleport,
+        CancelCounter_leavingRoom
     }
     public class Packet : IDisposable
     {

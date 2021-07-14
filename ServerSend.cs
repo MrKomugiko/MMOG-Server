@@ -144,7 +144,22 @@ namespace MMOG
                 SendTCPData(_toClient, _packet);  
             }
         }
-        
+        public static void CancelExitDungeonCounter(int _fromClient, Packet _p)
+        {
+            var room = Server.dungeonLobbyRooms.Where(room=>room.LobbyID == _p.ReadInt()).FirstOrDefault();
+            if(room != null)
+            {
+                Console.WriteLine("rozesłąnie info o anulowaniu counterków");
+                using (Packet _packet = new Packet((int)ServerPackets.CancelCounter))
+                {
+                    _packet.Write(room.LobbyID);          
+                    room.Players.Where(p=>p.Id != _fromClient).ToList().ForEach(p=>SendTCPData(p.Id, _packet)) ;                      
+                }
+                return;
+            }
+
+            Console.WriteLine("nie znaleziono pokoju -> nie wiadomo do kogo wyslac pakiet");
+        }
 
         public static void SendCurrentUpdatedDungeonLobbyData(int? _toClient = null, DungeonLobby.DUNGEONS dungeon = default, string _action = "null", int _roomID = 0)
         {

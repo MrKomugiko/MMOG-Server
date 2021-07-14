@@ -26,10 +26,11 @@ namespace MMOG
             DUNGEON_1 = 1,
             DUNGEON_2
         }
-        public DUNGEONS Get_DUNGEONS(){
+        public DUNGEONS Get_DUNGEONS()
+        {
             DUNGEONS dungeon;
                Enum.TryParse<DUNGEONS>(DungeonLocation.ToString(),out dungeon);
-               Console.WriteLine(DungeonLocation.ToString());
+             //  Console.WriteLine(DungeonLocation.ToString());
                return dungeon;
         }
         public DungeonLobby(int _lobbyID, Player _lobbyOwner, LOCATIONS _dungeonLocation,int _maxPlayersCapacity = 2)

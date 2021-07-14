@@ -121,7 +121,7 @@ namespace MMOG
         private bool walkIntoStairs;
         public void Move(Vector2 _direction)
         {
-            Console.WriteLine("move");
+            //Console.WriteLine("move");
             Inputs = new bool[4];
 
             Vector3 newPosition = Position + new Vector3(_direction.X, _direction.Y, 0);
