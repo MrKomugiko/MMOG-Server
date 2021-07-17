@@ -59,6 +59,9 @@ namespace MMOG
                         case "1-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.Start_Second_Floor, mapType: MAPTYPE.Obstacle_MAP); break;
                         case "2-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.DUNGEON_1, mapType: MAPTYPE.Ground_MAP); break;
                         case "2-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.DUNGEON_1, mapType: MAPTYPE.Obstacle_MAP); break;
+                        
+                        case "3-0": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.DUNGEON_2, mapType: MAPTYPE.Ground_MAP); break;
+                        case "3-1": ServerSend.DownloadMapData(fromID: admin, mapLocation: LOCATIONS.DUNGEON_2, mapType: MAPTYPE.Obstacle_MAP); break;
                     }
                 };
                 if (consoleCommand == "cmd_sendMapUpdateToAll") ServerSend.SendCurrentUpdateVersionNumber(); 
@@ -188,7 +191,7 @@ namespace MMOG
                     if (_nextLoop > DateTime.Now)
                     {
                         try { Thread.Sleep(_nextLoop - DateTime.Now); } 
-                        catch(Exception ex) { Console.WriteLine("UPDATE LOOP: "+ex.Message); };
+                        catch(Exception ex) { Console.WriteLine($"UPDATE LOOP: sleep time error {(_nextLoop - DateTime.Now)}ms : "+ex.Message); };
                     }
 
                     afkCleanerCounter -= (int)Constants.MS_PER_TICK;

@@ -84,7 +84,7 @@ namespace MMOG
 
             using (FileStream fs = new FileStream(Constants.PATH_NOTES_SERVER, FileMode.Create)) {
                 using (TextWriter tw = new StreamWriter(fs)) {
-                    tw.WriteAsync(serverJsonFile);
+                    tw.Write(serverJsonFile);
                 }
             }
             Console.WriteLine("zapisano informacje o update");
