@@ -155,6 +155,12 @@ namespace MMOG
                case DungeonLobby.DUNGEONS.DUNGEON_1:
                     if(position == new Vector3(3,2,2)) checkValue = true;
                     if(position == new Vector3(3,1,2)) checkValue = true;
+                    
+               break;
+                case DungeonLobby.DUNGEONS.DUNGEON_2:
+                    if(position == new Vector3(18,-2,10)) checkValue = true;
+                    if(position == new Vector3(18,-3,10)) checkValue = true;
+                    if(position == new Vector3(18,-4,10)) checkValue = true;
                break;
            };
 
