@@ -35,6 +35,11 @@ namespace MMOG
         Start_Second_Floor,
         DUNGEON_1,
         DUNGEON_2
+}
+    public enum DUNGEONS // nazwa jednakowa z tą w locations !
+    {
+        DUNGEON_1 = 1,
+        DUNGEON_2
     }
     public enum MAPTYPE
     {

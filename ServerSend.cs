@@ -161,7 +161,7 @@ namespace MMOG
             Console.WriteLine("nie znaleziono pokoju -> nie wiadomo do kogo wyslac pakiet");
         }
 
-        public static void SendCurrentUpdatedDungeonLobbyData(int? _toClient = null, DungeonLobby.DUNGEONS dungeon = default, string _action = "null", int _roomID = 0)
+        public static void SendCurrentUpdatedDungeonLobbyData(int? _toClient = null, DUNGEONS dungeon = default, string _action = "null", int _roomID = 0)
         {
             if(Server.dungeonLobbyRooms == null) Server.dungeonLobbyRooms = new List<DungeonLobby>();
             var data = Server.dungeonLobbyRooms;
@@ -221,7 +221,7 @@ namespace MMOG
             }
         }
 
-        internal static void RemoveDeletedRoom(DungeonLobby.DUNGEONS dungeon, int roomId, DungeonLobby _dungeonLobby)
+        internal static void RemoveDeletedRoom(DUNGEONS dungeon, int roomId, DungeonLobby _dungeonLobby)
         {
             using (Packet _packet = new Packet((int)ServerPackets.removeLobbyRoom))
             {

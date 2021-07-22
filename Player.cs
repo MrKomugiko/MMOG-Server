@@ -138,6 +138,8 @@ namespace MMOG
                 CheckForItems();
                 if(InDungeon)
                 {
+                    // podpiąć to i ujednolicić z check for item
+                    CheckForGateTrigger();
                     CheckForExitFromDungeon(Position,myDungeonLobbyRoom.Get_DUNGEONS());
                 }
 
@@ -145,35 +147,50 @@ namespace MMOG
 
             ServerSend.PlayerPositionToALL(this);
         }
-
-        private void CheckForExitFromDungeon(Vector3 position, DungeonLobby.DUNGEONS dungeon)
+   
+        private void CheckForExitFromDungeon(Vector3 position, DUNGEONS dungeon)
         {
-            bool checkValue = false;
-        // Exit positions
-           switch(dungeon)
-           {
-               case DungeonLobby.DUNGEONS.DUNGEON_1:
-                    if(position == new Vector3(3,2,2)) checkValue = true;
-                    if(position == new Vector3(3,1,2)) checkValue = true;
-                    
-               break;
-                case DungeonLobby.DUNGEONS.DUNGEON_2:
-                    if(position == new Vector3(18,-2,10)) checkValue = true;
-                    if(position == new Vector3(18,-3,10)) checkValue = true;
-                    if(position == new Vector3(18,-4,10)) checkValue = true;
-               break;
-           };
-
-            if(checkValue) 
+            if(DungeonLobby.dungeonExitsDict.ContainsKey(position))
             {
-                Console.WriteLine("aktywowanie procesu wyjscia z dungeonu ");
+                Console.WriteLine("aktywowanie procesu wyjscia z dungeonu "+DungeonLobby.dungeonExitsDict[position].ToString());
                 foreach(var player in myDungeonLobbyRoom.Players)
                 {
                     ServerSend.RunExitDungeonCounter(player.Id,myDungeonLobbyRoom);
                 }
             }
         }
-
+        private void CheckForGateTrigger()
+        {
+            if (obstacleData_Ref.ContainsKey(Position))
+            {
+                // TODO: przy wczytywaniu danych mapy, kazdemu trigerkowi dopisac odpowiadający jemu gate index
+                if (obstacleData_Ref[Position].Contains("trigger"))
+                {
+                    Console.WriteLine("trigger detected");
+                    // sp[rawdzenie ktorego date'a jest to trigger
+                    DungeonGate dungeonGate = myDungeonLobbyRoom.listaGateow.Where(p=>p.TriggerPosition == Position).FirstOrDefault();
+                    if(dungeonGate != null)
+                    {
+                        var gate = myDungeonLobbyRoom.listaGateow
+                            .Where(g=>g.GateID == dungeonGate.GateID)
+                            .First();
+                        // sprawdzenie czy brama jest aktywna
+                        if(gate.GateStatus == false) 
+                        {
+                            Console.WriteLine("Corresponded gate is already disabled");
+                            return;
+                        }
+                        Console.WriteLine("Corresponded gate is still active");
+                        // wykonanie akcji open gate dla wskazanego gatea
+                        gate.OPENGATE(ref myDungeonLobbyRoom.DungeonMAPDATA_Ground);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Trigger is not connected to any gate");
+                    }
+                }
+            }
+        }
         private void CheckForItems()
         {
             if (obstacleData_Ref.ContainsKey(Position))

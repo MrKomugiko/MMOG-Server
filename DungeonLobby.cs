@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace MMOG
 {
-    public class DungeonLobby
+    public partial class DungeonLobby
     {
         public int LobbyID { get; private set; }
         public Player LobbyOwner { get; private set; }
@@ -17,15 +17,51 @@ namespace MMOG
         public int MaxPlayersCapacity { get; private set; }
         public bool IsStarted { get; set; }
 
+        public List<DungeonGate> listaGateow = new List<DungeonGate>()
+        {
+            new DungeonGate(1,DUNGEONS.DUNGEON_2,new List<Vector3>()
+                {
+                    new Vector3(-8,8,0),
+                    new Vector3(-7,8,0),
+                    new Vector3(-6,8,0)
+                },
+                true,
+                new Vector3(-5,7,2)
+            ),
+            new DungeonGate(2,DUNGEONS.DUNGEON_2,new List<Vector3>()
+                {
+                    new Vector3(8,-2,0),
+                    new Vector3(8,-3,0),
+                    new Vector3(8,-4,0)
+                },
+                true,
+                new Vector3(7,-1,2)
+            ),
+            new DungeonGate(3,DUNGEONS.DUNGEON_2,new List<Vector3>()
+                {
+                    new Vector3(-5,-12,0),
+                    new Vector3(-6,-12,0),
+                    new Vector3(-7,-12,0)
+                },
+                true,
+                new Vector3(-3,-10,2)
+            )
+        // TODO: zautomatyzowac xd
+        };
+            public static Dictionary<Vector3,DUNGEONS> dungeonExitsDict = 
+            new Dictionary<Vector3, DUNGEONS>(){
+                {new Vector3(3,2,2), DUNGEONS.DUNGEON_1},
+                {new Vector3(3,1,2), DUNGEONS.DUNGEON_1},
+
+                {new Vector3(18,-2,10), DUNGEONS.DUNGEON_2},
+                {new Vector3(18,-3,10), DUNGEONS.DUNGEON_2},
+                {new Vector3(18,-4,10), DUNGEONS.DUNGEON_2}
+
+                // TODO: zasysać z jsona na serwerze
+            };
 
         public Dictionary<Vector3, string> DungeonMAPDATA { get; set; } = new Dictionary<Vector3, string>();
-        public Dictionary<Vector3, string> DungeonMAPDATA_Ground { get; set; }= new Dictionary<Vector3, string>();
-
-        public enum DUNGEONS // nazwa jednakowa z tą w locations !
-        {
-            DUNGEON_1 = 1,
-            DUNGEON_2
-        }
+        public Dictionary<Vector3, string> DungeonMAPDATA_Ground;// { get; set; }= new Dictionary<Vector3, string>();
         public DUNGEONS Get_DUNGEONS()
         {
             DUNGEONS dungeon;
@@ -47,7 +83,20 @@ namespace MMOG
             Console.WriteLine("Ładowanie kopi danych mapy do obiektu lobby");
             DungeonMAPDATA = new Dictionary<Vector3,string>(Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Obstacle_MAP)]);
             DungeonMAPDATA_Ground = new Dictionary<Vector3,string>(Server.BazaWszystkichMDanychMap[Constants.GetKeyFromMapLocationAndType(DungeonLocation,MAPTYPE.Ground_MAP)]);
+
+            // blokada przejscia spowodowana zamknietymi gateami \o.o/
+            EnableClodesGates(Get_DUNGEONS());
           //  Console.WriteLine($"załadowano:{DungeonMAPDATA.Count}[Obstacle] / {DungeonMAPDATA_Ground.Count}[Ground]");
+        }
+
+        private void EnableClodesGates(DUNGEONS dungeonLoc)
+        {
+
+            foreach(DungeonGate gate in listaGateow.Where(g=>g.Location == dungeonLoc))
+            {
+                // usuwanie 'podlogi z pamieci w przypadku gdy gate jest aktywny, uniemolizi przez niego przejscie
+                gate.PositionsOnMap.ForEach(p=> DungeonMAPDATA_Ground.Remove(p));
+            }
         }
 
         // public void Join(Player playerWhoWantJoin)
@@ -68,7 +117,7 @@ namespace MMOG
         //     {
         //         Console.WriteLine("gracza nie ma na liscie graczy w lobby");
         //     }
-            
+
         // }
         public static void CreateNewLobby(int _fromClient, Packet _packet)
         {
