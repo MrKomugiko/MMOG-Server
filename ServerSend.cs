@@ -59,6 +59,21 @@ namespace MMOG
                 Server.clients[i].udp.SendData(_packet);
             }
         }
+
+        internal static void TrigerAnimationAndTileSwapProcedure(Vector3 _tilePositionGrid, List<int> _playerIDList)
+        {
+            Console.WriteLine($" Wysłanie info do gracza X, ze ma odpalić animacje Y, dla obieku Z, i po zakonczeniu animacji podmienic na obiekt T");
+            Console.WriteLine("wykonać animacje dla obiektu na polu "+_tilePositionGrid);
+            using (Packet _packet = new Packet((int)ServerPackets.ExecuteAnimationForTile))
+            {
+                _packet.Write(_tilePositionGrid);
+                foreach(var players in _playerIDList)
+                {
+                    SendTCPData(players,_packet);
+                }
+            }
+        }
+
         private static void SendUDPDataToAll(int _exceptClient, Packet _packet)
         {
             _packet.WriteLength();

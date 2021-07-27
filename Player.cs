@@ -152,6 +152,8 @@ namespace MMOG
         {
             if(DungeonLobby.dungeonExitsDict.ContainsKey(position))
             {
+                if (DungeonLobby.dungeonExitsDict[position] != dungeon) return;
+                
                 Console.WriteLine("aktywowanie procesu wyjscia z dungeonu "+DungeonLobby.dungeonExitsDict[position].ToString());
                 foreach(var player in myDungeonLobbyRoom.Players)
                 {

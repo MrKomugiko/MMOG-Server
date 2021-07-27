@@ -28,7 +28,8 @@ namespace MMOG
         CurrentDungeonRoomsStatus,
         removeLobbyRoom,
         RunCounter,
-        CancelCounter
+        CancelCounter,
+        ExecuteAnimationForTile
     }
 
     /// <summary>Sent from client to server.</summary>
